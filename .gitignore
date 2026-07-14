@@ -1,0 +1,23 @@
+# Environments
+venv/
+.venv/
+env/
+__pycache__/
+.idea/
+.DS_Store
+
+# Heavy ML Models and folders
+review_topic_model
+review_topic_model/
+models/embedding_model.pkl
+*.pkl
+
+# Databases and Data files
+data/metrics.db
+*.db
+*.csv
+*.xlsx
+
+# Archive files and folders
+archive/
+archive

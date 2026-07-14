@@ -1,0 +1,1822 @@
+2026-07-14 07:38:05,120 — INFO — ============================================================
+2026-07-14 07:38:05,120 — INFO — PIPELINE START — 2026-07-14 07:38:05
+2026-07-14 07:38:05,120 — INFO — ============================================================
+2026-07-14 07:38:05,120 — INFO — ============================================================
+2026-07-14 07:38:05,120 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 07:38:05,120 — INFO — ============================================================
+2026-07-14 07:38:05,135 — INFO — Attempting to fetch responses directly from SurveyMonkey API...
+2026-07-14 07:38:05,135 — INFO — Fetching question metadata for survey 525214484...
+2026-07-14 07:38:05,993 — INFO — SurveyMonkey daily quota: 496/500 remaining.
+2026-07-14 07:38:05,993 — INFO — Mapped 3 questions for survey 525214484
+2026-07-14 07:38:05,997 — INFO — Fetching responses for survey 525214484...
+2026-07-14 07:38:08,114 — INFO — SurveyMonkey daily quota: 495/500 remaining.
+2026-07-14 07:38:08,117 — INFO —   Fetched 100 responses so far...
+2026-07-14 07:38:10,260 — INFO — SurveyMonkey daily quota: 494/500 remaining.
+2026-07-14 07:38:10,262 — INFO —   Fetched 200 responses so far...
+2026-07-14 07:38:12,741 — INFO — SurveyMonkey daily quota: 493/500 remaining.
+2026-07-14 07:38:12,742 — INFO —   Fetched 300 responses so far...
+2026-07-14 07:38:14,577 — INFO — SurveyMonkey daily quota: 492/500 remaining.
+2026-07-14 07:38:14,581 — INFO —   Fetched 400 responses so far...
+2026-07-14 07:38:16,442 — INFO — SurveyMonkey daily quota: 491/500 remaining.
+2026-07-14 07:38:16,446 — INFO —   Fetched 500 responses so far...
+2026-07-14 07:38:18,539 — INFO — SurveyMonkey daily quota: 490/500 remaining.
+2026-07-14 07:38:18,548 — INFO —   Fetched 600 responses so far...
+2026-07-14 07:38:20,320 — INFO — SurveyMonkey daily quota: 489/500 remaining.
+2026-07-14 07:38:20,322 — INFO —   Fetched 700 responses so far...
+2026-07-14 07:38:22,252 — INFO — SurveyMonkey daily quota: 488/500 remaining.
+2026-07-14 07:38:22,260 — INFO —   Fetched 800 responses so far...
+2026-07-14 07:38:23,573 — INFO — SurveyMonkey daily quota: 487/500 remaining.
+2026-07-14 07:38:23,576 — INFO —   Fetched 900 responses so far...
+2026-07-14 07:38:24,896 — INFO — SurveyMonkey daily quota: 486/500 remaining.
+2026-07-14 07:38:24,897 — INFO —   Fetched 1000 responses so far...
+2026-07-14 07:38:26,911 — INFO — SurveyMonkey daily quota: 485/500 remaining.
+2026-07-14 07:38:26,917 — INFO —   Fetched 1100 responses so far...
+2026-07-14 07:38:29,137 — INFO — SurveyMonkey daily quota: 484/500 remaining.
+2026-07-14 07:38:29,144 — INFO —   Fetched 1200 responses so far...
+2026-07-14 07:38:31,078 — INFO — SurveyMonkey daily quota: 483/500 remaining.
+2026-07-14 07:38:31,089 — INFO —   Fetched 1300 responses so far...
+2026-07-14 07:38:33,648 — INFO — SurveyMonkey daily quota: 482/500 remaining.
+2026-07-14 07:38:33,660 — INFO —   Fetched 1400 responses so far...
+2026-07-14 07:38:35,482 — INFO — SurveyMonkey daily quota: 481/500 remaining.
+2026-07-14 07:38:35,487 — INFO —   Fetched 1500 responses so far...
+2026-07-14 07:38:37,344 — INFO — SurveyMonkey daily quota: 480/500 remaining.
+2026-07-14 07:38:37,353 — INFO —   Fetched 1600 responses so far...
+2026-07-14 07:38:39,512 — INFO — SurveyMonkey daily quota: 479/500 remaining.
+2026-07-14 07:38:39,519 — INFO —   Fetched 1700 responses so far...
+2026-07-14 07:38:40,944 — INFO — SurveyMonkey daily quota: 478/500 remaining.
+2026-07-14 07:38:40,946 — INFO —   Fetched 1800 responses so far...
+2026-07-14 07:38:42,772 — INFO — SurveyMonkey daily quota: 477/500 remaining.
+2026-07-14 07:38:42,777 — INFO —   Fetched 1900 responses so far...
+2026-07-14 07:38:44,644 — INFO — SurveyMonkey daily quota: 476/500 remaining.
+2026-07-14 07:38:44,653 — INFO —   Fetched 2000 responses so far...
+2026-07-14 07:38:46,103 — INFO — SurveyMonkey daily quota: 475/500 remaining.
+2026-07-14 07:38:46,109 — INFO —   Fetched 2100 responses so far...
+2026-07-14 07:38:47,983 — INFO — SurveyMonkey daily quota: 474/500 remaining.
+2026-07-14 07:38:47,989 — INFO —   Fetched 2200 responses so far...
+2026-07-14 07:38:49,915 — INFO — SurveyMonkey daily quota: 473/500 remaining.
+2026-07-14 07:38:49,922 — INFO —   Fetched 2300 responses so far...
+2026-07-14 07:38:51,898 — INFO — SurveyMonkey daily quota: 472/500 remaining.
+2026-07-14 07:38:51,905 — INFO —   Fetched 2400 responses so far...
+2026-07-14 07:38:53,880 — INFO — SurveyMonkey daily quota: 471/500 remaining.
+2026-07-14 07:38:53,895 — INFO —   Fetched 2500 responses so far...
+2026-07-14 07:38:55,351 — INFO — SurveyMonkey daily quota: 470/500 remaining.
+2026-07-14 07:38:55,359 — INFO —   Fetched 2600 responses so far...
+2026-07-14 07:38:57,162 — INFO — SurveyMonkey daily quota: 469/500 remaining.
+2026-07-14 07:38:57,168 — INFO —   Fetched 2700 responses so far...
+2026-07-14 07:38:59,084 — INFO — SurveyMonkey daily quota: 468/500 remaining.
+2026-07-14 07:38:59,092 — INFO —   Fetched 2800 responses so far...
+2026-07-14 07:39:00,419 — INFO — SurveyMonkey daily quota: 467/500 remaining.
+2026-07-14 07:39:00,426 — INFO —   Fetched 2900 responses so far...
+2026-07-14 07:39:01,786 — INFO — SurveyMonkey daily quota: 466/500 remaining.
+2026-07-14 07:39:01,795 — INFO —   Fetched 3000 responses so far...
+2026-07-14 07:39:03,597 — INFO — SurveyMonkey daily quota: 465/500 remaining.
+2026-07-14 07:39:03,603 — INFO —   Fetched 3100 responses so far...
+2026-07-14 07:39:05,381 — INFO — SurveyMonkey daily quota: 464/500 remaining.
+2026-07-14 07:39:05,389 — INFO —   Fetched 3200 responses so far...
+2026-07-14 07:39:06,717 — INFO — SurveyMonkey daily quota: 463/500 remaining.
+2026-07-14 07:39:06,723 — INFO —   Fetched 3300 responses so far...
+2026-07-14 07:39:08,267 — INFO — SurveyMonkey daily quota: 462/500 remaining.
+2026-07-14 07:39:08,270 — INFO —   Fetched 3400 responses so far...
+2026-07-14 07:39:09,786 — INFO — SurveyMonkey daily quota: 461/500 remaining.
+2026-07-14 07:39:09,796 — INFO —   Fetched 3500 responses so far...
+2026-07-14 07:39:11,728 — INFO — SurveyMonkey daily quota: 460/500 remaining.
+2026-07-14 07:39:11,739 — INFO —   Fetched 3600 responses so far...
+2026-07-14 07:39:13,683 — INFO — SurveyMonkey daily quota: 459/500 remaining.
+2026-07-14 07:39:13,691 — INFO —   Fetched 3700 responses so far...
+2026-07-14 07:39:15,613 — INFO — SurveyMonkey daily quota: 458/500 remaining.
+2026-07-14 07:39:15,625 — INFO —   Fetched 3800 responses so far...
+2026-07-14 07:39:17,662 — INFO — SurveyMonkey daily quota: 457/500 remaining.
+2026-07-14 07:39:17,671 — INFO —   Fetched 3900 responses so far...
+2026-07-14 07:39:19,746 — INFO — SurveyMonkey daily quota: 456/500 remaining.
+2026-07-14 07:39:19,753 — INFO —   Fetched 4000 responses so far...
+2026-07-14 07:39:21,975 — INFO — SurveyMonkey daily quota: 455/500 remaining.
+2026-07-14 07:39:21,988 — INFO —   Fetched 4100 responses so far...
+2026-07-14 07:39:23,870 — INFO — SurveyMonkey daily quota: 454/500 remaining.
+2026-07-14 07:39:23,878 — INFO —   Fetched 4200 responses so far...
+2026-07-14 07:39:25,887 — INFO — SurveyMonkey daily quota: 453/500 remaining.
+2026-07-14 07:39:25,896 — INFO —   Fetched 4300 responses so far...
+2026-07-14 07:39:27,156 — INFO — SurveyMonkey daily quota: 452/500 remaining.
+2026-07-14 07:39:27,164 — INFO —   Fetched 4400 responses so far...
+2026-07-14 07:39:29,653 — INFO — SurveyMonkey daily quota: 451/500 remaining.
+2026-07-14 07:39:29,662 — INFO —   Fetched 4500 responses so far...
+2026-07-14 07:39:30,986 — INFO — SurveyMonkey daily quota: 450/500 remaining.
+2026-07-14 07:39:30,999 — INFO —   Fetched 4600 responses so far...
+2026-07-14 07:39:32,448 — INFO — SurveyMonkey daily quota: 449/500 remaining.
+2026-07-14 07:39:32,457 — INFO —   Fetched 4700 responses so far...
+2026-07-14 07:39:33,634 — INFO — SurveyMonkey daily quota: 448/500 remaining.
+2026-07-14 07:39:33,642 — INFO —   Fetched 4800 responses so far...
+2026-07-14 07:39:35,184 — INFO — SurveyMonkey daily quota: 447/500 remaining.
+2026-07-14 07:39:35,192 — INFO —   Fetched 4900 responses so far...
+2026-07-14 07:39:37,040 — INFO — SurveyMonkey daily quota: 446/500 remaining.
+2026-07-14 07:39:37,047 — INFO —   Fetched 5000 responses so far...
+2026-07-14 07:39:38,948 — INFO — SurveyMonkey daily quota: 445/500 remaining.
+2026-07-14 07:39:38,956 — INFO —   Fetched 5100 responses so far...
+2026-07-14 07:39:40,872 — INFO — SurveyMonkey daily quota: 444/500 remaining.
+2026-07-14 07:39:40,884 — INFO —   Fetched 5200 responses so far...
+2026-07-14 07:39:42,937 — INFO — SurveyMonkey daily quota: 443/500 remaining.
+2026-07-14 07:39:42,952 — INFO —   Fetched 5300 responses so far...
+2026-07-14 07:39:44,205 — INFO — SurveyMonkey daily quota: 442/500 remaining.
+2026-07-14 07:39:44,214 — INFO —   Fetched 5400 responses so far...
+2026-07-14 07:39:45,770 — INFO — SurveyMonkey daily quota: 441/500 remaining.
+2026-07-14 07:39:45,778 — INFO —   Fetched 5500 responses so far...
+2026-07-14 07:39:47,066 — INFO — SurveyMonkey daily quota: 440/500 remaining.
+2026-07-14 07:39:47,074 — INFO —   Fetched 5600 responses so far...
+2026-07-14 07:39:48,913 — INFO — SurveyMonkey daily quota: 439/500 remaining.
+2026-07-14 07:39:48,918 — INFO —   Fetched 5700 responses so far...
+2026-07-14 07:39:50,340 — INFO — SurveyMonkey daily quota: 438/500 remaining.
+2026-07-14 07:39:50,348 — INFO —   Fetched 5800 responses so far...
+2026-07-14 07:39:52,347 — INFO — SurveyMonkey daily quota: 437/500 remaining.
+2026-07-14 07:39:52,356 — INFO —   Fetched 5900 responses so far...
+2026-07-14 07:39:54,247 — INFO — SurveyMonkey daily quota: 436/500 remaining.
+2026-07-14 07:39:54,254 — INFO —   Fetched 6000 responses so far...
+2026-07-14 07:39:56,258 — INFO — SurveyMonkey daily quota: 435/500 remaining.
+2026-07-14 07:39:56,268 — INFO —   Fetched 6100 responses so far...
+2026-07-14 07:39:58,306 — INFO — SurveyMonkey daily quota: 434/500 remaining.
+2026-07-14 07:39:58,314 — INFO —   Fetched 6200 responses so far...
+2026-07-14 07:40:00,106 — INFO — SurveyMonkey daily quota: 433/500 remaining.
+2026-07-14 07:40:00,118 — INFO —   Fetched 6300 responses so far...
+2026-07-14 07:40:01,851 — INFO — SurveyMonkey daily quota: 432/500 remaining.
+2026-07-14 07:40:01,852 — INFO —   Fetched 6400 responses so far...
+2026-07-14 07:40:03,884 — INFO — SurveyMonkey daily quota: 431/500 remaining.
+2026-07-14 07:40:03,893 — INFO —   Fetched 6500 responses so far...
+2026-07-14 07:40:05,396 — INFO — SurveyMonkey daily quota: 430/500 remaining.
+2026-07-14 07:40:05,405 — INFO —   Fetched 6600 responses so far...
+2026-07-14 07:40:06,898 — INFO — SurveyMonkey daily quota: 429/500 remaining.
+2026-07-14 07:40:06,906 — INFO —   Fetched 6700 responses so far...
+2026-07-14 07:40:08,234 — INFO — SurveyMonkey daily quota: 428/500 remaining.
+2026-07-14 07:40:08,237 — INFO —   Fetched 6800 responses so far...
+2026-07-14 07:40:09,605 — INFO — SurveyMonkey daily quota: 427/500 remaining.
+2026-07-14 07:40:09,615 — INFO —   Fetched 6900 responses so far...
+2026-07-14 07:40:11,640 — INFO — SurveyMonkey daily quota: 426/500 remaining.
+2026-07-14 07:40:11,646 — INFO —   Fetched 7000 responses so far...
+2026-07-14 07:40:12,939 — INFO — SurveyMonkey daily quota: 425/500 remaining.
+2026-07-14 07:40:12,942 — INFO —   Fetched 7100 responses so far...
+2026-07-14 07:40:14,300 — INFO — SurveyMonkey daily quota: 424/500 remaining.
+2026-07-14 07:40:14,305 — INFO —   Fetched 7200 responses so far...
+2026-07-14 07:40:15,701 — INFO — SurveyMonkey daily quota: 423/500 remaining.
+2026-07-14 07:40:15,710 — INFO —   Fetched 7300 responses so far...
+2026-07-14 07:40:17,192 — INFO — SurveyMonkey daily quota: 422/500 remaining.
+2026-07-14 07:40:17,201 — INFO —   Fetched 7400 responses so far...
+2026-07-14 07:40:18,699 — INFO — SurveyMonkey daily quota: 421/500 remaining.
+2026-07-14 07:40:18,708 — INFO —   Fetched 7500 responses so far...
+2026-07-14 07:40:20,044 — INFO — SurveyMonkey daily quota: 420/500 remaining.
+2026-07-14 07:40:20,050 — INFO —   Fetched 7600 responses so far...
+2026-07-14 07:40:21,570 — INFO — SurveyMonkey daily quota: 419/500 remaining.
+2026-07-14 07:40:21,575 — INFO —   Fetched 7700 responses so far...
+2026-07-14 07:40:23,518 — INFO — SurveyMonkey daily quota: 418/500 remaining.
+2026-07-14 07:40:23,526 — INFO —   Fetched 7800 responses so far...
+2026-07-14 07:40:25,012 — INFO — SurveyMonkey daily quota: 417/500 remaining.
+2026-07-14 07:40:25,021 — INFO —   Fetched 7900 responses so far...
+2026-07-14 07:40:26,385 — INFO — SurveyMonkey daily quota: 416/500 remaining.
+2026-07-14 07:40:26,395 — INFO —   Fetched 8000 responses so far...
+2026-07-14 07:40:28,377 — INFO — SurveyMonkey daily quota: 415/500 remaining.
+2026-07-14 07:40:28,380 — INFO —   Fetched 8100 responses so far...
+2026-07-14 07:40:30,257 — INFO — SurveyMonkey daily quota: 414/500 remaining.
+2026-07-14 07:40:30,269 — INFO —   Fetched 8200 responses so far...
+2026-07-14 07:40:32,458 — INFO — SurveyMonkey daily quota: 413/500 remaining.
+2026-07-14 07:40:32,461 — INFO —   Fetched 8300 responses so far...
+2026-07-14 07:40:34,508 — INFO — SurveyMonkey daily quota: 412/500 remaining.
+2026-07-14 07:40:34,517 — INFO —   Fetched 8400 responses so far...
+2026-07-14 07:40:35,988 — INFO — SurveyMonkey daily quota: 411/500 remaining.
+2026-07-14 07:40:35,990 — INFO —   Fetched 8500 responses so far...
+2026-07-14 07:40:37,240 — INFO — SurveyMonkey daily quota: 410/500 remaining.
+2026-07-14 07:40:37,244 — INFO —   Fetched 8600 responses so far...
+2026-07-14 07:40:38,595 — INFO — SurveyMonkey daily quota: 409/500 remaining.
+2026-07-14 07:40:38,598 — INFO —   Fetched 8700 responses so far...
+2026-07-14 07:40:40,108 — INFO — SurveyMonkey daily quota: 408/500 remaining.
+2026-07-14 07:40:40,111 — INFO —   Fetched 8800 responses so far...
+2026-07-14 07:40:41,541 — INFO — SurveyMonkey daily quota: 407/500 remaining.
+2026-07-14 07:40:41,546 — INFO —   Fetched 8900 responses so far...
+2026-07-14 07:40:43,081 — INFO — SurveyMonkey daily quota: 406/500 remaining.
+2026-07-14 07:40:43,084 — INFO —   Fetched 9000 responses so far...
+2026-07-14 07:40:45,129 — INFO — SurveyMonkey daily quota: 405/500 remaining.
+2026-07-14 07:40:45,139 — INFO —   Fetched 9100 responses so far...
+2026-07-14 07:40:46,447 — INFO — SurveyMonkey daily quota: 404/500 remaining.
+2026-07-14 07:40:46,451 — INFO —   Fetched 9200 responses so far...
+2026-07-14 07:40:47,686 — INFO — SurveyMonkey daily quota: 403/500 remaining.
+2026-07-14 07:40:47,689 — INFO —   Fetched 9300 responses so far...
+2026-07-14 07:40:49,038 — INFO — SurveyMonkey daily quota: 402/500 remaining.
+2026-07-14 07:40:49,042 — INFO —   Fetched 9400 responses so far...
+2026-07-14 07:40:50,656 — INFO — SurveyMonkey daily quota: 401/500 remaining.
+2026-07-14 07:40:50,659 — INFO —   Fetched 9500 responses so far...
+2026-07-14 07:40:52,335 — INFO — SurveyMonkey daily quota: 400/500 remaining.
+2026-07-14 07:40:52,340 — INFO —   Fetched 9600 responses so far...
+2026-07-14 07:40:54,282 — INFO — SurveyMonkey daily quota: 399/500 remaining.
+2026-07-14 07:40:54,287 — INFO —   Fetched 9700 responses so far...
+2026-07-14 07:40:55,774 — INFO — SurveyMonkey daily quota: 398/500 remaining.
+2026-07-14 07:40:55,778 — INFO —   Fetched 9800 responses so far...
+2026-07-14 07:40:57,733 — INFO — SurveyMonkey daily quota: 397/500 remaining.
+2026-07-14 07:40:57,738 — INFO —   Fetched 9900 responses so far...
+2026-07-14 07:40:59,529 — INFO — SurveyMonkey daily quota: 396/500 remaining.
+2026-07-14 07:40:59,535 — INFO —   Fetched 10000 responses so far...
+2026-07-14 07:41:01,179 — INFO — SurveyMonkey daily quota: 395/500 remaining.
+2026-07-14 07:41:01,183 — INFO —   Fetched 10100 responses so far...
+2026-07-14 07:41:03,434 — INFO — SurveyMonkey daily quota: 394/500 remaining.
+2026-07-14 07:41:03,439 — INFO —   Fetched 10200 responses so far...
+2026-07-14 07:41:04,991 — INFO — SurveyMonkey daily quota: 393/500 remaining.
+2026-07-14 07:41:04,996 — INFO —   Fetched 10300 responses so far...
+2026-07-14 07:41:07,141 — INFO — SurveyMonkey daily quota: 392/500 remaining.
+2026-07-14 07:41:07,145 — INFO —   Fetched 10400 responses so far...
+2026-07-14 07:41:08,571 — INFO — SurveyMonkey daily quota: 391/500 remaining.
+2026-07-14 07:41:08,576 — INFO —   Fetched 10500 responses so far...
+2026-07-14 07:41:10,011 — INFO — SurveyMonkey daily quota: 390/500 remaining.
+2026-07-14 07:41:10,014 — INFO —   Fetched 10600 responses so far...
+2026-07-14 07:41:11,801 — INFO — SurveyMonkey daily quota: 389/500 remaining.
+2026-07-14 07:41:11,807 — INFO —   Fetched 10700 responses so far...
+2026-07-14 07:41:13,968 — INFO — SurveyMonkey daily quota: 388/500 remaining.
+2026-07-14 07:41:13,976 — INFO —   Fetched 10800 responses so far...
+2026-07-14 07:41:15,202 — INFO — SurveyMonkey daily quota: 387/500 remaining.
+2026-07-14 07:41:15,205 — INFO —   Fetched 10900 responses so far...
+2026-07-14 07:41:16,310 — INFO — SurveyMonkey daily quota: 386/500 remaining.
+2026-07-14 07:41:16,316 — INFO —   Fetched 11000 responses so far...
+2026-07-14 07:41:18,039 — INFO — SurveyMonkey daily quota: 385/500 remaining.
+2026-07-14 07:41:18,043 — INFO —   Fetched 11100 responses so far...
+2026-07-14 07:41:19,434 — INFO — SurveyMonkey daily quota: 384/500 remaining.
+2026-07-14 07:41:19,437 — INFO —   Fetched 11200 responses so far...
+2026-07-14 07:41:20,747 — INFO — SurveyMonkey daily quota: 383/500 remaining.
+2026-07-14 07:41:20,750 — INFO —   Fetched 11300 responses so far...
+2026-07-14 07:41:21,977 — INFO — SurveyMonkey daily quota: 382/500 remaining.
+2026-07-14 07:41:21,981 — INFO —   Fetched 11400 responses so far...
+2026-07-14 07:41:23,844 — INFO — SurveyMonkey daily quota: 381/500 remaining.
+2026-07-14 07:41:23,851 — INFO —   Fetched 11500 responses so far...
+2026-07-14 07:41:25,187 — INFO — SurveyMonkey daily quota: 380/500 remaining.
+2026-07-14 07:41:25,190 — INFO —   Fetched 11600 responses so far...
+2026-07-14 07:41:26,700 — INFO — SurveyMonkey daily quota: 379/500 remaining.
+2026-07-14 07:41:26,704 — INFO —   Fetched 11700 responses so far...
+2026-07-14 07:41:28,862 — INFO — SurveyMonkey daily quota: 378/500 remaining.
+2026-07-14 07:41:28,868 — INFO —   Fetched 11800 responses so far...
+2026-07-14 07:41:30,855 — INFO — SurveyMonkey daily quota: 377/500 remaining.
+2026-07-14 07:41:30,864 — INFO —   Fetched 11900 responses so far...
+2026-07-14 07:41:32,435 — INFO — SurveyMonkey daily quota: 376/500 remaining.
+2026-07-14 07:41:32,439 — INFO —   Fetched 12000 responses so far...
+2026-07-14 07:41:33,766 — INFO — SurveyMonkey daily quota: 375/500 remaining.
+2026-07-14 07:41:33,770 — INFO —   Fetched 12100 responses so far...
+2026-07-14 07:41:35,926 — INFO — SurveyMonkey daily quota: 374/500 remaining.
+2026-07-14 07:41:35,930 — INFO —   Fetched 12200 responses so far...
+2026-07-14 07:41:37,249 — INFO — SurveyMonkey daily quota: 373/500 remaining.
+2026-07-14 07:41:37,252 — INFO —   Fetched 12300 responses so far...
+2026-07-14 07:41:38,681 — INFO — SurveyMonkey daily quota: 372/500 remaining.
+2026-07-14 07:41:38,685 — INFO —   Fetched 12400 responses so far...
+2026-07-14 07:41:39,969 — INFO — SurveyMonkey daily quota: 371/500 remaining.
+2026-07-14 07:41:39,971 — INFO —   Fetched 12500 responses so far...
+2026-07-14 07:41:41,241 — INFO — SurveyMonkey daily quota: 370/500 remaining.
+2026-07-14 07:41:41,244 — INFO —   Fetched 12600 responses so far...
+2026-07-14 07:41:43,080 — INFO — SurveyMonkey daily quota: 369/500 remaining.
+2026-07-14 07:41:43,085 — INFO —   Fetched 12700 responses so far...
+2026-07-14 07:41:44,520 — INFO — SurveyMonkey daily quota: 368/500 remaining.
+2026-07-14 07:41:44,526 — INFO —   Fetched 12774 responses so far...
+2026-07-14 07:41:44,526 — INFO — Retrieved 12774 total responses for survey 525214484
+2026-07-14 07:41:44,585 — INFO — Flattened to DataFrame: 12774 rows, columns: ['Respondent ID', 'Start Date', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 07:41:44,593 — INFO — Loaded 12774 reviews via SurveyMonkey API
+2026-07-14 07:41:44,614 — INFO — Found 5130 previously processed IDs
+2026-07-14 07:41:44,619 — INFO — New reviews to process: 7644 (source: api)
+2026-07-14 07:41:44,636 — INFO — ============================================================
+2026-07-14 07:41:44,636 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-14 07:41:44,636 — INFO — ============================================================
+2026-07-14 07:41:44,636 — INFO — Columns before preprocessing: ['Respondent ID', 'Start Date', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 07:41:44,636 — INFO — Rows before preprocessing: 7644
+2026-07-14 07:41:44,655 — INFO — Columns after preprocessing: ['Respondent ID', 'Start Date', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-14 07:41:44,655 — INFO — Rows after preprocessing: 7
+2026-07-14 07:41:44,655 — INFO — Non-null Feedback_clean: 7
+2026-07-14 07:41:44,655 — INFO — Sample: ['it seems unnecessary to provide a description of the uploaded documents when we are also selecting the type of document also sometimes it isnt clear which documents are outstanding and need to be uploaded it would help if they were listed at the top of the upload page or highlighted in red otherwise it is straightforward to use thank you', 'very good', 'this is very confusing when the planning portal service people amended the plan why we could not delete the interior shapes i dont understand i thought i had submitted it again but obviously i didnt because the green application bar did not show 100 even though all the elements were completed please make this simpler for the older generation like us']
+2026-07-14 07:41:44,655 — INFO — Preprocessing complete ✓
+2026-07-14 07:41:44,655 — INFO — ============================================================
+2026-07-14 07:41:44,655 — INFO — STEP 3 — Classify
+2026-07-14 07:41:44,655 — INFO — ============================================================
+2026-07-14 07:41:44,691 — INFO — Loading SVM model...
+2026-07-14 07:41:44,708 — INFO — No device provided, using mps
+2026-07-14 07:41:44,856 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:44,857 — WARNING — Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-14 07:41:44,870 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:44,982 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:44,998 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:45,013 — INFO — Loading SentenceTransformer model from sentence-transformers/all-mpnet-base-v2.
+2026-07-14 07:41:45,112 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:45,127 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:45,224 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:45,236 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/README.md "HTTP/1.1 200 OK"
+2026-07-14 07:41:45,387 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:45,401 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:45,520 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:45,536 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:45,654 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 07:41:45,756 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:45,767 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:46,085 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 07:41:46,184 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 07:41:46,293 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 07:41:46,397 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 07:41:46,511 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:46,527 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:46,659 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:46,681 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:46,790 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:46,805 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:46,906 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:46,923 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:47,039 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-14 07:41:47,149 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-14 07:41:47,304 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:47,320 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:47,434 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2 "HTTP/1.1 200 OK"
+2026-07-14 07:41:48,196 — INFO — Models loaded ✓
+2026-07-14 07:41:48,196 — INFO — Generating embeddings...
+2026-07-14 07:41:50,942 — INFO — Classification complete — method breakdown:
+2026-07-14 07:41:50,944 — INFO — prediction_method
+svm             4
+svm_low_conf    3
+2026-07-14 07:41:50,944 — INFO — ============================================================
+2026-07-14 07:41:50,945 — INFO — STEP 4 — ABSA
+2026-07-14 07:41:50,945 — INFO — ============================================================
+2026-07-14 07:41:50,945 — INFO — Using device: MPS
+2026-07-14 07:41:50,945 — INFO — Loading ABSA model...
+2026-07-14 07:41:51,048 — INFO — HTTP Request: HEAD https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 07:41:51,066 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/yangheng/deberta-v3-base-absa-v1.1/10c9dff335a44073e1352360c3a7bc54dc58eb01/config.json "HTTP/1.1 200 OK"
+2026-07-14 07:41:51,390 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-14 07:41:51,495 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-14 07:41:52,183 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1 "HTTP/1.1 200 OK"
+2026-07-14 07:41:52,886 — INFO — ABSA model loaded ✓
+2026-07-14 07:41:52,890 — INFO — Word count distribution:
+count     7.000000
+mean     31.428571
+std      29.228166
+min       2.000000
+25%       6.000000
+50%      20.000000
+75%      60.500000
+max      65.000000
+Name: Feedback_clean, dtype: float64
+2026-07-14 07:41:52,890 — INFO — Reviews with >= 2 words: 7
+2026-07-14 07:41:52,890 — INFO — Reviews with >= 5 words: 5
+2026-07-14 07:41:52,891 — INFO — Using 'Feedback_clean' column for ABSA (avg 31.4 words)
+2026-07-14 07:41:52,891 — INFO — Running ABSA on 7 reviews (using column: Feedback_clean)
+2026-07-14 07:41:52,891 — INFO —   ABSA progress: 0/7
+2026-07-14 07:41:57,017 — INFO — ABSA raw labels seen: {'Positive', 'Negative'}
+2026-07-14 07:41:57,017 — INFO — ABSA call failures: 0 / 28 approx calls
+2026-07-14 07:41:57,036 — INFO — ABSA complete ✓
+2026-07-14 07:41:57,036 — INFO — Sentiment distribution: {'negative': 5, 'positive': 2}
+2026-07-14 07:41:57,079 — INFO — ============================================================
+2026-07-14 07:41:57,079 — INFO — STEP 5 — Entity extraction
+2026-07-14 07:41:57,079 — INFO — ============================================================
+2026-07-14 07:41:57,686 — INFO — spaCy model loaded ✓
+2026-07-14 07:41:57,686 — INFO —   Entity progress: 0/7
+2026-07-14 07:41:57,690 — INFO — Entity extraction complete ✓
+2026-07-14 07:41:57,691 — INFO — ============================================================
+2026-07-14 07:41:57,691 — INFO — STEP 6 — Save outputs
+2026-07-14 07:41:57,691 — INFO — ============================================================
+2026-07-14 07:41:59,153 — INFO — Appended to master — total records: 5137
+2026-07-14 07:42:00,235 — INFO — Saved: results.xlsx
+2026-07-14 07:42:03,091 — INFO — Saved: research_output.xlsx
+2026-07-14 07:42:03,154 — INFO — Saved: product_output.xlsx
+2026-07-14 07:42:03,182 — INFO — Saved: leadership_output.xlsx
+2026-07-14 07:42:03,182 — INFO — All outputs saved ✓
+2026-07-14 07:42:03,826 — ERROR — PIPELINE FAILED: Mixed timezones detected. Pass utc=True in to_datetime or tz='UTC' in DatetimeIndex to convert to a common timezone.
+2026-07-14 07:42:03,860 — ERROR — Traceback (most recent call last):
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/run_pipeline.py", line 1099, in main
+    adb.rebuild_from_master()
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/aggregation_db.py", line 632, in rebuild_from_master
+    df["Start Date"] = pd.to_datetime(df["Start Date"], errors="coerce")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 1040, in to_datetime
+    values = convert_listlike(arg._values, format)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 435, in _convert_listlike_datetimes
+    return _array_strptime_with_fallback(arg, name, utc, format, exact, errors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 470, in _array_strptime_with_fallback
+    result, tz_out = array_strptime(arg, fmt, exact=exact, errors=errors, utc=utc)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/tslibs/strptime.pyx", line 566, in pandas._libs.tslibs.strptime.array_strptime
+  File "pandas/_libs/tslibs/strptime.pyx", line 317, in pandas._libs.tslibs.strptime.DatetimeParseState.check_for_mixed_inputs
+ValueError: Mixed timezones detected. Pass utc=True in to_datetime or tz='UTC' in DatetimeIndex to convert to a common timezone.
+
+2026-07-14 08:25:35,477 — INFO — ============================================================
+2026-07-14 08:25:35,478 — INFO — PIPELINE START — 2026-07-14 08:25:35
+2026-07-14 08:25:35,478 — INFO — ============================================================
+2026-07-14 08:25:35,478 — INFO — ============================================================
+2026-07-14 08:25:35,478 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 08:25:35,478 — INFO — ============================================================
+2026-07-14 08:25:35,484 — INFO — Attempting to fetch responses directly from SurveyMonkey API...
+2026-07-14 08:25:35,484 — INFO — Fetching question metadata for survey 525214484...
+2026-07-14 08:25:36,367 — INFO — SurveyMonkey daily quota: 367/500 remaining.
+2026-07-14 08:25:36,368 — INFO — Mapped 3 questions for survey 525214484
+2026-07-14 08:25:36,370 — INFO — Fetching responses for survey 525214484...
+2026-07-14 08:25:37,937 — INFO — SurveyMonkey daily quota: 366/500 remaining.
+2026-07-14 08:25:37,941 — INFO —   Fetched 100 responses so far...
+2026-07-14 08:25:39,561 — INFO — SurveyMonkey daily quota: 365/500 remaining.
+2026-07-14 08:25:39,566 — INFO —   Fetched 200 responses so far...
+2026-07-14 08:25:41,341 — INFO — SurveyMonkey daily quota: 364/500 remaining.
+2026-07-14 08:25:41,347 — INFO —   Fetched 300 responses so far...
+2026-07-14 08:25:42,963 — INFO — SurveyMonkey daily quota: 363/500 remaining.
+2026-07-14 08:25:42,969 — INFO —   Fetched 400 responses so far...
+2026-07-14 08:25:44,612 — INFO — SurveyMonkey daily quota: 362/500 remaining.
+2026-07-14 08:25:44,619 — INFO —   Fetched 500 responses so far...
+2026-07-14 08:25:46,407 — INFO — SurveyMonkey daily quota: 361/500 remaining.
+2026-07-14 08:25:46,412 — INFO —   Fetched 600 responses so far...
+2026-07-14 08:25:48,007 — INFO — SurveyMonkey daily quota: 360/500 remaining.
+2026-07-14 08:25:48,014 — INFO —   Fetched 700 responses so far...
+2026-07-14 08:25:49,721 — INFO — SurveyMonkey daily quota: 359/500 remaining.
+2026-07-14 08:25:49,728 — INFO —   Fetched 800 responses so far...
+2026-07-14 08:25:51,528 — INFO — SurveyMonkey daily quota: 358/500 remaining.
+2026-07-14 08:25:51,534 — INFO —   Fetched 900 responses so far...
+2026-07-14 08:25:53,110 — INFO — SurveyMonkey daily quota: 357/500 remaining.
+2026-07-14 08:25:53,116 — INFO —   Fetched 1000 responses so far...
+2026-07-14 08:25:54,849 — INFO — SurveyMonkey daily quota: 356/500 remaining.
+2026-07-14 08:25:54,853 — INFO —   Fetched 1100 responses so far...
+2026-07-14 08:25:56,556 — INFO — SurveyMonkey daily quota: 355/500 remaining.
+2026-07-14 08:25:56,562 — INFO —   Fetched 1200 responses so far...
+2026-07-14 08:25:57,879 — INFO — SurveyMonkey daily quota: 354/500 remaining.
+2026-07-14 08:25:57,883 — INFO —   Fetched 1300 responses so far...
+2026-07-14 08:25:59,201 — INFO — SurveyMonkey daily quota: 353/500 remaining.
+2026-07-14 08:25:59,204 — INFO —   Fetched 1400 responses so far...
+2026-07-14 08:26:00,840 — INFO — SurveyMonkey daily quota: 352/500 remaining.
+2026-07-14 08:26:00,846 — INFO —   Fetched 1500 responses so far...
+2026-07-14 08:26:01,940 — INFO — SurveyMonkey daily quota: 351/500 remaining.
+2026-07-14 08:26:01,945 — INFO —   Fetched 1600 responses so far...
+2026-07-14 08:26:03,476 — INFO — SurveyMonkey daily quota: 350/500 remaining.
+2026-07-14 08:26:03,482 — INFO —   Fetched 1700 responses so far...
+2026-07-14 08:26:04,629 — INFO — SurveyMonkey daily quota: 349/500 remaining.
+2026-07-14 08:26:04,634 — INFO —   Fetched 1800 responses so far...
+2026-07-14 08:26:05,653 — INFO — SurveyMonkey daily quota: 348/500 remaining.
+2026-07-14 08:26:05,657 — INFO —   Fetched 1900 responses so far...
+2026-07-14 08:26:06,780 — INFO — SurveyMonkey daily quota: 347/500 remaining.
+2026-07-14 08:26:06,785 — INFO —   Fetched 2000 responses so far...
+2026-07-14 08:26:08,498 — INFO — SurveyMonkey daily quota: 346/500 remaining.
+2026-07-14 08:26:08,502 — INFO —   Fetched 2100 responses so far...
+2026-07-14 08:26:10,222 — INFO — SurveyMonkey daily quota: 345/500 remaining.
+2026-07-14 08:26:10,231 — INFO —   Fetched 2200 responses so far...
+2026-07-14 08:26:11,375 — INFO — SurveyMonkey daily quota: 344/500 remaining.
+2026-07-14 08:26:11,382 — INFO —   Fetched 2300 responses so far...
+2026-07-14 08:26:13,127 — INFO — SurveyMonkey daily quota: 343/500 remaining.
+2026-07-14 08:26:13,134 — INFO —   Fetched 2400 responses so far...
+2026-07-14 08:26:14,255 — INFO — SurveyMonkey daily quota: 342/500 remaining.
+2026-07-14 08:26:14,259 — INFO —   Fetched 2500 responses so far...
+2026-07-14 08:26:15,885 — INFO — SurveyMonkey daily quota: 341/500 remaining.
+2026-07-14 08:26:15,891 — INFO —   Fetched 2600 responses so far...
+2026-07-14 08:26:17,649 — INFO — SurveyMonkey daily quota: 340/500 remaining.
+2026-07-14 08:26:17,655 — INFO —   Fetched 2700 responses so far...
+2026-07-14 08:26:19,260 — INFO — SurveyMonkey daily quota: 339/500 remaining.
+2026-07-14 08:26:19,266 — INFO —   Fetched 2800 responses so far...
+2026-07-14 08:26:20,926 — INFO — SurveyMonkey daily quota: 338/500 remaining.
+2026-07-14 08:26:20,932 — INFO —   Fetched 2900 responses so far...
+2026-07-14 08:26:21,843 — INFO — SurveyMonkey daily quota: 337/500 remaining.
+2026-07-14 08:26:21,849 — INFO —   Fetched 3000 responses so far...
+2026-07-14 08:26:23,464 — INFO — SurveyMonkey daily quota: 336/500 remaining.
+2026-07-14 08:26:23,470 — INFO —   Fetched 3100 responses so far...
+2026-07-14 08:26:25,070 — INFO — SurveyMonkey daily quota: 335/500 remaining.
+2026-07-14 08:26:25,078 — INFO —   Fetched 3200 responses so far...
+2026-07-14 08:26:26,485 — INFO — SurveyMonkey daily quota: 334/500 remaining.
+2026-07-14 08:26:26,491 — INFO —   Fetched 3300 responses so far...
+2026-07-14 08:26:28,128 — INFO — SurveyMonkey daily quota: 333/500 remaining.
+2026-07-14 08:26:28,135 — INFO —   Fetched 3400 responses so far...
+2026-07-14 08:26:29,205 — INFO — SurveyMonkey daily quota: 332/500 remaining.
+2026-07-14 08:26:29,212 — INFO —   Fetched 3500 responses so far...
+2026-07-14 08:26:30,229 — INFO — SurveyMonkey daily quota: 331/500 remaining.
+2026-07-14 08:26:30,232 — INFO —   Fetched 3600 responses so far...
+2026-07-14 08:26:31,924 — INFO — SurveyMonkey daily quota: 330/500 remaining.
+2026-07-14 08:26:31,930 — INFO —   Fetched 3700 responses so far...
+2026-07-14 08:26:33,097 — INFO — SurveyMonkey daily quota: 329/500 remaining.
+2026-07-14 08:26:33,100 — INFO —   Fetched 3800 responses so far...
+2026-07-14 08:26:34,619 — INFO — SurveyMonkey daily quota: 328/500 remaining.
+2026-07-14 08:26:34,627 — INFO —   Fetched 3900 responses so far...
+2026-07-14 08:26:35,760 — INFO — SurveyMonkey daily quota: 327/500 remaining.
+2026-07-14 08:26:35,764 — INFO —   Fetched 4000 responses so far...
+2026-07-14 08:26:36,812 — INFO — SurveyMonkey daily quota: 326/500 remaining.
+2026-07-14 08:26:36,818 — INFO —   Fetched 4100 responses so far...
+2026-07-14 08:26:37,809 — INFO — SurveyMonkey daily quota: 325/500 remaining.
+2026-07-14 08:26:37,813 — INFO —   Fetched 4200 responses so far...
+2026-07-14 08:26:38,831 — INFO — SurveyMonkey daily quota: 324/500 remaining.
+2026-07-14 08:26:38,835 — INFO —   Fetched 4300 responses so far...
+2026-07-14 08:26:39,834 — INFO — SurveyMonkey daily quota: 323/500 remaining.
+2026-07-14 08:26:39,839 — INFO —   Fetched 4400 responses so far...
+2026-07-14 08:26:40,877 — INFO — SurveyMonkey daily quota: 322/500 remaining.
+2026-07-14 08:26:40,879 — INFO —   Fetched 4500 responses so far...
+2026-07-14 08:26:41,812 — INFO — SurveyMonkey daily quota: 321/500 remaining.
+2026-07-14 08:26:41,818 — INFO —   Fetched 4600 responses so far...
+2026-07-14 08:26:43,356 — INFO — SurveyMonkey daily quota: 320/500 remaining.
+2026-07-14 08:26:43,362 — INFO —   Fetched 4700 responses so far...
+2026-07-14 08:26:44,980 — INFO — SurveyMonkey daily quota: 319/500 remaining.
+2026-07-14 08:26:44,986 — INFO —   Fetched 4800 responses so far...
+2026-07-14 08:26:45,956 — INFO — SurveyMonkey daily quota: 318/500 remaining.
+2026-07-14 08:26:45,961 — INFO —   Fetched 4900 responses so far...
+2026-07-14 08:26:47,634 — INFO — SurveyMonkey daily quota: 317/500 remaining.
+2026-07-14 08:26:47,640 — INFO —   Fetched 5000 responses so far...
+2026-07-14 08:26:48,662 — INFO — SurveyMonkey daily quota: 316/500 remaining.
+2026-07-14 08:26:48,667 — INFO —   Fetched 5100 responses so far...
+2026-07-14 08:26:49,687 — INFO — SurveyMonkey daily quota: 315/500 remaining.
+2026-07-14 08:26:49,692 — INFO —   Fetched 5200 responses so far...
+2026-07-14 08:26:51,325 — INFO — SurveyMonkey daily quota: 314/500 remaining.
+2026-07-14 08:26:51,331 — INFO —   Fetched 5300 responses so far...
+2026-07-14 08:26:52,323 — INFO — SurveyMonkey daily quota: 313/500 remaining.
+2026-07-14 08:26:52,327 — INFO —   Fetched 5400 responses so far...
+2026-07-14 08:26:53,976 — INFO — SurveyMonkey daily quota: 312/500 remaining.
+2026-07-14 08:26:53,983 — INFO —   Fetched 5500 responses so far...
+2026-07-14 08:26:55,606 — INFO — SurveyMonkey daily quota: 311/500 remaining.
+2026-07-14 08:26:55,613 — INFO —   Fetched 5600 responses so far...
+2026-07-14 08:26:56,650 — INFO — SurveyMonkey daily quota: 310/500 remaining.
+2026-07-14 08:26:56,654 — INFO —   Fetched 5700 responses so far...
+2026-07-14 08:26:57,810 — INFO — SurveyMonkey daily quota: 309/500 remaining.
+2026-07-14 08:26:57,813 — INFO —   Fetched 5800 responses so far...
+2026-07-14 08:26:58,955 — INFO — SurveyMonkey daily quota: 308/500 remaining.
+2026-07-14 08:26:58,959 — INFO —   Fetched 5900 responses so far...
+2026-07-14 08:27:00,566 — INFO — SurveyMonkey daily quota: 307/500 remaining.
+2026-07-14 08:27:00,573 — INFO —   Fetched 6000 responses so far...
+2026-07-14 08:27:02,230 — INFO — SurveyMonkey daily quota: 306/500 remaining.
+2026-07-14 08:27:02,236 — INFO —   Fetched 6100 responses so far...
+2026-07-14 08:27:03,510 — INFO — SurveyMonkey daily quota: 305/500 remaining.
+2026-07-14 08:27:03,514 — INFO —   Fetched 6200 responses so far...
+2026-07-14 08:27:04,535 — INFO — SurveyMonkey daily quota: 304/500 remaining.
+2026-07-14 08:27:04,540 — INFO —   Fetched 6300 responses so far...
+2026-07-14 08:27:06,120 — INFO — SurveyMonkey daily quota: 303/500 remaining.
+2026-07-14 08:27:06,122 — INFO —   Fetched 6400 responses so far...
+2026-07-14 08:27:07,689 — INFO — SurveyMonkey daily quota: 302/500 remaining.
+2026-07-14 08:27:07,690 — INFO —   Fetched 6500 responses so far...
+2026-07-14 08:27:09,405 — INFO — SurveyMonkey daily quota: 301/500 remaining.
+2026-07-14 08:27:09,411 — INFO —   Fetched 6600 responses so far...
+2026-07-14 08:27:10,475 — INFO — SurveyMonkey daily quota: 300/500 remaining.
+2026-07-14 08:27:10,479 — INFO —   Fetched 6700 responses so far...
+2026-07-14 08:27:11,515 — INFO — SurveyMonkey daily quota: 299/500 remaining.
+2026-07-14 08:27:11,519 — INFO —   Fetched 6800 responses so far...
+2026-07-14 08:27:12,467 — INFO — SurveyMonkey daily quota: 298/500 remaining.
+2026-07-14 08:27:12,474 — INFO —   Fetched 6900 responses so far...
+2026-07-14 08:27:13,467 — INFO — SurveyMonkey daily quota: 297/500 remaining.
+2026-07-14 08:27:13,471 — INFO —   Fetched 7000 responses so far...
+2026-07-14 08:27:14,877 — INFO — SurveyMonkey daily quota: 296/500 remaining.
+2026-07-14 08:27:14,881 — INFO —   Fetched 7100 responses so far...
+2026-07-14 08:27:15,901 — INFO — SurveyMonkey daily quota: 295/500 remaining.
+2026-07-14 08:27:15,906 — INFO —   Fetched 7200 responses so far...
+2026-07-14 08:27:16,869 — INFO — SurveyMonkey daily quota: 294/500 remaining.
+2026-07-14 08:27:16,873 — INFO —   Fetched 7300 responses so far...
+2026-07-14 08:27:18,525 — INFO — SurveyMonkey daily quota: 293/500 remaining.
+2026-07-14 08:27:18,532 — INFO —   Fetched 7400 responses so far...
+2026-07-14 08:27:20,096 — INFO — SurveyMonkey daily quota: 292/500 remaining.
+2026-07-14 08:27:20,104 — INFO —   Fetched 7500 responses so far...
+2026-07-14 08:27:21,838 — INFO — SurveyMonkey daily quota: 291/500 remaining.
+2026-07-14 08:27:21,843 — INFO —   Fetched 7600 responses so far...
+2026-07-14 08:27:22,906 — INFO — SurveyMonkey daily quota: 290/500 remaining.
+2026-07-14 08:27:22,911 — INFO —   Fetched 7700 responses so far...
+2026-07-14 08:27:24,627 — INFO — SurveyMonkey daily quota: 289/500 remaining.
+2026-07-14 08:27:24,634 — INFO —   Fetched 7800 responses so far...
+2026-07-14 08:27:25,822 — INFO — SurveyMonkey daily quota: 288/500 remaining.
+2026-07-14 08:27:25,826 — INFO —   Fetched 7900 responses so far...
+2026-07-14 08:27:27,484 — INFO — SurveyMonkey daily quota: 287/500 remaining.
+2026-07-14 08:27:27,493 — INFO —   Fetched 8000 responses so far...
+2026-07-14 08:27:29,106 — INFO — SurveyMonkey daily quota: 286/500 remaining.
+2026-07-14 08:27:29,112 — INFO —   Fetched 8100 responses so far...
+2026-07-14 08:27:30,135 — INFO — SurveyMonkey daily quota: 285/500 remaining.
+2026-07-14 08:27:30,138 — INFO —   Fetched 8200 responses so far...
+2026-07-14 08:27:31,100 — INFO — SurveyMonkey daily quota: 284/500 remaining.
+2026-07-14 08:27:31,105 — INFO —   Fetched 8300 responses so far...
+2026-07-14 08:27:32,183 — INFO — SurveyMonkey daily quota: 283/500 remaining.
+2026-07-14 08:27:32,186 — INFO —   Fetched 8400 responses so far...
+2026-07-14 08:27:33,310 — INFO — SurveyMonkey daily quota: 282/500 remaining.
+2026-07-14 08:27:33,314 — INFO —   Fetched 8500 responses so far...
+2026-07-14 08:27:34,948 — INFO — SurveyMonkey daily quota: 281/500 remaining.
+2026-07-14 08:27:34,956 — INFO —   Fetched 8600 responses so far...
+2026-07-14 08:27:36,642 — INFO — SurveyMonkey daily quota: 280/500 remaining.
+2026-07-14 08:27:36,646 — INFO —   Fetched 8700 responses so far...
+2026-07-14 08:27:37,938 — INFO — SurveyMonkey daily quota: 279/500 remaining.
+2026-07-14 08:27:37,943 — INFO —   Fetched 8800 responses so far...
+2026-07-14 08:27:38,941 — INFO — SurveyMonkey daily quota: 278/500 remaining.
+2026-07-14 08:27:38,946 — INFO —   Fetched 8900 responses so far...
+2026-07-14 08:27:40,077 — INFO — SurveyMonkey daily quota: 277/500 remaining.
+2026-07-14 08:27:40,080 — INFO —   Fetched 9000 responses so far...
+2026-07-14 08:27:41,871 — INFO — SurveyMonkey daily quota: 276/500 remaining.
+2026-07-14 08:27:41,878 — INFO —   Fetched 9100 responses so far...
+2026-07-14 08:27:43,515 — INFO — SurveyMonkey daily quota: 275/500 remaining.
+2026-07-14 08:27:43,521 — INFO —   Fetched 9200 responses so far...
+2026-07-14 08:27:44,777 — INFO — SurveyMonkey daily quota: 274/500 remaining.
+2026-07-14 08:27:44,781 — INFO —   Fetched 9300 responses so far...
+2026-07-14 08:27:45,758 — INFO — SurveyMonkey daily quota: 273/500 remaining.
+2026-07-14 08:27:45,762 — INFO —   Fetched 9400 responses so far...
+2026-07-14 08:27:47,431 — INFO — SurveyMonkey daily quota: 272/500 remaining.
+2026-07-14 08:27:47,438 — INFO —   Fetched 9500 responses so far...
+2026-07-14 08:27:48,568 — INFO — SurveyMonkey daily quota: 271/500 remaining.
+2026-07-14 08:27:48,574 — INFO —   Fetched 9600 responses so far...
+2026-07-14 08:27:49,693 — INFO — SurveyMonkey daily quota: 270/500 remaining.
+2026-07-14 08:27:49,698 — INFO —   Fetched 9700 responses so far...
+2026-07-14 08:27:51,533 — INFO — SurveyMonkey daily quota: 269/500 remaining.
+2026-07-14 08:27:51,539 — INFO —   Fetched 9800 responses so far...
+2026-07-14 08:27:52,508 — INFO — SurveyMonkey daily quota: 268/500 remaining.
+2026-07-14 08:27:52,512 — INFO —   Fetched 9900 responses so far...
+2026-07-14 08:27:53,585 — INFO — SurveyMonkey daily quota: 267/500 remaining.
+2026-07-14 08:27:53,589 — INFO —   Fetched 10000 responses so far...
+2026-07-14 08:27:55,228 — INFO — SurveyMonkey daily quota: 266/500 remaining.
+2026-07-14 08:27:55,231 — INFO —   Fetched 10100 responses so far...
+2026-07-14 08:27:56,871 — INFO — SurveyMonkey daily quota: 265/500 remaining.
+2026-07-14 08:27:56,878 — INFO —   Fetched 10200 responses so far...
+2026-07-14 08:27:57,886 — INFO — SurveyMonkey daily quota: 264/500 remaining.
+2026-07-14 08:27:57,891 — INFO —   Fetched 10300 responses so far...
+2026-07-14 08:27:59,624 — INFO — SurveyMonkey daily quota: 263/500 remaining.
+2026-07-14 08:27:59,630 — INFO —   Fetched 10400 responses so far...
+2026-07-14 08:28:00,753 — INFO — SurveyMonkey daily quota: 262/500 remaining.
+2026-07-14 08:28:00,757 — INFO —   Fetched 10500 responses so far...
+2026-07-14 08:28:01,877 — INFO — SurveyMonkey daily quota: 261/500 remaining.
+2026-07-14 08:28:01,881 — INFO —   Fetched 10600 responses so far...
+2026-07-14 08:28:03,977 — INFO — SurveyMonkey daily quota: 260/500 remaining.
+2026-07-14 08:28:03,984 — INFO —   Fetched 10700 responses so far...
+2026-07-14 08:28:05,141 — INFO — SurveyMonkey daily quota: 259/500 remaining.
+2026-07-14 08:28:05,147 — INFO —   Fetched 10800 responses so far...
+2026-07-14 08:28:06,285 — INFO — SurveyMonkey daily quota: 258/500 remaining.
+2026-07-14 08:28:06,289 — INFO —   Fetched 10900 responses so far...
+2026-07-14 08:28:07,409 — INFO — SurveyMonkey daily quota: 257/500 remaining.
+2026-07-14 08:28:07,414 — INFO —   Fetched 11000 responses so far...
+2026-07-14 08:28:08,511 — INFO — SurveyMonkey daily quota: 256/500 remaining.
+2026-07-14 08:28:08,515 — INFO —   Fetched 11100 responses so far...
+2026-07-14 08:28:09,506 — INFO — SurveyMonkey daily quota: 255/500 remaining.
+2026-07-14 08:28:09,510 — INFO —   Fetched 11200 responses so far...
+2026-07-14 08:28:11,163 — INFO — SurveyMonkey daily quota: 254/500 remaining.
+2026-07-14 08:28:11,169 — INFO —   Fetched 11300 responses so far...
+2026-07-14 08:28:12,119 — INFO — SurveyMonkey daily quota: 253/500 remaining.
+2026-07-14 08:28:12,125 — INFO —   Fetched 11400 responses so far...
+2026-07-14 08:28:13,249 — INFO — SurveyMonkey daily quota: 252/500 remaining.
+2026-07-14 08:28:13,253 — INFO —   Fetched 11500 responses so far...
+2026-07-14 08:28:14,995 — INFO — SurveyMonkey daily quota: 251/500 remaining.
+2026-07-14 08:28:15,001 — INFO —   Fetched 11600 responses so far...
+2026-07-14 08:28:16,113 — INFO — SurveyMonkey daily quota: 250/500 remaining.
+2026-07-14 08:28:16,116 — INFO —   Fetched 11700 responses so far...
+2026-07-14 08:28:17,137 — INFO — SurveyMonkey daily quota: 249/500 remaining.
+2026-07-14 08:28:17,140 — INFO —   Fetched 11800 responses so far...
+2026-07-14 08:28:18,780 — INFO — SurveyMonkey daily quota: 248/500 remaining.
+2026-07-14 08:28:18,784 — INFO —   Fetched 11900 responses so far...
+2026-07-14 08:28:19,799 — INFO — SurveyMonkey daily quota: 247/500 remaining.
+2026-07-14 08:28:19,804 — INFO —   Fetched 12000 responses so far...
+2026-07-14 08:28:20,876 — INFO — SurveyMonkey daily quota: 246/500 remaining.
+2026-07-14 08:28:20,879 — INFO —   Fetched 12100 responses so far...
+2026-07-14 08:28:22,552 — INFO — SurveyMonkey daily quota: 245/500 remaining.
+2026-07-14 08:28:22,558 — INFO —   Fetched 12200 responses so far...
+2026-07-14 08:28:23,599 — INFO — SurveyMonkey daily quota: 244/500 remaining.
+2026-07-14 08:28:23,604 — INFO —   Fetched 12300 responses so far...
+2026-07-14 08:28:24,564 — INFO — SurveyMonkey daily quota: 243/500 remaining.
+2026-07-14 08:28:24,569 — INFO —   Fetched 12400 responses so far...
+2026-07-14 08:28:25,643 — INFO — SurveyMonkey daily quota: 242/500 remaining.
+2026-07-14 08:28:25,647 — INFO —   Fetched 12500 responses so far...
+2026-07-14 08:28:26,762 — INFO — SurveyMonkey daily quota: 241/500 remaining.
+2026-07-14 08:28:26,766 — INFO —   Fetched 12600 responses so far...
+2026-07-14 08:28:28,540 — INFO — SurveyMonkey daily quota: 240/500 remaining.
+2026-07-14 08:28:28,546 — INFO —   Fetched 12700 responses so far...
+2026-07-14 08:28:29,961 — INFO — SurveyMonkey daily quota: 239/500 remaining.
+2026-07-14 08:28:29,968 — INFO —   Fetched 12775 responses so far...
+2026-07-14 08:28:29,968 — INFO — Retrieved 12775 total responses for survey 525214484
+2026-07-14 08:28:30,006 — INFO — Flattened to DataFrame: 12775 rows, columns: ['Respondent ID', 'Start Date', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 08:28:30,013 — INFO — Loaded 12775 reviews via SurveyMonkey API
+2026-07-14 08:28:30,032 — INFO — Found 5137 previously processed IDs
+2026-07-14 08:28:30,037 — INFO — New reviews to process: 7638 (source: api)
+2026-07-14 08:28:30,059 — INFO — ============================================================
+2026-07-14 08:28:30,059 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-14 08:28:30,059 — INFO — ============================================================
+2026-07-14 08:28:30,059 — INFO — Columns before preprocessing: ['Respondent ID', 'Start Date', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 08:28:30,059 — INFO — Rows before preprocessing: 7638
+2026-07-14 08:28:30,067 — INFO — Columns after preprocessing: ['Respondent ID', 'Start Date', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-14 08:28:30,067 — INFO — Rows after preprocessing: 0
+2026-07-14 08:28:30,067 — INFO — Non-null Feedback_clean: 0
+2026-07-14 08:28:30,067 — INFO — Sample: []
+2026-07-14 08:28:30,067 — INFO — Preprocessing complete ✓
+2026-07-14 08:28:30,067 — WARNING — No feedback responses in this export — skipping NLP steps.
+2026-07-14 08:40:33,312 — INFO — ============================================================
+2026-07-14 08:40:33,313 — INFO — PIPELINE START — 2026-07-14 08:40:33
+2026-07-14 08:40:33,313 — INFO — ============================================================
+2026-07-14 08:40:33,313 — INFO — ============================================================
+2026-07-14 08:40:33,313 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 08:40:33,313 — INFO — ============================================================
+2026-07-14 08:40:33,314 — INFO — Attempting to fetch responses directly from SurveyMonkey API...
+2026-07-14 08:40:33,314 — INFO — Fetching question metadata for survey 525214484...
+2026-07-14 08:40:34,208 — INFO — SurveyMonkey daily quota: 238/500 remaining.
+2026-07-14 08:40:34,209 — INFO — Mapped 3 questions for survey 525214484
+2026-07-14 08:40:34,210 — INFO — Fetching responses for survey 525214484...
+2026-07-14 08:40:35,542 — INFO — SurveyMonkey daily quota: 237/500 remaining.
+2026-07-14 08:40:35,546 — INFO —   Fetched 100 responses so far...
+2026-07-14 08:40:36,537 — INFO — SurveyMonkey daily quota: 236/500 remaining.
+2026-07-14 08:40:36,542 — INFO —   Fetched 200 responses so far...
+2026-07-14 08:40:38,071 — INFO — SurveyMonkey daily quota: 235/500 remaining.
+2026-07-14 08:40:38,075 — INFO —   Fetched 300 responses so far...
+2026-07-14 08:40:39,752 — INFO — SurveyMonkey daily quota: 234/500 remaining.
+2026-07-14 08:40:39,758 — INFO —   Fetched 400 responses so far...
+2026-07-14 08:40:41,309 — INFO — SurveyMonkey daily quota: 233/500 remaining.
+2026-07-14 08:40:41,315 — INFO —   Fetched 500 responses so far...
+2026-07-14 08:40:42,401 — INFO — SurveyMonkey daily quota: 232/500 remaining.
+2026-07-14 08:40:42,406 — INFO —   Fetched 600 responses so far...
+2026-07-14 08:40:43,745 — INFO — SurveyMonkey daily quota: 231/500 remaining.
+2026-07-14 08:40:43,747 — INFO —   Fetched 700 responses so far...
+2026-07-14 08:40:45,425 — INFO — SurveyMonkey daily quota: 230/500 remaining.
+2026-07-14 08:40:45,432 — INFO —   Fetched 800 responses so far...
+2026-07-14 08:40:47,034 — INFO — SurveyMonkey daily quota: 229/500 remaining.
+2026-07-14 08:40:47,040 — INFO —   Fetched 900 responses so far...
+2026-07-14 08:40:48,622 — INFO — SurveyMonkey daily quota: 228/500 remaining.
+2026-07-14 08:40:48,628 — INFO —   Fetched 1000 responses so far...
+2026-07-14 08:40:49,974 — INFO — SurveyMonkey daily quota: 227/500 remaining.
+2026-07-14 08:40:49,976 — INFO —   Fetched 1100 responses so far...
+2026-07-14 08:40:51,363 — INFO — SurveyMonkey daily quota: 226/500 remaining.
+2026-07-14 08:40:51,368 — INFO —   Fetched 1200 responses so far...
+2026-07-14 08:40:52,794 — INFO — SurveyMonkey daily quota: 225/500 remaining.
+2026-07-14 08:40:52,800 — INFO —   Fetched 1300 responses so far...
+2026-07-14 08:40:53,779 — INFO — SurveyMonkey daily quota: 224/500 remaining.
+2026-07-14 08:40:53,784 — INFO —   Fetched 1400 responses so far...
+2026-07-14 08:40:55,332 — INFO — SurveyMonkey daily quota: 223/500 remaining.
+2026-07-14 08:40:55,337 — INFO —   Fetched 1500 responses so far...
+2026-07-14 08:40:56,225 — INFO — SurveyMonkey daily quota: 222/500 remaining.
+2026-07-14 08:40:56,230 — INFO —   Fetched 1600 responses so far...
+2026-07-14 08:40:57,801 — INFO — SurveyMonkey daily quota: 221/500 remaining.
+2026-07-14 08:40:57,806 — INFO —   Fetched 1700 responses so far...
+2026-07-14 08:40:59,377 — INFO — SurveyMonkey daily quota: 220/500 remaining.
+2026-07-14 08:40:59,382 — INFO —   Fetched 1800 responses so far...
+2026-07-14 08:41:00,745 — INFO — SurveyMonkey daily quota: 219/500 remaining.
+2026-07-14 08:41:00,748 — INFO —   Fetched 1900 responses so far...
+2026-07-14 08:41:02,079 — INFO — SurveyMonkey daily quota: 218/500 remaining.
+2026-07-14 08:41:02,084 — INFO —   Fetched 2000 responses so far...
+2026-07-14 08:41:03,425 — INFO — SurveyMonkey daily quota: 217/500 remaining.
+2026-07-14 08:41:03,428 — INFO —   Fetched 2100 responses so far...
+2026-07-14 08:41:04,798 — INFO — SurveyMonkey daily quota: 216/500 remaining.
+2026-07-14 08:41:04,801 — INFO —   Fetched 2200 responses so far...
+2026-07-14 08:41:06,072 — INFO — SurveyMonkey daily quota: 215/500 remaining.
+2026-07-14 08:41:06,073 — INFO —   Fetched 2300 responses so far...
+2026-07-14 08:41:07,668 — INFO — SurveyMonkey daily quota: 214/500 remaining.
+2026-07-14 08:41:07,672 — INFO —   Fetched 2400 responses so far...
+2026-07-14 08:41:08,957 — INFO — SurveyMonkey daily quota: 213/500 remaining.
+2026-07-14 08:41:08,963 — INFO —   Fetched 2500 responses so far...
+2026-07-14 08:41:10,746 — INFO — SurveyMonkey daily quota: 212/500 remaining.
+2026-07-14 08:41:10,750 — INFO —   Fetched 2600 responses so far...
+2026-07-14 08:41:12,599 — INFO — SurveyMonkey daily quota: 211/500 remaining.
+2026-07-14 08:41:12,602 — INFO —   Fetched 2700 responses so far...
+2026-07-14 08:41:13,571 — INFO — SurveyMonkey daily quota: 210/500 remaining.
+2026-07-14 08:41:13,575 — INFO —   Fetched 2800 responses so far...
+2026-07-14 08:41:15,134 — INFO — SurveyMonkey daily quota: 209/500 remaining.
+2026-07-14 08:41:15,140 — INFO —   Fetched 2900 responses so far...
+2026-07-14 08:41:16,546 — INFO — SurveyMonkey daily quota: 208/500 remaining.
+2026-07-14 08:41:16,553 — INFO —   Fetched 3000 responses so far...
+2026-07-14 08:41:17,626 — INFO — SurveyMonkey daily quota: 207/500 remaining.
+2026-07-14 08:41:17,630 — INFO —   Fetched 3100 responses so far...
+2026-07-14 08:41:19,250 — INFO — SurveyMonkey daily quota: 206/500 remaining.
+2026-07-14 08:41:19,258 — INFO —   Fetched 3200 responses so far...
+2026-07-14 08:41:20,839 — INFO — SurveyMonkey daily quota: 205/500 remaining.
+2026-07-14 08:41:20,843 — INFO —   Fetched 3300 responses so far...
+2026-07-14 08:41:22,246 — INFO — SurveyMonkey daily quota: 204/500 remaining.
+2026-07-14 08:41:22,248 — INFO —   Fetched 3400 responses so far...
+2026-07-14 08:41:23,133 — INFO — SurveyMonkey daily quota: 203/500 remaining.
+2026-07-14 08:41:23,137 — INFO —   Fetched 3500 responses so far...
+2026-07-14 08:41:24,210 — INFO — SurveyMonkey daily quota: 202/500 remaining.
+2026-07-14 08:41:24,212 — INFO —   Fetched 3600 responses so far...
+2026-07-14 08:41:25,407 — INFO — SurveyMonkey daily quota: 201/500 remaining.
+2026-07-14 08:41:25,410 — INFO —   Fetched 3700 responses so far...
+2026-07-14 08:41:27,024 — INFO — SurveyMonkey daily quota: 200/500 remaining.
+2026-07-14 08:41:27,030 — INFO —   Fetched 3800 responses so far...
+2026-07-14 08:41:28,068 — INFO — SurveyMonkey daily quota: 199/500 remaining.
+2026-07-14 08:41:28,071 — INFO —   Fetched 3900 responses so far...
+2026-07-14 08:41:29,753 — INFO — SurveyMonkey daily quota: 198/500 remaining.
+2026-07-14 08:41:29,759 — INFO —   Fetched 4000 responses so far...
+2026-07-14 08:41:30,716 — INFO — SurveyMonkey daily quota: 197/500 remaining.
+2026-07-14 08:41:30,721 — INFO —   Fetched 4100 responses so far...
+2026-07-14 08:41:32,444 — INFO — SurveyMonkey daily quota: 196/500 remaining.
+2026-07-14 08:41:32,450 — INFO —   Fetched 4200 responses so far...
+2026-07-14 08:41:33,499 — INFO — SurveyMonkey daily quota: 195/500 remaining.
+2026-07-14 08:41:33,502 — INFO —   Fetched 4300 responses so far...
+2026-07-14 08:41:34,523 — INFO — SurveyMonkey daily quota: 194/500 remaining.
+2026-07-14 08:41:34,527 — INFO —   Fetched 4400 responses so far...
+2026-07-14 08:41:36,187 — INFO — SurveyMonkey daily quota: 193/500 remaining.
+2026-07-14 08:41:36,191 — INFO —   Fetched 4500 responses so far...
+2026-07-14 08:41:37,757 — INFO — SurveyMonkey daily quota: 192/500 remaining.
+2026-07-14 08:41:37,765 — INFO —   Fetched 4600 responses so far...
+2026-07-14 08:41:39,313 — INFO — SurveyMonkey daily quota: 191/500 remaining.
+2026-07-14 08:41:39,319 — INFO —   Fetched 4700 responses so far...
+2026-07-14 08:41:40,882 — INFO — SurveyMonkey daily quota: 190/500 remaining.
+2026-07-14 08:41:40,887 — INFO —   Fetched 4800 responses so far...
+2026-07-14 08:41:41,944 — INFO — SurveyMonkey daily quota: 189/500 remaining.
+2026-07-14 08:41:41,949 — INFO —   Fetched 4900 responses so far...
+2026-07-14 08:41:42,900 — INFO — SurveyMonkey daily quota: 188/500 remaining.
+2026-07-14 08:41:42,903 — INFO —   Fetched 5000 responses so far...
+2026-07-14 08:41:43,841 — INFO — SurveyMonkey daily quota: 187/500 remaining.
+2026-07-14 08:41:43,844 — INFO —   Fetched 5100 responses so far...
+2026-07-14 08:41:45,552 — INFO — SurveyMonkey daily quota: 186/500 remaining.
+2026-07-14 08:41:45,560 — INFO —   Fetched 5200 responses so far...
+2026-07-14 08:41:47,154 — INFO — SurveyMonkey daily quota: 185/500 remaining.
+2026-07-14 08:41:47,159 — INFO —   Fetched 5300 responses so far...
+2026-07-14 08:41:48,545 — INFO — SurveyMonkey daily quota: 184/500 remaining.
+2026-07-14 08:41:48,551 — INFO —   Fetched 5400 responses so far...
+2026-07-14 08:41:49,686 — INFO — SurveyMonkey daily quota: 183/500 remaining.
+2026-07-14 08:41:49,691 — INFO —   Fetched 5500 responses so far...
+2026-07-14 08:41:50,804 — INFO — SurveyMonkey daily quota: 182/500 remaining.
+2026-07-14 08:41:50,807 — INFO —   Fetched 5600 responses so far...
+2026-07-14 08:41:53,774 — INFO — SurveyMonkey daily quota: 181/500 remaining.
+2026-07-14 08:41:53,778 — INFO —   Fetched 5700 responses so far...
+2026-07-14 08:41:54,798 — INFO — SurveyMonkey daily quota: 180/500 remaining.
+2026-07-14 08:41:54,802 — INFO —   Fetched 5800 responses so far...
+2026-07-14 08:41:56,470 — INFO — SurveyMonkey daily quota: 179/500 remaining.
+2026-07-14 08:41:56,476 — INFO —   Fetched 5900 responses so far...
+2026-07-14 08:41:57,495 — INFO — SurveyMonkey daily quota: 178/500 remaining.
+2026-07-14 08:41:57,496 — INFO —   Fetched 6000 responses so far...
+2026-07-14 08:41:59,062 — INFO — SurveyMonkey daily quota: 177/500 remaining.
+2026-07-14 08:41:59,068 — INFO —   Fetched 6100 responses so far...
+2026-07-14 08:42:00,762 — INFO — SurveyMonkey daily quota: 176/500 remaining.
+2026-07-14 08:42:00,768 — INFO —   Fetched 6200 responses so far...
+2026-07-14 08:42:01,800 — INFO — SurveyMonkey daily quota: 175/500 remaining.
+2026-07-14 08:42:01,805 — INFO —   Fetched 6300 responses so far...
+2026-07-14 08:42:03,673 — INFO — SurveyMonkey daily quota: 174/500 remaining.
+2026-07-14 08:42:03,674 — INFO —   Fetched 6400 responses so far...
+2026-07-14 08:42:04,629 — INFO — SurveyMonkey daily quota: 173/500 remaining.
+2026-07-14 08:42:04,633 — INFO —   Fetched 6500 responses so far...
+2026-07-14 08:42:06,111 — INFO — SurveyMonkey daily quota: 172/500 remaining.
+2026-07-14 08:42:06,116 — INFO —   Fetched 6600 responses so far...
+2026-07-14 08:42:07,668 — INFO — SurveyMonkey daily quota: 171/500 remaining.
+2026-07-14 08:42:07,669 — INFO —   Fetched 6700 responses so far...
+2026-07-14 08:42:08,632 — INFO — SurveyMonkey daily quota: 170/500 remaining.
+2026-07-14 08:42:08,635 — INFO —   Fetched 6800 responses so far...
+2026-07-14 08:42:10,263 — INFO — SurveyMonkey daily quota: 169/500 remaining.
+2026-07-14 08:42:10,272 — INFO —   Fetched 6900 responses so far...
+2026-07-14 08:42:11,285 — INFO — SurveyMonkey daily quota: 168/500 remaining.
+2026-07-14 08:42:11,289 — INFO —   Fetched 7000 responses so far...
+2026-07-14 08:42:12,718 — INFO — SurveyMonkey daily quota: 167/500 remaining.
+2026-07-14 08:42:12,721 — INFO —   Fetched 7100 responses so far...
+2026-07-14 08:42:13,928 — INFO — SurveyMonkey daily quota: 166/500 remaining.
+2026-07-14 08:42:13,930 — INFO —   Fetched 7200 responses so far...
+2026-07-14 08:42:14,971 — INFO — SurveyMonkey daily quota: 165/500 remaining.
+2026-07-14 08:42:14,975 — INFO —   Fetched 7300 responses so far...
+2026-07-14 08:42:16,655 — INFO — SurveyMonkey daily quota: 164/500 remaining.
+2026-07-14 08:42:16,660 — INFO —   Fetched 7400 responses so far...
+2026-07-14 08:42:18,325 — INFO — SurveyMonkey daily quota: 163/500 remaining.
+2026-07-14 08:42:18,332 — INFO —   Fetched 7500 responses so far...
+2026-07-14 08:42:19,838 — INFO — SurveyMonkey daily quota: 162/500 remaining.
+2026-07-14 08:42:19,845 — INFO —   Fetched 7600 responses so far...
+2026-07-14 08:42:21,502 — INFO — SurveyMonkey daily quota: 161/500 remaining.
+2026-07-14 08:42:21,508 — INFO —   Fetched 7700 responses so far...
+2026-07-14 08:42:22,489 — INFO — SurveyMonkey daily quota: 160/500 remaining.
+2026-07-14 08:42:22,492 — INFO —   Fetched 7800 responses so far...
+2026-07-14 08:42:23,471 — INFO — SurveyMonkey daily quota: 159/500 remaining.
+2026-07-14 08:42:23,475 — INFO —   Fetched 7900 responses so far...
+2026-07-14 08:42:25,124 — INFO — SurveyMonkey daily quota: 158/500 remaining.
+2026-07-14 08:42:25,130 — INFO —   Fetched 8000 responses so far...
+2026-07-14 08:42:26,725 — INFO — SurveyMonkey daily quota: 157/500 remaining.
+2026-07-14 08:42:26,732 — INFO —   Fetched 8100 responses so far...
+2026-07-14 08:42:27,771 — INFO — SurveyMonkey daily quota: 156/500 remaining.
+2026-07-14 08:42:27,775 — INFO —   Fetched 8200 responses so far...
+2026-07-14 08:42:28,944 — INFO — SurveyMonkey daily quota: 155/500 remaining.
+2026-07-14 08:42:28,948 — INFO —   Fetched 8300 responses so far...
+2026-07-14 08:42:30,505 — INFO — SurveyMonkey daily quota: 154/500 remaining.
+2026-07-14 08:42:30,511 — INFO —   Fetched 8400 responses so far...
+2026-07-14 08:42:31,561 — INFO — SurveyMonkey daily quota: 153/500 remaining.
+2026-07-14 08:42:31,564 — INFO —   Fetched 8500 responses so far...
+2026-07-14 08:42:33,146 — INFO — SurveyMonkey daily quota: 152/500 remaining.
+2026-07-14 08:42:33,155 — INFO —   Fetched 8600 responses so far...
+2026-07-14 08:42:34,724 — INFO — SurveyMonkey daily quota: 151/500 remaining.
+2026-07-14 08:42:34,730 — INFO —   Fetched 8700 responses so far...
+2026-07-14 08:42:35,681 — INFO — SurveyMonkey daily quota: 150/500 remaining.
+2026-07-14 08:42:35,685 — INFO —   Fetched 8800 responses so far...
+2026-07-14 08:42:36,779 — INFO — SurveyMonkey daily quota: 149/500 remaining.
+2026-07-14 08:42:36,783 — INFO —   Fetched 8900 responses so far...
+2026-07-14 08:42:37,924 — INFO — SurveyMonkey daily quota: 148/500 remaining.
+2026-07-14 08:42:37,928 — INFO —   Fetched 9000 responses so far...
+2026-07-14 08:42:39,479 — INFO — SurveyMonkey daily quota: 147/500 remaining.
+2026-07-14 08:42:39,485 — INFO —   Fetched 9100 responses so far...
+2026-07-14 08:42:40,571 — INFO — SurveyMonkey daily quota: 146/500 remaining.
+2026-07-14 08:42:40,575 — INFO —   Fetched 9200 responses so far...
+2026-07-14 08:42:41,493 — INFO — SurveyMonkey daily quota: 145/500 remaining.
+2026-07-14 08:42:41,498 — INFO —   Fetched 9300 responses so far...
+2026-07-14 08:42:43,317 — INFO — SurveyMonkey daily quota: 144/500 remaining.
+2026-07-14 08:42:43,323 — INFO —   Fetched 9400 responses so far...
+2026-07-14 08:42:44,432 — INFO — SurveyMonkey daily quota: 143/500 remaining.
+2026-07-14 08:42:44,437 — INFO —   Fetched 9500 responses so far...
+2026-07-14 08:42:45,444 — INFO — SurveyMonkey daily quota: 142/500 remaining.
+2026-07-14 08:42:45,448 — INFO —   Fetched 9600 responses so far...
+2026-07-14 08:42:46,529 — INFO — SurveyMonkey daily quota: 141/500 remaining.
+2026-07-14 08:42:46,536 — INFO —   Fetched 9700 responses so far...
+2026-07-14 08:42:48,124 — INFO — SurveyMonkey daily quota: 140/500 remaining.
+2026-07-14 08:42:48,130 — INFO —   Fetched 9800 responses so far...
+2026-07-14 08:42:49,275 — INFO — SurveyMonkey daily quota: 139/500 remaining.
+2026-07-14 08:42:49,280 — INFO —   Fetched 9900 responses so far...
+2026-07-14 08:42:50,864 — INFO — SurveyMonkey daily quota: 138/500 remaining.
+2026-07-14 08:42:50,869 — INFO —   Fetched 10000 responses so far...
+2026-07-14 08:42:51,835 — INFO — SurveyMonkey daily quota: 137/500 remaining.
+2026-07-14 08:42:51,839 — INFO —   Fetched 10100 responses so far...
+2026-07-14 08:42:53,167 — INFO — SurveyMonkey daily quota: 136/500 remaining.
+2026-07-14 08:42:53,170 — INFO —   Fetched 10200 responses so far...
+2026-07-14 08:42:54,289 — INFO — SurveyMonkey daily quota: 135/500 remaining.
+2026-07-14 08:42:54,294 — INFO —   Fetched 10300 responses so far...
+2026-07-14 08:42:55,573 — INFO — SurveyMonkey daily quota: 134/500 remaining.
+2026-07-14 08:42:55,576 — INFO —   Fetched 10400 responses so far...
+2026-07-14 08:42:56,650 — INFO — SurveyMonkey daily quota: 133/500 remaining.
+2026-07-14 08:42:56,654 — INFO —   Fetched 10500 responses so far...
+2026-07-14 08:42:58,372 — INFO — SurveyMonkey daily quota: 132/500 remaining.
+2026-07-14 08:42:58,377 — INFO —   Fetched 10600 responses so far...
+2026-07-14 08:43:00,067 — INFO — SurveyMonkey daily quota: 131/500 remaining.
+2026-07-14 08:43:00,073 — INFO —   Fetched 10700 responses so far...
+2026-07-14 08:43:01,670 — INFO — SurveyMonkey daily quota: 130/500 remaining.
+2026-07-14 08:43:01,674 — INFO —   Fetched 10800 responses so far...
+2026-07-14 08:43:03,284 — INFO — SurveyMonkey daily quota: 129/500 remaining.
+2026-07-14 08:43:03,290 — INFO —   Fetched 10900 responses so far...
+2026-07-14 08:43:04,903 — INFO — SurveyMonkey daily quota: 128/500 remaining.
+2026-07-14 08:43:04,909 — INFO —   Fetched 11000 responses so far...
+2026-07-14 08:43:05,967 — INFO — SurveyMonkey daily quota: 127/500 remaining.
+2026-07-14 08:43:05,971 — INFO —   Fetched 11100 responses so far...
+2026-07-14 08:43:07,591 — INFO — SurveyMonkey daily quota: 126/500 remaining.
+2026-07-14 08:43:07,594 — INFO —   Fetched 11200 responses so far...
+2026-07-14 08:43:08,511 — INFO — SurveyMonkey daily quota: 125/500 remaining.
+2026-07-14 08:43:08,517 — INFO —   Fetched 11300 responses so far...
+2026-07-14 08:43:10,236 — INFO — SurveyMonkey daily quota: 124/500 remaining.
+2026-07-14 08:43:10,242 — INFO —   Fetched 11400 responses so far...
+2026-07-14 08:43:11,879 — INFO — SurveyMonkey daily quota: 123/500 remaining.
+2026-07-14 08:43:11,885 — INFO —   Fetched 11500 responses so far...
+2026-07-14 08:43:12,867 — INFO — SurveyMonkey daily quota: 122/500 remaining.
+2026-07-14 08:43:12,870 — INFO —   Fetched 11600 responses so far...
+2026-07-14 08:43:14,477 — INFO — SurveyMonkey daily quota: 121/500 remaining.
+2026-07-14 08:43:14,483 — INFO —   Fetched 11700 responses so far...
+2026-07-14 08:43:15,646 — INFO — SurveyMonkey daily quota: 120/500 remaining.
+2026-07-14 08:43:15,650 — INFO —   Fetched 11800 responses so far...
+2026-07-14 08:43:17,580 — INFO — SurveyMonkey daily quota: 119/500 remaining.
+2026-07-14 08:43:17,584 — INFO —   Fetched 11900 responses so far...
+2026-07-14 08:43:18,604 — INFO — SurveyMonkey daily quota: 118/500 remaining.
+2026-07-14 08:43:18,607 — INFO —   Fetched 12000 responses so far...
+2026-07-14 08:43:20,522 — INFO — SurveyMonkey daily quota: 117/500 remaining.
+2026-07-14 08:43:20,528 — INFO —   Fetched 12100 responses so far...
+2026-07-14 08:43:22,277 — INFO — SurveyMonkey daily quota: 116/500 remaining.
+2026-07-14 08:43:22,283 — INFO —   Fetched 12200 responses so far...
+2026-07-14 08:43:23,354 — INFO — SurveyMonkey daily quota: 115/500 remaining.
+2026-07-14 08:43:23,358 — INFO —   Fetched 12300 responses so far...
+2026-07-14 08:43:24,915 — INFO — SurveyMonkey daily quota: 114/500 remaining.
+2026-07-14 08:43:24,921 — INFO —   Fetched 12400 responses so far...
+2026-07-14 08:43:25,939 — INFO — SurveyMonkey daily quota: 113/500 remaining.
+2026-07-14 08:43:25,943 — INFO —   Fetched 12500 responses so far...
+2026-07-14 08:43:27,495 — INFO — SurveyMonkey daily quota: 112/500 remaining.
+2026-07-14 08:43:27,501 — INFO —   Fetched 12600 responses so far...
+2026-07-14 08:43:28,500 — INFO — SurveyMonkey daily quota: 111/500 remaining.
+2026-07-14 08:43:28,503 — INFO —   Fetched 12700 responses so far...
+2026-07-14 08:43:29,723 — INFO — SurveyMonkey daily quota: 110/500 remaining.
+2026-07-14 08:43:29,726 — INFO —   Fetched 12775 responses so far...
+2026-07-14 08:43:29,726 — INFO — Retrieved 12775 total responses for survey 525214484
+2026-07-14 08:43:29,771 — INFO — Flattened to DataFrame: 12775 rows, columns: ['Respondent ID', 'Start Date', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 08:43:29,779 — INFO — Loaded 12775 reviews via SurveyMonkey API
+2026-07-14 08:43:29,787 — INFO — Found 5137 previously processed IDs
+2026-07-14 08:43:29,793 — INFO — New reviews to process: 7638 (source: api)
+2026-07-14 08:43:29,809 — INFO — ============================================================
+2026-07-14 08:43:29,809 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-14 08:43:29,809 — INFO — ============================================================
+2026-07-14 08:43:29,809 — INFO — Columns before preprocessing: ['Respondent ID', 'Start Date', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 08:43:29,809 — INFO — Rows before preprocessing: 7638
+2026-07-14 08:43:29,816 — INFO — Columns after preprocessing: ['Respondent ID', 'Start Date', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-14 08:43:29,816 — INFO — Rows after preprocessing: 0
+2026-07-14 08:43:29,816 — INFO — Non-null Feedback_clean: 0
+2026-07-14 08:43:29,816 — INFO — Sample: []
+2026-07-14 08:43:29,816 — INFO — Preprocessing complete ✓
+2026-07-14 08:43:29,816 — WARNING — No feedback responses in this export — skipping NLP steps.
+2026-07-14 08:43:29,832 — INFO — Marked 7638 rating-only (no-feedback) respondents as processed.
+2026-07-14 10:04:14,870 — INFO — ============================================================
+2026-07-14 10:04:14,870 — INFO — PIPELINE START — 2026-07-14 10:04:14
+2026-07-14 10:04:14,870 — INFO — ============================================================
+2026-07-14 10:04:14,870 — INFO — ============================================================
+2026-07-14 10:04:14,870 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 10:04:14,870 — INFO — ============================================================
+2026-07-14 10:04:14,872 — INFO — Attempting to fetch responses directly from SurveyMonkey API...
+2026-07-14 10:04:14,872 — INFO — Fetching question metadata for survey 525214484...
+2026-07-14 10:04:15,484 — INFO — SurveyMonkey daily quota: 109/500 remaining.
+2026-07-14 10:04:15,485 — INFO — Mapped 3 questions for survey 525214484
+2026-07-14 10:04:15,487 — INFO — Fetching responses for survey 525214484...
+2026-07-14 10:04:16,858 — INFO — SurveyMonkey daily quota: 108/500 remaining.
+2026-07-14 10:04:16,863 — INFO —   Fetched 100 responses so far...
+2026-07-14 10:04:18,140 — INFO — SurveyMonkey daily quota: 107/500 remaining.
+2026-07-14 10:04:18,150 — INFO —   Fetched 200 responses so far...
+2026-07-14 10:04:19,277 — INFO — SurveyMonkey daily quota: 106/500 remaining.
+2026-07-14 10:04:19,281 — INFO —   Fetched 300 responses so far...
+2026-07-14 10:04:20,255 — INFO — SurveyMonkey daily quota: 105/500 remaining.
+2026-07-14 10:04:20,259 — INFO —   Fetched 400 responses so far...
+2026-07-14 10:04:21,312 — INFO — SurveyMonkey daily quota: 104/500 remaining.
+2026-07-14 10:04:21,315 — INFO —   Fetched 500 responses so far...
+2026-07-14 10:04:22,736 — INFO — SurveyMonkey daily quota: 103/500 remaining.
+2026-07-14 10:04:22,744 — INFO —   Fetched 600 responses so far...
+2026-07-14 10:04:23,637 — INFO — SurveyMonkey daily quota: 102/500 remaining.
+2026-07-14 10:04:23,646 — INFO —   Fetched 700 responses so far...
+2026-07-14 10:04:24,610 — INFO — SurveyMonkey daily quota: 101/500 remaining.
+2026-07-14 10:04:24,623 — INFO —   Fetched 800 responses so far...
+2026-07-14 10:04:25,662 — INFO — SurveyMonkey daily quota: 100/500 remaining.
+2026-07-14 10:04:25,671 — INFO —   Fetched 900 responses so far...
+2026-07-14 10:04:26,950 — INFO — SurveyMonkey daily quota: 99/500 remaining.
+2026-07-14 10:04:26,951 — INFO —   Fetched 1000 responses so far...
+2026-07-14 10:04:28,236 — INFO — SurveyMonkey daily quota: 98/500 remaining.
+2026-07-14 10:04:28,241 — INFO —   Fetched 1100 responses so far...
+2026-07-14 10:04:29,234 — INFO — SurveyMonkey daily quota: 97/500 remaining.
+2026-07-14 10:04:29,242 — INFO —   Fetched 1200 responses so far...
+2026-07-14 10:04:30,349 — INFO — SurveyMonkey daily quota: 96/500 remaining.
+2026-07-14 10:04:30,360 — INFO —   Fetched 1300 responses so far...
+2026-07-14 10:04:31,711 — INFO — SurveyMonkey daily quota: 95/500 remaining.
+2026-07-14 10:04:31,722 — INFO —   Fetched 1400 responses so far...
+2026-07-14 10:04:32,953 — INFO — SurveyMonkey daily quota: 94/500 remaining.
+2026-07-14 10:04:32,962 — INFO —   Fetched 1500 responses so far...
+2026-07-14 10:04:34,246 — INFO — SurveyMonkey daily quota: 93/500 remaining.
+2026-07-14 10:04:34,256 — INFO —   Fetched 1600 responses so far...
+2026-07-14 10:04:35,305 — INFO — SurveyMonkey daily quota: 92/500 remaining.
+2026-07-14 10:04:35,314 — INFO —   Fetched 1700 responses so far...
+2026-07-14 10:04:36,634 — INFO — SurveyMonkey daily quota: 91/500 remaining.
+2026-07-14 10:04:36,638 — INFO —   Fetched 1800 responses so far...
+2026-07-14 10:04:37,678 — INFO — SurveyMonkey daily quota: 90/500 remaining.
+2026-07-14 10:04:37,685 — INFO —   Fetched 1900 responses so far...
+2026-07-14 10:04:38,787 — INFO — SurveyMonkey daily quota: 89/500 remaining.
+2026-07-14 10:04:38,796 — INFO —   Fetched 2000 responses so far...
+2026-07-14 10:04:39,959 — INFO — SurveyMonkey daily quota: 88/500 remaining.
+2026-07-14 10:04:39,968 — INFO —   Fetched 2100 responses so far...
+2026-07-14 10:04:40,912 — INFO — SurveyMonkey daily quota: 87/500 remaining.
+2026-07-14 10:04:40,919 — INFO —   Fetched 2200 responses so far...
+2026-07-14 10:04:42,285 — INFO — SurveyMonkey daily quota: 86/500 remaining.
+2026-07-14 10:04:42,294 — INFO —   Fetched 2300 responses so far...
+2026-07-14 10:04:43,668 — INFO — SurveyMonkey daily quota: 85/500 remaining.
+2026-07-14 10:04:43,679 — INFO —   Fetched 2400 responses so far...
+2026-07-14 10:04:44,992 — INFO — SurveyMonkey daily quota: 84/500 remaining.
+2026-07-14 10:04:45,004 — INFO —   Fetched 2500 responses so far...
+2026-07-14 10:04:46,560 — INFO — SurveyMonkey daily quota: 83/500 remaining.
+2026-07-14 10:04:46,568 — INFO —   Fetched 2600 responses so far...
+2026-07-14 10:04:47,697 — INFO — SurveyMonkey daily quota: 82/500 remaining.
+2026-07-14 10:04:47,704 — INFO —   Fetched 2700 responses so far...
+2026-07-14 10:04:49,041 — INFO — SurveyMonkey daily quota: 81/500 remaining.
+2026-07-14 10:04:49,048 — INFO —   Fetched 2800 responses so far...
+2026-07-14 10:04:50,501 — INFO — SurveyMonkey daily quota: 80/500 remaining.
+2026-07-14 10:04:50,510 — INFO —   Fetched 2900 responses so far...
+2026-07-14 10:04:52,142 — INFO — SurveyMonkey daily quota: 79/500 remaining.
+2026-07-14 10:04:52,155 — INFO —   Fetched 3000 responses so far...
+2026-07-14 10:04:53,751 — INFO — SurveyMonkey daily quota: 78/500 remaining.
+2026-07-14 10:04:53,759 — INFO —   Fetched 3100 responses so far...
+2026-07-14 10:04:55,148 — INFO — SurveyMonkey daily quota: 77/500 remaining.
+2026-07-14 10:04:55,157 — INFO —   Fetched 3200 responses so far...
+2026-07-14 10:04:56,858 — INFO — SurveyMonkey daily quota: 76/500 remaining.
+2026-07-14 10:04:56,863 — INFO —   Fetched 3300 responses so far...
+2026-07-14 10:04:58,509 — INFO — SurveyMonkey daily quota: 75/500 remaining.
+2026-07-14 10:04:58,514 — INFO —   Fetched 3400 responses so far...
+2026-07-14 10:04:59,559 — INFO — SurveyMonkey daily quota: 74/500 remaining.
+2026-07-14 10:04:59,567 — INFO —   Fetched 3500 responses so far...
+2026-07-14 10:05:00,593 — INFO — SurveyMonkey daily quota: 73/500 remaining.
+2026-07-14 10:05:00,597 — INFO —   Fetched 3600 responses so far...
+2026-07-14 10:05:01,625 — INFO — SurveyMonkey daily quota: 72/500 remaining.
+2026-07-14 10:05:01,632 — INFO —   Fetched 3700 responses so far...
+2026-07-14 10:05:03,294 — INFO — SurveyMonkey daily quota: 71/500 remaining.
+2026-07-14 10:05:03,302 — INFO —   Fetched 3800 responses so far...
+2026-07-14 10:05:04,948 — INFO — SurveyMonkey daily quota: 70/500 remaining.
+2026-07-14 10:05:04,955 — INFO —   Fetched 3900 responses so far...
+2026-07-14 10:05:06,504 — INFO — SurveyMonkey daily quota: 69/500 remaining.
+2026-07-14 10:05:06,512 — INFO —   Fetched 4000 responses so far...
+2026-07-14 10:05:08,051 — INFO — SurveyMonkey daily quota: 68/500 remaining.
+2026-07-14 10:05:08,057 — INFO —   Fetched 4100 responses so far...
+2026-07-14 10:05:09,022 — INFO — SurveyMonkey daily quota: 67/500 remaining.
+2026-07-14 10:05:09,030 — INFO —   Fetched 4200 responses so far...
+2026-07-14 10:05:10,268 — INFO — SurveyMonkey daily quota: 66/500 remaining.
+2026-07-14 10:05:10,274 — INFO —   Fetched 4300 responses so far...
+2026-07-14 10:05:11,854 — INFO — SurveyMonkey daily quota: 65/500 remaining.
+2026-07-14 10:05:11,859 — INFO —   Fetched 4400 responses so far...
+2026-07-14 10:05:13,206 — INFO — SurveyMonkey daily quota: 64/500 remaining.
+2026-07-14 10:05:13,218 — INFO —   Fetched 4500 responses so far...
+2026-07-14 10:05:15,024 — INFO — SurveyMonkey daily quota: 63/500 remaining.
+2026-07-14 10:05:15,029 — INFO —   Fetched 4600 responses so far...
+2026-07-14 10:05:16,690 — INFO — SurveyMonkey daily quota: 62/500 remaining.
+2026-07-14 10:05:16,693 — INFO —   Fetched 4700 responses so far...
+2026-07-14 10:05:18,302 — INFO — SurveyMonkey daily quota: 61/500 remaining.
+2026-07-14 10:05:18,310 — INFO —   Fetched 4800 responses so far...
+2026-07-14 10:05:19,250 — INFO — SurveyMonkey daily quota: 60/500 remaining.
+2026-07-14 10:05:19,258 — INFO —   Fetched 4900 responses so far...
+2026-07-14 10:05:21,059 — INFO — SurveyMonkey daily quota: 59/500 remaining.
+2026-07-14 10:05:21,067 — INFO —   Fetched 5000 responses so far...
+2026-07-14 10:05:22,663 — INFO — SurveyMonkey daily quota: 58/500 remaining.
+2026-07-14 10:05:22,673 — INFO —   Fetched 5100 responses so far...
+2026-07-14 10:05:23,729 — INFO — SurveyMonkey daily quota: 57/500 remaining.
+2026-07-14 10:05:23,738 — INFO —   Fetched 5200 responses so far...
+2026-07-14 10:05:25,356 — INFO — SurveyMonkey daily quota: 56/500 remaining.
+2026-07-14 10:05:25,364 — INFO —   Fetched 5300 responses so far...
+2026-07-14 10:05:26,955 — INFO — SurveyMonkey daily quota: 55/500 remaining.
+2026-07-14 10:05:26,958 — INFO —   Fetched 5400 responses so far...
+2026-07-14 10:05:28,170 — INFO — SurveyMonkey daily quota: 54/500 remaining.
+2026-07-14 10:05:28,176 — INFO —   Fetched 5500 responses so far...
+2026-07-14 10:05:29,170 — INFO — SurveyMonkey daily quota: 53/500 remaining.
+2026-07-14 10:05:29,176 — INFO —   Fetched 5600 responses so far...
+2026-07-14 10:05:30,766 — INFO — SurveyMonkey daily quota: 52/500 remaining.
+2026-07-14 10:05:30,770 — INFO —   Fetched 5700 responses so far...
+2026-07-14 10:05:32,324 — INFO — SurveyMonkey daily quota: 51/500 remaining.
+2026-07-14 10:05:32,327 — INFO —   Fetched 5800 responses so far...
+2026-07-14 10:05:35,530 — INFO — SurveyMonkey daily quota: 50/500 remaining.
+2026-07-14 10:05:35,538 — INFO —   Fetched 5900 responses so far...
+2026-07-14 10:05:37,352 — WARNING — SurveyMonkey daily quota running low: 49/500 requests left today.
+2026-07-14 10:05:37,359 — INFO —   Fetched 6000 responses so far...
+2026-07-14 10:05:38,980 — WARNING — SurveyMonkey daily quota running low: 48/500 requests left today.
+2026-07-14 10:05:38,985 — INFO —   Fetched 6100 responses so far...
+2026-07-14 10:05:40,124 — WARNING — SurveyMonkey daily quota running low: 47/500 requests left today.
+2026-07-14 10:05:40,132 — INFO —   Fetched 6200 responses so far...
+2026-07-14 10:05:41,135 — WARNING — SurveyMonkey daily quota running low: 46/500 requests left today.
+2026-07-14 10:05:41,146 — INFO —   Fetched 6300 responses so far...
+2026-07-14 10:05:42,341 — WARNING — SurveyMonkey daily quota running low: 45/500 requests left today.
+2026-07-14 10:05:42,342 — INFO —   Fetched 6400 responses so far...
+2026-07-14 10:05:43,449 — WARNING — SurveyMonkey daily quota running low: 44/500 requests left today.
+2026-07-14 10:05:43,457 — INFO —   Fetched 6500 responses so far...
+2026-07-14 10:05:44,431 — WARNING — SurveyMonkey daily quota running low: 43/500 requests left today.
+2026-07-14 10:05:44,438 — INFO —   Fetched 6600 responses so far...
+2026-07-14 10:05:45,548 — WARNING — SurveyMonkey daily quota running low: 42/500 requests left today.
+2026-07-14 10:05:45,558 — INFO —   Fetched 6700 responses so far...
+2026-07-14 10:05:47,234 — WARNING — SurveyMonkey daily quota running low: 41/500 requests left today.
+2026-07-14 10:05:47,239 — INFO —   Fetched 6800 responses so far...
+2026-07-14 10:05:48,237 — WARNING — SurveyMonkey daily quota running low: 40/500 requests left today.
+2026-07-14 10:05:48,247 — INFO —   Fetched 6900 responses so far...
+2026-07-14 10:05:49,380 — WARNING — SurveyMonkey daily quota running low: 39/500 requests left today.
+2026-07-14 10:05:49,388 — INFO —   Fetched 7000 responses so far...
+2026-07-14 10:05:50,416 — WARNING — SurveyMonkey daily quota running low: 38/500 requests left today.
+2026-07-14 10:05:50,422 — INFO —   Fetched 7100 responses so far...
+2026-07-14 10:05:51,393 — WARNING — SurveyMonkey daily quota running low: 37/500 requests left today.
+2026-07-14 10:05:51,401 — INFO —   Fetched 7200 responses so far...
+2026-07-14 10:05:53,081 — WARNING — SurveyMonkey daily quota running low: 36/500 requests left today.
+2026-07-14 10:05:53,085 — INFO —   Fetched 7300 responses so far...
+2026-07-14 10:05:54,153 — WARNING — SurveyMonkey daily quota running low: 35/500 requests left today.
+2026-07-14 10:05:54,159 — INFO —   Fetched 7400 responses so far...
+2026-07-14 10:05:55,315 — WARNING — SurveyMonkey daily quota running low: 34/500 requests left today.
+2026-07-14 10:05:55,322 — INFO —   Fetched 7500 responses so far...
+2026-07-14 10:05:57,125 — WARNING — SurveyMonkey daily quota running low: 33/500 requests left today.
+2026-07-14 10:05:57,132 — INFO —   Fetched 7600 responses so far...
+2026-07-14 10:05:58,815 — WARNING — SurveyMonkey daily quota running low: 32/500 requests left today.
+2026-07-14 10:05:58,819 — INFO —   Fetched 7700 responses so far...
+2026-07-14 10:06:00,464 — WARNING — SurveyMonkey daily quota running low: 31/500 requests left today.
+2026-07-14 10:06:00,477 — INFO —   Fetched 7800 responses so far...
+2026-07-14 10:06:01,742 — WARNING — SurveyMonkey daily quota running low: 30/500 requests left today.
+2026-07-14 10:06:01,746 — INFO —   Fetched 7900 responses so far...
+2026-07-14 10:06:02,900 — WARNING — SurveyMonkey daily quota running low: 29/500 requests left today.
+2026-07-14 10:06:02,909 — INFO —   Fetched 8000 responses so far...
+2026-07-14 10:06:03,910 — WARNING — SurveyMonkey daily quota running low: 28/500 requests left today.
+2026-07-14 10:06:03,915 — INFO —   Fetched 8100 responses so far...
+2026-07-14 10:06:04,871 — WARNING — SurveyMonkey daily quota running low: 27/500 requests left today.
+2026-07-14 10:06:04,876 — INFO —   Fetched 8200 responses so far...
+2026-07-14 10:06:05,782 — WARNING — SurveyMonkey daily quota running low: 26/500 requests left today.
+2026-07-14 10:06:05,790 — INFO —   Fetched 8300 responses so far...
+2026-07-14 10:06:06,793 — WARNING — SurveyMonkey daily quota running low: 25/500 requests left today.
+2026-07-14 10:06:06,798 — INFO —   Fetched 8400 responses so far...
+2026-07-14 10:06:07,943 — WARNING — SurveyMonkey daily quota running low: 24/500 requests left today.
+2026-07-14 10:06:07,950 — INFO —   Fetched 8500 responses so far...
+2026-07-14 10:06:08,998 — WARNING — SurveyMonkey daily quota running low: 23/500 requests left today.
+2026-07-14 10:06:09,005 — INFO —   Fetched 8600 responses so far...
+2026-07-14 10:06:10,241 — WARNING — SurveyMonkey daily quota running low: 22/500 requests left today.
+2026-07-14 10:06:10,245 — INFO —   Fetched 8700 responses so far...
+2026-07-14 10:06:11,352 — WARNING — SurveyMonkey daily quota running low: 21/500 requests left today.
+2026-07-14 10:06:11,358 — INFO —   Fetched 8800 responses so far...
+2026-07-14 10:06:13,246 — WARNING — SurveyMonkey daily quota running low: 20/500 requests left today.
+2026-07-14 10:06:13,250 — INFO —   Fetched 8900 responses so far...
+2026-07-14 10:06:14,976 — WARNING — SurveyMonkey daily quota running low: 19/500 requests left today.
+2026-07-14 10:06:14,983 — INFO —   Fetched 9000 responses so far...
+2026-07-14 10:06:16,035 — WARNING — SurveyMonkey daily quota running low: 18/500 requests left today.
+2026-07-14 10:06:16,041 — INFO —   Fetched 9100 responses so far...
+2026-07-14 10:06:17,700 — WARNING — SurveyMonkey daily quota running low: 17/500 requests left today.
+2026-07-14 10:06:17,706 — INFO —   Fetched 9200 responses so far...
+2026-07-14 10:06:19,261 — WARNING — SurveyMonkey daily quota running low: 16/500 requests left today.
+2026-07-14 10:06:19,269 — INFO —   Fetched 9300 responses so far...
+2026-07-14 10:06:20,466 — WARNING — SurveyMonkey daily quota running low: 15/500 requests left today.
+2026-07-14 10:06:20,471 — INFO —   Fetched 9400 responses so far...
+2026-07-14 10:06:22,132 — WARNING — SurveyMonkey daily quota running low: 14/500 requests left today.
+2026-07-14 10:06:22,138 — INFO —   Fetched 9500 responses so far...
+2026-07-14 10:06:23,889 — WARNING — SurveyMonkey daily quota running low: 13/500 requests left today.
+2026-07-14 10:06:23,896 — INFO —   Fetched 9600 responses so far...
+2026-07-14 10:06:24,873 — WARNING — SurveyMonkey daily quota running low: 12/500 requests left today.
+2026-07-14 10:06:24,884 — INFO —   Fetched 9700 responses so far...
+2026-07-14 10:06:26,100 — WARNING — SurveyMonkey daily quota running low: 11/500 requests left today.
+2026-07-14 10:06:26,105 — INFO —   Fetched 9800 responses so far...
+2026-07-14 10:06:27,197 — WARNING — SurveyMonkey daily quota running low: 10/500 requests left today.
+2026-07-14 10:06:27,203 — INFO —   Fetched 9900 responses so far...
+2026-07-14 10:06:28,235 — WARNING — SurveyMonkey daily quota running low: 9/500 requests left today.
+2026-07-14 10:06:28,242 — INFO —   Fetched 10000 responses so far...
+2026-07-14 10:06:29,275 — WARNING — SurveyMonkey daily quota running low: 8/500 requests left today.
+2026-07-14 10:06:29,283 — INFO —   Fetched 10100 responses so far...
+2026-07-14 10:06:30,329 — WARNING — SurveyMonkey daily quota running low: 7/500 requests left today.
+2026-07-14 10:06:30,334 — INFO —   Fetched 10200 responses so far...
+2026-07-14 10:06:31,334 — WARNING — SurveyMonkey daily quota running low: 6/500 requests left today.
+2026-07-14 10:06:31,342 — INFO —   Fetched 10300 responses so far...
+2026-07-14 10:06:32,638 — WARNING — SurveyMonkey daily quota running low: 5/500 requests left today.
+2026-07-14 10:06:32,644 — INFO —   Fetched 10400 responses so far...
+2026-07-14 10:06:33,778 — WARNING — SurveyMonkey daily quota running low: 4/500 requests left today.
+2026-07-14 10:06:33,781 — INFO —   Fetched 10500 responses so far...
+2026-07-14 10:06:34,907 — WARNING — SurveyMonkey daily quota running low: 3/500 requests left today.
+2026-07-14 10:06:34,914 — INFO —   Fetched 10600 responses so far...
+2026-07-14 10:06:35,929 — WARNING — SurveyMonkey daily quota running low: 2/500 requests left today.
+2026-07-14 10:06:35,934 — INFO —   Fetched 10700 responses so far...
+2026-07-14 10:06:37,452 — WARNING — SurveyMonkey daily quota running low: 1/500 requests left today.
+2026-07-14 10:06:37,461 — INFO —   Fetched 10800 responses so far...
+2026-07-14 10:06:38,393 — ERROR — SurveyMonkey daily quota EXHAUSTED (0/500). Resets in ~14.9h.
+2026-07-14 10:06:38,398 — INFO —   Fetched 10900 responses so far...
+2026-07-14 10:06:40,009 — ERROR — SurveyMonkey daily quota EXHAUSTED (0/500). Resets in ~14.9h.
+2026-07-14 10:06:40,018 — INFO —   Fetched 11000 responses so far...
+2026-07-14 10:06:40,849 — ERROR — SurveyMonkey daily quota EXHAUSTED (0/500). Resets in ~14.9h.
+2026-07-14 10:06:40,849 — WARNING — SurveyMonkey rate limit hit: Too many requests were made, try again later.
+2026-07-14 10:06:40,850 — ERROR — SurveyMonkey daily/rate quota exhausted — ABORTING this run rather than falling back to a stale local file. Reason: Too many requests were made, try again later.
+2026-07-14 10:23:54,895 — INFO — ============================================================
+2026-07-14 10:23:54,895 — INFO — PIPELINE START — 2026-07-14 10:23:54
+2026-07-14 10:23:54,895 — INFO — ============================================================
+2026-07-14 10:23:54,895 — INFO — ============================================================
+2026-07-14 10:23:54,895 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 10:23:54,895 — INFO — ============================================================
+2026-07-14 10:23:54,896 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-14 10:23:56,838 — INFO — Loaded 12782 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-14 10:23:56,857 — INFO — Found 12775 previously processed IDs
+2026-07-14 10:23:56,865 — INFO — New reviews to process: 12782 (source: file)
+2026-07-14 10:23:56,884 — INFO — ============================================================
+2026-07-14 10:23:56,884 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-14 10:23:56,884 — INFO — ============================================================
+2026-07-14 10:23:56,884 — INFO — Columns before preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 10:23:56,884 — INFO — Rows before preprocessing: 12782
+2026-07-14 10:23:56,899 — ERROR — PIPELINE FAILED: expected string or bytes-like object, got 'float'
+2026-07-14 10:23:56,962 — ERROR — Traceback (most recent call last):
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/run_pipeline.py", line 1117, in main
+    df = step_preprocess_external(df_raw.copy(), has_extra_header_row=has_extra_header_row)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/run_pipeline.py", line 113, in step_preprocess_external
+    df = pre.preprocessing_first(df.copy(), has_extra_header_row=has_extra_header_row)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/preprocessing.py", line 125, in preprocessing_first
+    data['Feedback_clean'] = data['Feedback'].apply(clean_whitespace)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/venv/lib/python3.11/site-packages/pandas/core/series.py", line 5084, in apply
+    ).apply()
+      ^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/venv/lib/python3.11/site-packages/pandas/core/apply.py", line 1520, in apply
+    return self.apply_standard()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/venv/lib/python3.11/site-packages/pandas/core/apply.py", line 1578, in apply_standard
+    mapped = obj._map_values(mapper=curried)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/venv/lib/python3.11/site-packages/pandas/core/base.py", line 1022, in _map_values
+    return algorithms.map_array(arr, mapper, na_action=na_action)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/venv/lib/python3.11/site-packages/pandas/core/algorithms.py", line 1715, in map_array
+    return lib.map_infer(values, mapper)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/lib.pyx", line 3071, in pandas._libs.lib.map_infer
+  File "/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/preprocessing.py", line 31, in clean_whitespace
+    text = re.sub(r'\s+', ' ', text)    # replace any whitespace sequence with a single space
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.15_1/Frameworks/Python.framework/Versions/3.11/lib/python3.11/re/__init__.py", line 185, in sub
+    return _compile(pattern, flags).sub(repl, string, count)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'float'
+
+2026-07-14 10:39:54,984 — INFO — ============================================================
+2026-07-14 10:39:54,986 — INFO — PIPELINE START — 2026-07-14 10:39:54
+2026-07-14 10:39:54,986 — INFO — ============================================================
+2026-07-14 10:39:54,986 — INFO — ============================================================
+2026-07-14 10:39:54,986 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 10:39:54,986 — INFO — ============================================================
+2026-07-14 10:39:54,993 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-14 10:39:56,426 — INFO — Loaded 12782 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-14 10:39:56,444 — INFO — Found 12775 previously processed IDs
+2026-07-14 10:39:56,451 — INFO — New reviews to process: 12782 (source: file)
+2026-07-14 10:39:56,469 — INFO — ============================================================
+2026-07-14 10:39:56,469 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-14 10:39:56,469 — INFO — ============================================================
+2026-07-14 10:39:56,469 — INFO — Columns before preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 10:39:56,469 — INFO — Rows before preprocessing: 12782
+2026-07-14 10:39:59,118 — INFO — Columns after preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-14 10:39:59,118 — INFO — Rows after preprocessing: 5123
+2026-07-14 10:39:59,118 — INFO — Non-null Feedback_clean: 5123
+2026-07-14 10:39:59,118 — INFO — Sample: ['i find it hard to upload documents as the drop down menu times out quicker than you can click on it', 'drawing a diagram of the site was necessarily challenging i do a lot of it work and it was difficult for me i do not think this will be possible for some people particularly those who did not have it skills or older i don’t want to be overcritical as i know it’s a difficult thing to design but i think it does need improvement', 'its seem straight forward uploading and completing my application']
+2026-07-14 10:39:59,118 — INFO — Preprocessing complete ✓
+2026-07-14 10:39:59,118 — INFO — ============================================================
+2026-07-14 10:39:59,118 — INFO — STEP 3 — Classify
+2026-07-14 10:39:59,119 — INFO — ============================================================
+2026-07-14 10:39:59,153 — INFO — Loading SVM model...
+2026-07-14 10:39:59,171 — INFO — No device provided, using mps
+2026-07-14 10:39:59,324 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:39:59,325 — WARNING — Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-14 10:39:59,338 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-14 10:39:59,448 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:39:59,462 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-14 10:39:59,477 — INFO — Loading SentenceTransformer model from sentence-transformers/all-mpnet-base-v2.
+2026-07-14 10:39:59,576 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:39:59,590 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-14 10:39:59,690 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:39:59,706 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/README.md "HTTP/1.1 200 OK"
+2026-07-14 10:39:59,834 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:39:59,846 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-14 10:39:59,972 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:39:59,985 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-07-14 10:40:00,089 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 10:40:00,190 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:40:00,201 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 10:40:00,468 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 10:40:00,572 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 10:40:00,680 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 10:40:00,783 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 10:40:00,885 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:40:00,899 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-14 10:40:01,007 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:40:01,020 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 10:40:01,123 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:40:01,137 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 10:40:01,243 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:40:01,256 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-14 10:40:01,369 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-14 10:40:01,499 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-14 10:40:01,678 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:40:01,693 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-07-14 10:40:01,806 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2 "HTTP/1.1 200 OK"
+2026-07-14 10:40:02,668 — INFO — Models loaded ✓
+2026-07-14 10:40:02,669 — INFO — Generating embeddings...
+2026-07-14 10:40:28,163 — INFO — Classification complete — method breakdown:
+2026-07-14 10:40:28,169 — INFO — prediction_method
+svm             2817
+svm_low_conf    1786
+fallback         520
+2026-07-14 10:40:28,169 — INFO — ============================================================
+2026-07-14 10:40:28,169 — INFO — STEP 4 — ABSA
+2026-07-14 10:40:28,169 — INFO — ============================================================
+2026-07-14 10:40:28,170 — INFO — Using device: MPS
+2026-07-14 10:40:28,170 — INFO — Loading ABSA model...
+2026-07-14 10:40:28,329 — INFO — HTTP Request: HEAD https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 10:40:28,340 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/yangheng/deberta-v3-base-absa-v1.1/10c9dff335a44073e1352360c3a7bc54dc58eb01/config.json "HTTP/1.1 200 OK"
+2026-07-14 10:40:28,685 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-14 10:40:28,797 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-14 10:40:29,495 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1 "HTTP/1.1 200 OK"
+2026-07-14 10:40:30,553 — INFO — ABSA model loaded ✓
+2026-07-14 10:40:30,565 — INFO — Word count distribution:
+count    5123.000000
+mean       18.994730
+std        21.943152
+min         0.000000
+25%         5.000000
+50%        12.000000
+75%        25.000000
+max       336.000000
+Name: Feedback_clean, dtype: float64
+2026-07-14 10:40:30,565 — INFO — Reviews with >= 2 words: 4824
+2026-07-14 10:40:30,565 — INFO — Reviews with >= 5 words: 4009
+2026-07-14 10:40:30,579 — INFO — Using 'Feedback' column for ABSA (avg 19.1 words vs 19.0 clean)
+2026-07-14 10:40:30,590 — INFO — Running ABSA on 4826 reviews (using column: Feedback)
+2026-07-14 10:40:30,598 — INFO —   ABSA progress: 0/4826
+2026-07-14 10:40:44,469 — INFO —   ABSA progress: 100/4826
+2026-07-14 10:40:54,681 — INFO —   ABSA progress: 200/4826
+2026-07-14 10:41:04,159 — INFO —   ABSA progress: 300/4826
+2026-07-14 10:41:14,028 — INFO —   ABSA progress: 400/4826
+2026-07-14 10:41:23,060 — INFO —   ABSA progress: 500/4826
+2026-07-14 10:41:32,723 — INFO —   ABSA progress: 600/4826
+2026-07-14 10:41:42,422 — INFO —   ABSA progress: 700/4826
+2026-07-14 10:41:53,324 — INFO —   ABSA progress: 800/4826
+2026-07-14 10:42:03,079 — INFO —   ABSA progress: 900/4826
+2026-07-14 10:42:13,022 — INFO —   ABSA progress: 1000/4826
+2026-07-14 10:42:21,818 — INFO —   ABSA progress: 1100/4826
+2026-07-14 10:42:31,039 — INFO —   ABSA progress: 1200/4826
+2026-07-14 10:42:41,464 — INFO —   ABSA progress: 1300/4826
+2026-07-14 10:42:50,703 — INFO —   ABSA progress: 1400/4826
+2026-07-14 10:43:00,217 — INFO —   ABSA progress: 1500/4826
+2026-07-14 10:43:10,360 — INFO —   ABSA progress: 1600/4826
+2026-07-14 10:43:19,048 — INFO —   ABSA progress: 1700/4826
+2026-07-14 10:43:27,968 — INFO —   ABSA progress: 1800/4826
+2026-07-14 10:43:37,757 — INFO —   ABSA progress: 1900/4826
+2026-07-14 10:43:45,445 — INFO —   ABSA progress: 2000/4826
+2026-07-14 10:43:54,728 — INFO —   ABSA progress: 2100/4826
+2026-07-14 10:44:03,757 — INFO —   ABSA progress: 2200/4826
+2026-07-14 10:44:13,546 — INFO —   ABSA progress: 2300/4826
+2026-07-14 10:44:22,774 — INFO —   ABSA progress: 2400/4826
+2026-07-14 10:44:31,691 — INFO —   ABSA progress: 2500/4826
+2026-07-14 10:44:40,582 — INFO —   ABSA progress: 2600/4826
+2026-07-14 10:44:50,825 — INFO —   ABSA progress: 2700/4826
+2026-07-14 10:44:59,846 — INFO —   ABSA progress: 2800/4826
+2026-07-14 10:45:08,636 — INFO —   ABSA progress: 2900/4826
+2026-07-14 10:45:17,232 — INFO —   ABSA progress: 3000/4826
+2026-07-14 10:45:28,849 — INFO —   ABSA progress: 3100/4826
+2026-07-14 10:45:38,223 — INFO —   ABSA progress: 3200/4826
+2026-07-14 10:45:48,482 — INFO —   ABSA progress: 3300/4826
+2026-07-14 10:45:57,400 — INFO —   ABSA progress: 3400/4826
+2026-07-14 10:46:07,210 — INFO —   ABSA progress: 3500/4826
+2026-07-14 10:46:17,194 — INFO —   ABSA progress: 3600/4826
+2026-07-14 10:46:26,550 — INFO —   ABSA progress: 3700/4826
+2026-07-14 10:46:36,250 — INFO —   ABSA progress: 3800/4826
+2026-07-14 10:46:45,779 — INFO —   ABSA progress: 3900/4826
+2026-07-14 10:46:56,901 — INFO —   ABSA progress: 4000/4826
+2026-07-14 10:47:07,680 — INFO —   ABSA progress: 4100/4826
+2026-07-14 10:47:18,171 — INFO —   ABSA progress: 4200/4826
+2026-07-14 10:47:28,595 — INFO —   ABSA progress: 4300/4826
+2026-07-14 10:47:37,708 — INFO —   ABSA progress: 4400/4826
+2026-07-14 10:47:47,047 — INFO —   ABSA progress: 4500/4826
+2026-07-14 10:47:56,264 — INFO —   ABSA progress: 4600/4826
+2026-07-14 10:48:05,881 — INFO —   ABSA progress: 4700/4826
+2026-07-14 10:48:15,357 — INFO —   ABSA progress: 4800/4826
+2026-07-14 10:48:17,906 — INFO — ABSA raw labels seen: {'Positive', 'Negative', 'Neutral'}
+2026-07-14 10:48:17,906 — INFO — ABSA call failures: 0 / 19304 approx calls
+2026-07-14 10:48:18,362 — INFO — ABSA complete ✓
+2026-07-14 10:48:18,363 — INFO — Sentiment distribution: {'negative': 2449, 'positive': 1864, 'neutral': 810}
+2026-07-14 10:48:18,440 — INFO — ============================================================
+2026-07-14 10:48:18,440 — INFO — STEP 5 — Entity extraction
+2026-07-14 10:48:18,440 — INFO — ============================================================
+2026-07-14 10:48:19,016 — INFO — spaCy model loaded ✓
+2026-07-14 10:48:19,026 — INFO —   Entity progress: 0/5123
+2026-07-14 10:48:19,083 — INFO —   Entity progress: 500/5123
+2026-07-14 10:48:19,128 — INFO —   Entity progress: 1000/5123
+2026-07-14 10:48:19,172 — INFO —   Entity progress: 1500/5123
+2026-07-14 10:48:19,218 — INFO —   Entity progress: 2000/5123
+2026-07-14 10:48:19,264 — INFO —   Entity progress: 2500/5123
+2026-07-14 10:48:19,310 — INFO —   Entity progress: 3000/5123
+2026-07-14 10:48:19,354 — INFO —   Entity progress: 3500/5123
+2026-07-14 10:48:19,400 — INFO —   Entity progress: 4000/5123
+2026-07-14 10:48:19,445 — INFO —   Entity progress: 4500/5123
+2026-07-14 10:48:19,494 — INFO —   Entity progress: 5000/5123
+2026-07-14 10:48:19,509 — INFO — Entity extraction complete ✓
+2026-07-14 10:48:19,510 — INFO — ============================================================
+2026-07-14 10:48:19,510 — INFO — STEP 6 — Save outputs
+2026-07-14 10:48:19,510 — INFO — ============================================================
+2026-07-14 10:48:20,050 — INFO — Appended to master — total records: 10260
+2026-07-14 10:48:24,492 — INFO — Saved: results.xlsx
+2026-07-14 10:48:32,883 — INFO — Saved: research_output.xlsx
+2026-07-14 10:48:33,424 — INFO — Saved: product_output.xlsx
+2026-07-14 10:48:33,450 — INFO — Saved: leadership_output.xlsx
+2026-07-14 10:48:33,450 — INFO — All outputs saved ✓
+2026-07-14 10:48:33,475 — INFO — Marked 12782 respondents as processed (5123 with feedback, 7659 rating-only).
+2026-07-14 10:48:36,796 — INFO — Dashboard regenerated ✓
+2026-07-14 10:48:36,796 — INFO — ============================================================
+2026-07-14 10:48:36,796 — INFO — PIPELINE COMPLETE — 12782 new reviews processed
+2026-07-14 10:48:36,796 — INFO — Master file now contains 10260 reviews
+2026-07-14 10:48:36,796 — INFO — Outputs: outputs/latest/ and outputs/archive/2026-07-14/
+2026-07-14 10:48:36,796 — INFO — ============================================================
+2026-07-14 11:39:59,285 — INFO — ============================================================
+2026-07-14 11:39:59,285 — INFO — PIPELINE START — 2026-07-14 11:39:59
+2026-07-14 11:39:59,285 — INFO — ============================================================
+2026-07-14 11:39:59,285 — INFO — ============================================================
+2026-07-14 11:39:59,285 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 11:39:59,285 — INFO — ============================================================
+2026-07-14 11:39:59,292 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-14 11:40:01,065 — INFO — Loaded 12782 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-14 11:40:01,082 — INFO — Found 12782 previously processed IDs
+2026-07-14 11:40:01,090 — INFO — New reviews to process: 0 (source: file)
+2026-07-14 11:40:01,090 — WARNING — No new reviews found — nothing to process.
+2026-07-14 11:40:01,090 — WARNING — Check that the input file/API contains new Respondent IDs.
+2026-07-14 12:01:49,768 — INFO — ============================================================
+2026-07-14 12:01:49,768 — INFO — PIPELINE START — 2026-07-14 12:01:49
+2026-07-14 12:01:49,768 — INFO — ============================================================
+2026-07-14 12:01:49,768 — INFO — ============================================================
+2026-07-14 12:01:49,768 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 12:01:49,768 — INFO — ============================================================
+2026-07-14 12:01:49,769 — INFO — Attempting to fetch responses directly from SurveyMonkey API...
+2026-07-14 12:01:49,769 — INFO — Fetching question metadata for survey 525214484...
+2026-07-14 12:01:50,188 — ERROR — SurveyMonkey daily quota EXHAUSTED (0/500). Resets in ~13.0h.
+2026-07-14 12:01:50,189 — WARNING — SurveyMonkey rate limit hit: Too many requests were made, try again later.
+2026-07-14 12:01:50,189 — ERROR — SurveyMonkey daily/rate quota exhausted — ABORTING this run rather than falling back to a stale local file. Reason: Too many requests were made, try again later.
+2026-07-14 12:05:39,269 — INFO — ============================================================
+2026-07-14 12:05:39,269 — INFO — PIPELINE START — 2026-07-14 12:05:39
+2026-07-14 12:05:39,269 — INFO — ============================================================
+2026-07-14 12:05:39,269 — INFO — ============================================================
+2026-07-14 12:05:39,269 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 12:05:39,269 — INFO — ============================================================
+2026-07-14 12:05:39,281 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-14 12:05:41,070 — INFO — Loaded 12782 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-14 12:05:41,098 — INFO — Found 12782 previously processed IDs
+2026-07-14 12:05:41,139 — INFO — New reviews to process: 0 (source: file)
+2026-07-14 12:05:41,139 — WARNING — No new reviews found — nothing to process.
+2026-07-14 12:05:41,139 — WARNING — Check that the input file/API contains new Respondent IDs.
+2026-07-14 12:10:38,549 — INFO — ============================================================
+2026-07-14 12:10:38,550 — INFO — PIPELINE START — 2026-07-14 12:10:38
+2026-07-14 12:10:38,550 — INFO — ============================================================
+2026-07-14 12:10:38,550 — INFO — ============================================================
+2026-07-14 12:10:38,550 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 12:10:38,550 — INFO — ============================================================
+2026-07-14 12:10:38,552 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-14 12:10:39,482 — INFO — Loaded 12782 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-14 12:10:39,502 — INFO — Found 12782 previously processed IDs
+2026-07-14 12:10:39,507 — INFO — Processing all available reviews: 12782 (source: file)
+2026-07-14 12:10:39,507 — INFO — New reviews to process: 12782 (source: file)
+2026-07-14 12:10:39,532 — INFO — ============================================================
+2026-07-14 12:10:39,532 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-14 12:10:39,532 — INFO — ============================================================
+2026-07-14 12:10:39,532 — INFO — Columns before preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 12:10:39,532 — INFO — Rows before preprocessing: 12782
+2026-07-14 12:10:42,117 — INFO — Columns after preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-14 12:10:42,117 — INFO — Rows after preprocessing: 5123
+2026-07-14 12:10:42,117 — INFO — Non-null Feedback_clean: 5123
+2026-07-14 12:10:42,117 — INFO — Sample: ['i find it hard to upload documents as the drop down menu times out quicker than you can click on it', 'drawing a diagram of the site was necessarily challenging i do a lot of it work and it was difficult for me i do not think this will be possible for some people particularly those who did not have it skills or older i don’t want to be overcritical as i know it’s a difficult thing to design but i think it does need improvement', 'its seem straight forward uploading and completing my application']
+2026-07-14 12:10:42,117 — INFO — Preprocessing complete ✓
+2026-07-14 12:10:42,117 — INFO — ============================================================
+2026-07-14 12:10:42,117 — INFO — STEP 3 — Classify
+2026-07-14 12:10:42,117 — INFO — ============================================================
+2026-07-14 12:10:42,158 — INFO — Loading SVM model...
+2026-07-14 12:10:42,176 — INFO — No device provided, using mps
+2026-07-14 12:10:42,351 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:42,354 — WARNING — Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-14 12:10:42,369 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:42,496 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:42,514 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:42,531 — INFO — Loading SentenceTransformer model from sentence-transformers/all-mpnet-base-v2.
+2026-07-14 12:10:42,636 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:42,656 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:42,763 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:42,781 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/README.md "HTTP/1.1 200 OK"
+2026-07-14 12:10:42,930 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:42,951 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:43,080 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:43,110 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:43,243 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 12:10:43,352 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:43,369 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:43,669 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 12:10:43,769 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 12:10:43,875 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 12:10:43,981 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 12:10:44,087 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:44,107 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:44,224 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:44,243 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:44,352 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:44,364 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:44,460 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:44,472 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:44,587 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-14 12:10:44,703 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-14 12:10:44,926 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:10:44,940 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-07-14 12:10:45,061 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2 "HTTP/1.1 200 OK"
+2026-07-14 12:10:45,681 — INFO — Models loaded ✓
+2026-07-14 12:10:45,681 — INFO — Generating embeddings...
+2026-07-14 12:11:05,960 — INFO — Classification complete — method breakdown:
+2026-07-14 12:11:05,965 — INFO — prediction_method
+svm             2817
+svm_low_conf    1786
+fallback         520
+2026-07-14 12:11:05,965 — INFO — ============================================================
+2026-07-14 12:11:05,965 — INFO — STEP 4 — ABSA
+2026-07-14 12:11:05,965 — INFO — ============================================================
+2026-07-14 12:11:05,966 — INFO — Using device: MPS
+2026-07-14 12:11:05,966 — INFO — Loading ABSA model...
+2026-07-14 12:11:06,106 — INFO — HTTP Request: HEAD https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 12:11:06,120 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/yangheng/deberta-v3-base-absa-v1.1/10c9dff335a44073e1352360c3a7bc54dc58eb01/config.json "HTTP/1.1 200 OK"
+2026-07-14 12:11:06,478 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-14 12:11:06,585 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-14 12:11:07,341 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1 "HTTP/1.1 200 OK"
+2026-07-14 12:11:08,609 — INFO — ABSA model loaded ✓
+2026-07-14 12:11:08,651 — INFO — Word count distribution:
+count    5123.000000
+mean       18.994730
+std        21.943152
+min         0.000000
+25%         5.000000
+50%        12.000000
+75%        25.000000
+max       336.000000
+Name: Feedback_clean, dtype: float64
+2026-07-14 12:11:08,651 — INFO — Reviews with >= 2 words: 4824
+2026-07-14 12:11:08,651 — INFO — Reviews with >= 5 words: 4009
+2026-07-14 12:11:08,665 — INFO — Using 'Feedback' column for ABSA (avg 19.1 words vs 19.0 clean)
+2026-07-14 12:11:08,675 — INFO — Running ABSA on 4826 reviews (using column: Feedback)
+2026-07-14 12:11:08,685 — INFO —   ABSA progress: 0/4826
+2026-07-14 12:11:20,158 — INFO —   ABSA progress: 100/4826
+2026-07-14 12:11:29,945 — INFO —   ABSA progress: 200/4826
+2026-07-14 12:11:39,455 — INFO —   ABSA progress: 300/4826
+2026-07-14 12:11:49,622 — INFO —   ABSA progress: 400/4826
+2026-07-14 12:11:58,403 — INFO —   ABSA progress: 500/4826
+2026-07-14 12:12:07,626 — INFO —   ABSA progress: 600/4826
+2026-07-14 12:12:17,047 — INFO —   ABSA progress: 700/4826
+2026-07-14 12:12:27,803 — INFO —   ABSA progress: 800/4826
+2026-07-14 12:12:37,163 — INFO —   ABSA progress: 900/4826
+2026-07-14 12:12:46,774 — INFO —   ABSA progress: 1000/4826
+2026-07-14 12:12:55,509 — INFO —   ABSA progress: 1100/4826
+2026-07-14 12:13:04,130 — INFO —   ABSA progress: 1200/4826
+2026-07-14 12:13:13,480 — INFO —   ABSA progress: 1300/4826
+2026-07-14 12:13:22,397 — INFO —   ABSA progress: 1400/4826
+2026-07-14 12:13:31,804 — INFO —   ABSA progress: 1500/4826
+2026-07-14 12:13:41,461 — INFO —   ABSA progress: 1600/4826
+2026-07-14 12:13:49,718 — INFO —   ABSA progress: 1700/4826
+2026-07-14 12:13:58,571 — INFO —   ABSA progress: 1800/4826
+2026-07-14 12:14:07,257 — INFO —   ABSA progress: 1900/4826
+2026-07-14 12:14:15,957 — INFO —   ABSA progress: 2000/4826
+2026-07-14 12:14:25,985 — INFO —   ABSA progress: 2100/4826
+2026-07-14 12:14:34,873 — INFO —   ABSA progress: 2200/4826
+2026-07-14 12:14:44,316 — INFO —   ABSA progress: 2300/4826
+2026-07-14 12:14:52,916 — INFO —   ABSA progress: 2400/4826
+2026-07-14 12:15:01,572 — INFO —   ABSA progress: 2500/4826
+2026-07-14 12:15:09,848 — INFO —   ABSA progress: 2600/4826
+2026-07-14 12:15:19,498 — INFO —   ABSA progress: 2700/4826
+2026-07-14 12:15:28,417 — INFO —   ABSA progress: 2800/4826
+2026-07-14 12:15:37,048 — INFO —   ABSA progress: 2900/4826
+2026-07-14 12:15:45,510 — INFO —   ABSA progress: 3000/4826
+2026-07-14 12:15:55,424 — INFO —   ABSA progress: 3100/4826
+2026-07-14 12:16:04,241 — INFO —   ABSA progress: 3200/4826
+2026-07-14 12:16:13,936 — INFO —   ABSA progress: 3300/4826
+2026-07-14 12:16:22,654 — INFO —   ABSA progress: 3400/4826
+2026-07-14 12:16:31,933 — INFO —   ABSA progress: 3500/4826
+2026-07-14 12:16:40,109 — INFO —   ABSA progress: 3600/4826
+2026-07-14 12:16:50,157 — INFO —   ABSA progress: 3700/4826
+2026-07-14 12:17:00,127 — INFO —   ABSA progress: 3800/4826
+2026-07-14 12:17:09,268 — INFO —   ABSA progress: 3900/4826
+2026-07-14 12:17:17,456 — INFO —   ABSA progress: 4000/4826
+2026-07-14 12:17:27,344 — INFO —   ABSA progress: 4100/4826
+2026-07-14 12:17:38,214 — INFO —   ABSA progress: 4200/4826
+2026-07-14 12:17:50,410 — INFO —   ABSA progress: 4300/4826
+2026-07-14 12:18:00,006 — INFO —   ABSA progress: 4400/4826
+2026-07-14 12:18:09,450 — INFO —   ABSA progress: 4500/4826
+2026-07-14 12:18:18,566 — INFO —   ABSA progress: 4600/4826
+2026-07-14 12:18:27,471 — INFO —   ABSA progress: 4700/4826
+2026-07-14 12:18:37,424 — INFO —   ABSA progress: 4800/4826
+2026-07-14 12:18:39,736 — INFO — ABSA raw labels seen: {'Positive', 'Negative', 'Neutral'}
+2026-07-14 12:18:39,736 — INFO — ABSA call failures: 0 / 19304 approx calls
+2026-07-14 12:18:40,270 — INFO — ABSA complete ✓
+2026-07-14 12:18:40,272 — INFO — Sentiment distribution: {'negative': 2449, 'positive': 1864, 'neutral': 810}
+2026-07-14 12:18:40,349 — INFO — ============================================================
+2026-07-14 12:18:40,349 — INFO — STEP 5 — Entity extraction
+2026-07-14 12:18:40,349 — INFO — ============================================================
+2026-07-14 12:18:40,889 — INFO — spaCy model loaded ✓
+2026-07-14 12:18:40,904 — INFO —   Entity progress: 0/5123
+2026-07-14 12:18:40,962 — INFO —   Entity progress: 500/5123
+2026-07-14 12:18:41,008 — INFO —   Entity progress: 1000/5123
+2026-07-14 12:18:41,053 — INFO —   Entity progress: 1500/5123
+2026-07-14 12:18:41,106 — INFO —   Entity progress: 2000/5123
+2026-07-14 12:18:41,152 — INFO —   Entity progress: 2500/5123
+2026-07-14 12:18:41,199 — INFO —   Entity progress: 3000/5123
+2026-07-14 12:18:41,245 — INFO —   Entity progress: 3500/5123
+2026-07-14 12:18:41,292 — INFO —   Entity progress: 4000/5123
+2026-07-14 12:18:41,337 — INFO —   Entity progress: 4500/5123
+2026-07-14 12:18:41,388 — INFO —   Entity progress: 5000/5123
+2026-07-14 12:18:41,403 — INFO — Entity extraction complete ✓
+2026-07-14 12:18:41,404 — INFO — ============================================================
+2026-07-14 12:18:41,404 — INFO — STEP 6 — Save outputs
+2026-07-14 12:18:41,404 — INFO — ============================================================
+2026-07-14 12:18:42,642 — WARNING — Dropped 10245 duplicate respondent rows
+2026-07-14 12:18:42,642 — INFO — Appended to master — total records: 5138
+2026-07-14 12:18:46,042 — INFO — Saved: results.xlsx
+2026-07-14 12:18:52,103 — INFO — Saved: research_output.xlsx
+2026-07-14 12:18:52,787 — INFO — Saved: product_output.xlsx
+2026-07-14 12:18:52,834 — INFO — Saved: leadership_output.xlsx
+2026-07-14 12:18:52,834 — INFO — All outputs saved ✓
+2026-07-14 12:18:52,873 — INFO — Marked 12782 respondents as processed (5123 with feedback, 7659 rating-only).
+2026-07-14 12:18:55,672 — INFO — Dashboard regenerated ✓
+2026-07-14 12:18:55,672 — INFO — ============================================================
+2026-07-14 12:18:55,672 — INFO — PIPELINE COMPLETE — 12782 new reviews processed
+2026-07-14 12:18:55,672 — INFO — Master file now contains 5138 reviews
+2026-07-14 12:18:55,672 — INFO — Outputs: outputs/latest/ and outputs/archive/2026-07-14/
+2026-07-14 12:18:55,672 — INFO — ============================================================
+2026-07-14 13:35:57,832 — INFO — ============================================================
+2026-07-14 13:35:57,832 — INFO — PIPELINE START — 2026-07-14 13:35:57
+2026-07-14 13:35:57,833 — INFO — ============================================================
+2026-07-14 13:35:57,833 — INFO — ============================================================
+2026-07-14 13:35:57,833 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 13:35:57,833 — INFO — ============================================================
+2026-07-14 13:35:57,840 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-14 13:35:59,447 — INFO — Loaded 12781 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-14 13:35:59,476 — INFO — Found 12782 previously processed IDs
+2026-07-14 13:35:59,478 — INFO — Processing all available reviews: 12781 (source: file)
+2026-07-14 13:35:59,478 — INFO — New reviews to process: 12781 (source: file)
+2026-07-14 13:35:59,498 — INFO — ============================================================
+2026-07-14 13:35:59,498 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-14 13:35:59,498 — INFO — ============================================================
+2026-07-14 13:35:59,498 — INFO — Columns before preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-14 13:35:59,498 — INFO — Rows before preprocessing: 12781
+2026-07-14 13:36:02,164 — INFO — Columns after preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-14 13:36:02,164 — INFO — Rows after preprocessing: 5122
+2026-07-14 13:36:02,164 — INFO — Non-null Feedback_clean: 5122
+2026-07-14 13:36:02,165 — INFO — Sample: ['drawing a diagram of the site was necessarily challenging i do a lot of it work and it was difficult for me i do not think this will be possible for some people particularly those who did not have it skills or older i don’t want to be overcritical as i know it’s a difficult thing to design but i think it does need improvement', 'its seem straight forward uploading and completing my application', 'difficult to navigate']
+2026-07-14 13:36:02,165 — INFO — Preprocessing complete ✓
+2026-07-14 13:36:02,165 — INFO — ============================================================
+2026-07-14 13:36:02,165 — INFO — STEP 3 — Classify
+2026-07-14 13:36:02,165 — INFO — ============================================================
+2026-07-14 13:36:02,199 — INFO — Loading SVM model...
+2026-07-14 13:36:02,216 — INFO — No device provided, using mps
+2026-07-14 13:36:02,396 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:02,412 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:02,519 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:02,519 — WARNING — Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-14 13:36:02,531 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:02,538 — INFO — Loading SentenceTransformer model from sentence-transformers/all-mpnet-base-v2.
+2026-07-14 13:36:02,638 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:02,651 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:02,752 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:02,764 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/README.md "HTTP/1.1 200 OK"
+2026-07-14 13:36:02,893 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:02,905 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:03,009 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:03,021 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:03,132 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 13:36:03,231 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:03,243 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:03,492 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 13:36:03,590 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 13:36:03,713 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 13:36:03,816 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-14 13:36:03,915 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:03,927 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:04,046 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:04,057 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:04,157 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:04,169 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:04,269 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:04,283 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:04,393 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-14 13:36:04,497 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-14 13:36:04,659 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:04,669 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:04,798 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2 "HTTP/1.1 200 OK"
+2026-07-14 13:36:05,419 — INFO — Models loaded ✓
+2026-07-14 13:36:05,420 — INFO — Generating embeddings...
+2026-07-14 13:36:23,457 — INFO — Classification complete — method breakdown:
+2026-07-14 13:36:23,471 — INFO — prediction_method
+svm             2816
+svm_low_conf    1786
+fallback         520
+2026-07-14 13:36:23,471 — INFO — ============================================================
+2026-07-14 13:36:23,471 — INFO — STEP 4 — ABSA
+2026-07-14 13:36:23,471 — INFO — ============================================================
+2026-07-14 13:36:23,471 — INFO — Using device: MPS
+2026-07-14 13:36:23,471 — INFO — Loading ABSA model...
+2026-07-14 13:36:23,605 — INFO — HTTP Request: HEAD https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-14 13:36:23,619 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/yangheng/deberta-v3-base-absa-v1.1/10c9dff335a44073e1352360c3a7bc54dc58eb01/config.json "HTTP/1.1 200 OK"
+2026-07-14 13:36:23,951 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-14 13:36:24,056 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-14 13:36:24,662 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1 "HTTP/1.1 200 OK"
+2026-07-14 13:36:25,684 — INFO — ABSA model loaded ✓
+2026-07-14 13:36:25,705 — INFO — Word count distribution:
+count    5122.000000
+mean       18.994338
+std        21.945277
+min         0.000000
+25%         5.000000
+50%        12.000000
+75%        25.000000
+max       336.000000
+Name: Feedback_clean, dtype: float64
+2026-07-14 13:36:25,706 — INFO — Reviews with >= 2 words: 4823
+2026-07-14 13:36:25,706 — INFO — Reviews with >= 5 words: 4008
+2026-07-14 13:36:25,717 — INFO — Using 'Feedback' column for ABSA (avg 19.1 words vs 19.0 clean)
+2026-07-14 13:36:25,726 — INFO — Running ABSA on 4825 reviews (using column: Feedback)
+2026-07-14 13:36:25,734 — INFO —   ABSA progress: 0/4825
+2026-07-14 13:36:35,098 — INFO —   ABSA progress: 100/4825
+2026-07-14 13:36:43,367 — INFO —   ABSA progress: 200/4825
+2026-07-14 13:36:51,574 — INFO —   ABSA progress: 300/4825
+2026-07-14 13:37:00,968 — INFO —   ABSA progress: 400/4825
+2026-07-14 13:37:09,564 — INFO —   ABSA progress: 500/4825
+2026-07-14 13:37:19,464 — INFO —   ABSA progress: 600/4825
+2026-07-14 13:37:28,779 — INFO —   ABSA progress: 700/4825
+2026-07-14 13:37:38,860 — INFO —   ABSA progress: 800/4825
+2026-07-14 13:37:47,815 — INFO —   ABSA progress: 900/4825
+2026-07-14 13:37:57,395 — INFO —   ABSA progress: 1000/4825
+2026-07-14 13:38:06,006 — INFO —   ABSA progress: 1100/4825
+2026-07-14 13:38:14,554 — INFO —   ABSA progress: 1200/4825
+2026-07-14 13:38:24,261 — INFO —   ABSA progress: 1300/4825
+2026-07-14 13:38:33,433 — INFO —   ABSA progress: 1400/4825
+2026-07-14 13:38:43,038 — INFO —   ABSA progress: 1500/4825
+2026-07-14 13:38:53,023 — INFO —   ABSA progress: 1600/4825
+2026-07-14 13:39:02,100 — INFO —   ABSA progress: 1700/4825
+2026-07-14 13:39:10,702 — INFO —   ABSA progress: 1800/4825
+2026-07-14 13:39:20,336 — INFO —   ABSA progress: 1900/4825
+2026-07-14 13:39:28,309 — INFO —   ABSA progress: 2000/4825
+2026-07-14 13:39:37,202 — INFO —   ABSA progress: 2100/4825
+2026-07-14 13:39:45,426 — INFO —   ABSA progress: 2200/4825
+2026-07-14 13:39:53,905 — INFO —   ABSA progress: 2300/4825
+2026-07-14 13:40:01,550 — INFO —   ABSA progress: 2400/4825
+2026-07-14 13:40:09,559 — INFO —   ABSA progress: 2500/4825
+2026-07-14 13:40:16,864 — INFO —   ABSA progress: 2600/4825
+2026-07-14 13:40:25,378 — INFO —   ABSA progress: 2700/4825
+2026-07-14 13:40:33,044 — INFO —   ABSA progress: 2800/4825
+2026-07-14 13:40:40,336 — INFO —   ABSA progress: 2900/4825
+2026-07-14 13:40:47,523 — INFO —   ABSA progress: 3000/4825
+2026-07-14 13:40:56,957 — INFO —   ABSA progress: 3100/4825
+2026-07-14 13:41:05,159 — INFO —   ABSA progress: 3200/4825
+2026-07-14 13:41:13,544 — INFO —   ABSA progress: 3300/4825
+2026-07-14 13:41:21,217 — INFO —   ABSA progress: 3400/4825
+2026-07-14 13:41:29,236 — INFO —   ABSA progress: 3500/4825
+2026-07-14 13:41:36,630 — INFO —   ABSA progress: 3600/4825
+2026-07-14 13:41:44,448 — INFO —   ABSA progress: 3700/4825
+2026-07-14 13:41:51,932 — INFO —   ABSA progress: 3800/4825
+2026-07-14 13:41:59,871 — INFO —   ABSA progress: 3900/4825
+2026-07-14 13:42:07,454 — INFO —   ABSA progress: 4000/4825
+2026-07-14 13:42:16,001 — INFO —   ABSA progress: 4100/4825
+2026-07-14 13:42:24,541 — INFO —   ABSA progress: 4200/4825
+2026-07-14 13:42:32,871 — INFO —   ABSA progress: 4300/4825
+2026-07-14 13:42:41,292 — INFO —   ABSA progress: 4400/4825
+2026-07-14 13:42:49,220 — INFO —   ABSA progress: 4500/4825
+2026-07-14 13:42:57,372 — INFO —   ABSA progress: 4600/4825
+2026-07-14 13:43:05,600 — INFO —   ABSA progress: 4700/4825
+2026-07-14 13:43:13,782 — INFO —   ABSA progress: 4800/4825
+2026-07-14 13:43:15,949 — INFO — ABSA raw labels seen: {'Neutral', 'Positive', 'Negative'}
+2026-07-14 13:43:15,949 — INFO — ABSA call failures: 0 / 19300 approx calls
+2026-07-14 13:43:16,448 — INFO — ABSA complete ✓
+2026-07-14 13:43:16,449 — INFO — Sentiment distribution: {'negative': 2448, 'positive': 1864, 'neutral': 810}
+2026-07-14 13:43:16,520 — INFO — ============================================================
+2026-07-14 13:43:16,521 — INFO — STEP 5 — Entity extraction
+2026-07-14 13:43:16,521 — INFO — ============================================================
+2026-07-14 13:43:17,067 — INFO — spaCy model loaded ✓
+2026-07-14 13:43:17,082 — INFO —   Entity progress: 0/5122
+2026-07-14 13:43:17,137 — INFO —   Entity progress: 500/5122
+2026-07-14 13:43:17,182 — INFO —   Entity progress: 1000/5122
+2026-07-14 13:43:17,228 — INFO —   Entity progress: 1500/5122
+2026-07-14 13:43:17,276 — INFO —   Entity progress: 2000/5122
+2026-07-14 13:43:17,323 — INFO —   Entity progress: 2500/5122
+2026-07-14 13:43:17,369 — INFO —   Entity progress: 3000/5122
+2026-07-14 13:43:17,415 — INFO —   Entity progress: 3500/5122
+2026-07-14 13:43:17,460 — INFO —   Entity progress: 4000/5122
+2026-07-14 13:43:17,506 — INFO —   Entity progress: 4500/5122
+2026-07-14 13:43:17,555 — INFO —   Entity progress: 5000/5122
+2026-07-14 13:43:17,574 — INFO — Entity extraction complete ✓
+2026-07-14 13:43:17,575 — INFO — ============================================================
+2026-07-14 13:43:17,575 — INFO — STEP 6 — Save outputs
+2026-07-14 13:43:17,575 — INFO — ============================================================
+2026-07-14 13:43:18,148 — WARNING — Dropped 5122 duplicate respondent rows
+2026-07-14 13:43:18,148 — INFO — Appended to master — total records: 5138
+2026-07-14 13:43:21,419 — INFO — Saved: results.xlsx
+2026-07-14 13:43:27,254 — INFO — Saved: research_output.xlsx
+2026-07-14 13:43:28,019 — INFO — Saved: product_output.xlsx
+2026-07-14 13:43:28,087 — INFO — Saved: leadership_output.xlsx
+2026-07-14 13:43:28,087 — INFO — All outputs saved ✓
+2026-07-14 13:43:28,120 — INFO — Marked 12781 respondents as processed (5122 with feedback, 7659 rating-only).
+2026-07-14 13:43:30,529 — INFO — Dashboard regenerated ✓
+2026-07-14 13:43:30,529 — INFO — ============================================================
+2026-07-14 13:43:30,529 — INFO — PIPELINE COMPLETE — 12781 new reviews processed
+2026-07-14 13:43:30,529 — INFO — Master file now contains 5138 reviews
+2026-07-14 13:43:30,529 — INFO — Outputs: outputs/latest/ and outputs/archive/2026-07-14/
+2026-07-14 13:43:30,529 — INFO — ============================================================
+2026-07-14 23:36:08,858 — INFO — ============================================================
+2026-07-14 23:36:08,858 — INFO — PIPELINE START — 2026-07-14 23:36:08
+2026-07-14 23:36:08,858 — INFO — ============================================================
+2026-07-14 23:36:08,858 — INFO — ============================================================
+2026-07-14 23:36:08,859 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-14 23:36:08,859 — INFO — ============================================================
+2026-07-14 23:36:08,860 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-14 23:36:09,521 — INFO — Loaded 12781 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-14 23:36:09,556 — INFO — Found 12782 previously processed IDs
+2026-07-14 23:36:09,598 — INFO — New reviews to process: 0 (source: file)
+2026-07-14 23:36:09,598 — WARNING — No new reviews found — nothing to process.
+2026-07-14 23:36:09,598 — WARNING — Check that the input file/API contains new Respondent IDs.

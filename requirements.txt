@@ -1,0 +1,27 @@
+# Minimal dependencies for update_raw_metrics.py (daily job).
+# Deliberately excludes torch/transformers/spacy/sentence-transformers —
+# those are only needed by the weekly full pipeline (see requirements.txt).
+
+# Core
+pandas
+numpy
+openpyxl
+
+# SurveyMonkey API + config
+requests
+python-dotenv
+
+# NLP pipeline
+joblib
+scikit-learn
+torch
+sentence-transformers
+transformers
+spacy
+beautifulsoup4
+pyspellchecker
+demoji
+
+# Dashboard
+streamlit
+matplotlib

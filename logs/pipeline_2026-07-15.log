@@ -1,0 +1,24 @@
+2026-07-15 00:28:53,856 — INFO — ============================================================
+2026-07-15 00:28:53,856 — INFO — PIPELINE START — 2026-07-15 00:28:53
+2026-07-15 00:28:53,856 — INFO — ============================================================
+2026-07-15 00:28:53,856 — INFO — ============================================================
+2026-07-15 00:28:53,856 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-15 00:28:53,856 — INFO — ============================================================
+2026-07-15 00:28:53,863 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-15 00:28:55,217 — INFO — Loaded 12781 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-15 00:28:55,248 — INFO — Found 12782 previously processed IDs
+2026-07-15 00:28:55,283 — INFO — New reviews to process: 0 (source: file)
+2026-07-15 00:28:55,284 — WARNING — No new reviews found — nothing to process.
+2026-07-15 00:28:55,284 — WARNING — Check that the input file/API contains new Respondent IDs.
+2026-07-15 00:33:44,631 — INFO — ============================================================
+2026-07-15 00:33:44,632 — INFO — PIPELINE START — 2026-07-15 00:33:44
+2026-07-15 00:33:44,632 — INFO — ============================================================
+2026-07-15 00:33:44,632 — INFO — ============================================================
+2026-07-15 00:33:44,632 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-15 00:33:44,632 — INFO — ============================================================
+2026-07-15 00:33:44,633 — INFO — SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.
+2026-07-15 00:33:45,263 — INFO — Loaded 12781 reviews from manual export (/Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/inputs/new_export.xlsx)
+2026-07-15 00:33:45,282 — INFO — Found 12782 previously processed IDs
+2026-07-15 00:33:45,316 — INFO — New reviews to process: 0 (source: file)
+2026-07-15 00:33:45,316 — WARNING — No new reviews found — nothing to process.
+2026-07-15 00:33:45,316 — WARNING — Check that the input file/API contains new Respondent IDs.
