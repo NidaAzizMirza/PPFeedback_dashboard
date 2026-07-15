@@ -7,12 +7,22 @@ __pycache__/
 .DS_Store
 .env
 
+# Archive files and folders
+archive/
+
+
+# Excel lock files
+~$*
+
 # Heavy ML Models and folders
 review_topic_model/
 models/embedding_model.pkl
 *.pkl
 !models/svm_final_model.pkl
 !models/svm_final_label_encoder.pkl
+
+# Local manual-export scratch folder (CI always uses the API, never this)
+inputs/
 
 # Databases and Data files
 *.db
@@ -22,5 +32,10 @@ models/embedding_model.pkl
 !processed_ids.csv
 !data/tags.csv
 
-# Archive files and folders
-archive/
+# Weekly pipeline output exports — not tracked, regenerated every run
+outputs/latest/*.xlsx
+outputs/archive/
+
+# Databases and Data files (xlsx)
+*.xlsx
+!data/master.xlsx
