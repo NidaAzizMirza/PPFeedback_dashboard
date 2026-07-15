@@ -5,19 +5,22 @@ env/
 __pycache__/
 .idea/
 .DS_Store
+.env
 
 # Heavy ML Models and folders
-review_topic_model
 review_topic_model/
 models/embedding_model.pkl
 *.pkl
+!models/svm_final_model.pkl
+!models/svm_final_label_encoder.pkl
 
 # Databases and Data files
-data/metrics.db
 *.db
+!data/metrics.db
 *.csv
 *.xlsx
+!data/master.xlsx
+!processed_ids.csv
 
 # Archive files and folders
 archive/
-archive
