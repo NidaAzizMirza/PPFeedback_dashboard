@@ -50,6 +50,7 @@ jobs:
           # the one output file that IS meant to be tracked, since GitHub
           # Pages serves it directly from the repo.
           git add data/master.xlsx data/processed_ids.csv data/metrics.db
+          git add data/last_fetch_checkpoint.txt
           git add outputs/latest/dashboard.html
           git diff --quiet --cached || git commit -m "Weekly full pipeline run — $(date -u +%Y-%m-%d)"
           git push

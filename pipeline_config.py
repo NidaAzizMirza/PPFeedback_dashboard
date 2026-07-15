@@ -25,6 +25,24 @@ PROCESSED_IDS_RAW = os.path.join(BASE_DIR, "data", "processed_ids_raw.csv")
 TAGS_FILE         = os.path.join(BASE_DIR, "data", "tags.csv")
 MANUAL_TAGS_FILE  = os.path.join(BASE_DIR, "data", "manuallytagged_complete.csv")
 
+# 'Last successful API fetch' checkpoint for the weekly full pipeline
+# (run_pipeline.py). Lets survey_monkey_fetch.py ask SurveyMonkey for
+# only responses created since this time, instead of re-pulling the
+# entire ~12,800+ response history (~128 API calls) on every run — see
+# _fetch_raw_responses() in run_pipeline.py. Deliberately separate from
+# LAST_FETCH_CHECKPOINT_RAW below: the weekly and daily jobs each need
+# their own independent checkpoint, since they run on different
+# schedules and track different dedup lists (processed_ids.csv vs
+# processed_ids_raw.csv) — sharing one checkpoint would let one job's
+# fetch silently move the cutoff past responses the other job still
+# needs to see.
+LAST_FETCH_CHECKPOINT     = os.path.join(BASE_DIR, "data", "last_fetch_checkpoint.txt")
+# Same idea, for the daily raw-metrics job (update_raw_metrics.py) —
+# NOT YET WIRED UP. update_raw_metrics.py still does a full re-fetch
+# every run; it needs the equivalent of the run_pipeline.py change
+# applied to it separately, using this path.
+LAST_FETCH_CHECKPOINT_RAW = os.path.join(BASE_DIR, "data", "last_fetch_checkpoint_raw.txt")
+
 MODELS_DIR        = os.path.join(BASE_DIR, "models")
 SVM_MODEL         = os.path.join(MODELS_DIR, "svm_final_model.pkl")
 SVM_ENCODER       = os.path.join(MODELS_DIR, "svm_final_label_encoder.pkl")

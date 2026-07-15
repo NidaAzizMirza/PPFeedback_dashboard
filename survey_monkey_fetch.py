@@ -9,6 +9,7 @@
 #   df = smf.fetch_survey_as_dataframe()
 
 import logging
+import os
 import time
 
 import pandas as pd
@@ -19,6 +20,58 @@ import pipeline_config as cfg
 log = logging.getLogger(__name__)
 
 API_BASE = "https://api.surveymonkey.com/v3"
+
+# How much earlier than the last checkpoint to actually ask the API for,
+# as a safety margin against clock skew / API write latency near the
+# boundary. Re-fetching a small overlap window is cheap (a handful of
+# responses, not the whole history) and any duplicates are caught by the
+# existing processed_ids dedup in run_pipeline.py — so it's safe to be
+# generous here rather than risk silently missing a response.
+CHECKPOINT_OVERLAP_MINUTES = 60
+
+
+def load_checkpoint(path):
+    """
+    Read the ISO-8601 'last successful fetch' timestamp from a checkpoint
+    file. Returns None if the file doesn't exist yet (e.g. first-ever
+    run) — callers should treat None as "do a full fetch".
+    """
+    if not os.path.exists(path):
+        return None
+    with open(path, "r") as f:
+        ts = f.read().strip()
+    return ts or None
+
+
+def save_checkpoint(path, timestamp_iso):
+    """
+    Write the 'last successful fetch' timestamp. Callers must only call
+    this AFTER a run has fully succeeded — advancing the checkpoint on a
+    failed run would mean any responses in that window are never
+    fetched again.
+    """
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        f.write(timestamp_iso)
+    log.info(f"Checkpoint saved: {timestamp_iso}")
+
+
+def checkpoint_with_overlap(checkpoint_iso):
+    """
+    Given a checkpoint timestamp (or None), return the timestamp to
+    actually pass as start_created_at — pulled back by
+    CHECKPOINT_OVERLAP_MINUTES as a safety margin. Returns None
+    unchanged (meaning: no checkpoint yet, do a full fetch).
+
+    Expects the SurveyMonkey DateString format used elsewhere in this
+    module, e.g. "2026-07-15T08:31:15+00:00".
+    """
+    if not checkpoint_iso:
+        return None
+    from datetime import datetime, timedelta
+    dt = datetime.strptime(checkpoint_iso, "%Y-%m-%dT%H:%M:%S+00:00")
+    dt -= timedelta(minutes=CHECKPOINT_OVERLAP_MINUTES)
+    return dt.strftime("%Y-%m-%dT%H:%M:%S+00:00")
 
 
 class RateLimitExceeded(Exception):
@@ -148,16 +201,28 @@ def get_question_map(survey_id=None):
     return {qid: m["heading"] for qid, m in meta.items()}
 
 
-def fetch_all_responses(survey_id=None, per_page=None):
+def fetch_all_responses(survey_id=None, per_page=None, start_created_at=None):
     """
-    Pull every completed response for a survey, paginating through the
-    bulk responses endpoint until there are no more pages.
+    Pull completed responses for a survey, paginating through the bulk
+    responses endpoint until there are no more pages.
+
+    If start_created_at is given (an ISO-8601 timestamp string), only
+    responses created at or after that time are returned — this is what
+    makes incremental fetching possible instead of re-pulling the entire
+    survey history (currently ~12,800+ responses, ~128 API calls) on
+    every single run. Pass None for a full fetch (e.g. first-ever run,
+    or no checkpoint file found yet).
     """
     survey_id = _survey_id(survey_id)
     per_page = per_page or cfg.SM_PER_PAGE
 
     url = f"{API_BASE}/surveys/{survey_id}/responses/bulk"
     params = {"per_page": per_page, "page": 1, "status": "completed"}
+    if start_created_at:
+        params["start_created_at"] = start_created_at
+        log.info(f"Incremental fetch: responses since {start_created_at}")
+    else:
+        log.info("Full fetch: no checkpoint set, pulling entire survey history")
 
     all_responses = []
     while url:
@@ -230,19 +295,23 @@ def responses_to_dataframe(raw_responses, question_meta):
     return df
 
 
-def fetch_survey_as_dataframe(survey_id=None):
+def fetch_survey_as_dataframe(survey_id=None, start_created_at=None):
     """
     Main entry point. Returns a DataFrame in the same shape
     run_pipeline.py expects from the manual Excel export — NOTE: unlike
     the Excel export, this data has no spurious extra header row, so
     downstream code must not apply the usual .iloc[1:] drop to
     API-sourced data.
+
+    start_created_at: pass an ISO-8601 timestamp (typically read from a
+    checkpoint file via load_checkpoint()) to fetch only responses since
+    then. Pass None for a full fetch.
     """
     survey_id = _survey_id(survey_id)
     log.info(f"Fetching question metadata for survey {survey_id}...")
     question_meta = get_question_metadata(survey_id)
 
     log.info(f"Fetching responses for survey {survey_id}...")
-    raw = fetch_all_responses(survey_id)
+    raw = fetch_all_responses(survey_id, start_created_at=start_created_at)
 
     return responses_to_dataframe(raw, question_meta)

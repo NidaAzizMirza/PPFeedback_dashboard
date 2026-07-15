@@ -9,7 +9,7 @@ import shutil
 import warnings
 import logging
 import traceback
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pandas as pd
 import numpy as np
@@ -36,6 +36,17 @@ warnings.filterwarnings("ignore")
 # ── Setup ──────────────────────────────────────────────────────────────────
 RUN_DATE = datetime.now().strftime("%Y-%m-%d")
 RUN_TS   = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# UTC timestamp captured at pipeline start, in the DateString format
+# SurveyMonkey's API uses (confirmed against date_created in their
+# public docs, e.g. "2015-10-06T12:56:55+00:00"). Saved as the fetch
+# checkpoint at the end of a successful run (see main()), so the NEXT
+# run's start_created_at only asks for responses since this moment —
+# instead of re-pulling the entire survey history every time. Captured
+# once, at process start (a few seconds before the actual API call),
+# which is deliberately conservative: worst case a tiny harmless overlap
+# next run, never a gap.
+FETCH_CHECKPOINT_TS = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
 
 # ── RESET (manual only!) ───────────────────────────────────────────────────
 # These lines used to run UNCONDITIONALLY on every execution, wiping the
@@ -189,7 +200,15 @@ def _fetch_raw_responses():
     """
     Try pulling responses directly from the SurveyMonkey API first.
     Falls back to the manual Excel export in inputs/ if the API isn't
-    configured or the request fails for any reason.
+    configured or the request fails for any reason (non-rate-limit
+    failures only — see RateLimitExceeded handling below).
+
+    API fetches are INCREMENTAL: they only ask for responses created
+    since the last saved checkpoint (cfg.LAST_FETCH_CHECKPOINT), instead
+    of re-pulling the entire survey history (~12,800+ responses, ~128
+    API calls) on every single run — this is what exhausted the daily
+    500-request quota mid-run previously. The checkpoint itself is only
+    advanced on a fully successful run, in main() — never here.
 
     Returns (df, source) where source is "api" or "file" — callers need
     this because API data has no spurious header row, unlike the Excel
@@ -213,9 +232,29 @@ def _fetch_raw_responses():
 
     try:
         log.info("Attempting to fetch responses directly from SurveyMonkey API...")
-        df_api = smf.fetch_survey_as_dataframe()
+
+        checkpoint = smf.load_checkpoint(cfg.LAST_FETCH_CHECKPOINT)
+        fetch_since = smf.checkpoint_with_overlap(checkpoint)
+        df_api = smf.fetch_survey_as_dataframe(start_created_at=fetch_since)
+
         if len(df_api) == 0:
-            raise ValueError("API returned zero responses")
+            if fetch_since:
+                # Incremental fetch (we have a checkpoint) genuinely
+                # returning nothing new is a normal outcome — e.g. a
+                # quiet week — NOT a failure. Falling back to the manual
+                # export here would be wrong: it would silently
+                # reprocess whatever's sitting in inputs/, which has
+                # nothing to do with "no new API responses since X".
+                log.info("No new responses since last checkpoint — nothing to process.")
+                pipeline_log["status"] = "no_new_responses"
+                append_pipeline_log()
+                sys.exit(0)
+            else:
+                # No checkpoint yet (first-ever run) AND zero responses
+                # is unusual — keep the original behaviour of falling
+                # through to the manual-file fallback below.
+                raise ValueError("API returned zero responses on a full fetch")
+
         log.info(f"Loaded {len(df_api)} reviews via SurveyMonkey API")
         return df_api, "api"
     except smf.RateLimitExceeded as e:
@@ -1161,6 +1200,15 @@ def main():
             # dashboard even though master.xlsx itself is up to date.
             adb.rebuild_from_master()
             adb.export_for_powerbi()
+
+            # Only advance the checkpoint for API-sourced runs — a
+            # manual SKIP_API run isn't governed by this checkpoint and
+            # shouldn't move it forward (that would create a gap once
+            # the pipeline goes back to fetching from the real API).
+            if ingest_source == "api":
+                import survey_monkey_fetch as smf
+                smf.save_checkpoint(cfg.LAST_FETCH_CHECKPOINT, FETCH_CHECKPOINT_TS)
+
             pipeline_log["status"] = "skipped"
             return
 
@@ -1189,6 +1237,17 @@ def main():
         # ── Rebuild DB from full master (groups by actual Start Date) ──
         adb.rebuild_from_master()
         adb.export_for_powerbi()
+
+        # Same reasoning as the no-feedback branch above — only advance
+        # the checkpoint for API-sourced runs, and only now that the
+        # ENTIRE run (classify/ABSA/entities/save/mark-processed) has
+        # actually succeeded. Advancing it any earlier (e.g. right after
+        # ingest) would risk silently losing responses if a later step
+        # crashed — mark_ids_processed wouldn't have run for them, but
+        # the next fetch would already be past their creation date.
+        if ingest_source == "api":
+            import survey_monkey_fetch as smf
+            smf.save_checkpoint(cfg.LAST_FETCH_CHECKPOINT, FETCH_CHECKPOINT_TS)
 
         # ── Regenerate dashboard from updated DB ───────────────────────
         import generate_dashboard as gd
