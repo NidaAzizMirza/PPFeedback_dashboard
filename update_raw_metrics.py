@@ -14,7 +14,7 @@
 import os
 import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pandas as pd
 
@@ -27,6 +27,13 @@ logging.basicConfig(
     format="%(asctime)s — %(levelname)s — %(message)s",
 )
 log = logging.getLogger(__name__)
+
+# UTC timestamp captured at process start, used as this run's checkpoint
+# if it succeeds (see save_checkpoint calls in main()). Separate from
+# run_pipeline.py's own FETCH_CHECKPOINT_TS / LAST_FETCH_CHECKPOINT — see
+# the comment on LAST_FETCH_CHECKPOINT_RAW in pipeline_config.py for why
+# the daily and weekly jobs must not share one checkpoint.
+FETCH_CHECKPOINT_TS = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
 
 
 def load_processed_raw_ids():
@@ -114,9 +121,14 @@ def main():
         if len(df) > 0:
             df = df.iloc[1:].reset_index(drop=True)
     else:
+        checkpoint = smf.load_checkpoint(cfg.LAST_FETCH_CHECKPOINT_RAW)
+        fetch_since = smf.checkpoint_with_overlap(checkpoint)
         try:
-            df = smf.fetch_survey_as_dataframe()
-            log.info(f"Fetched {len(df)} total responses from SurveyMonkey API")
+            df = smf.fetch_survey_as_dataframe(start_created_at=fetch_since)
+            if fetch_since:
+                log.info(f"Fetched {len(df)} responses from SurveyMonkey API since {fetch_since}")
+            else:
+                log.info(f"Fetched {len(df)} total responses from SurveyMonkey API (full history — no checkpoint yet)")
         except Exception as e:
             log.error(f"SurveyMonkey API fetch failed: {e}")
             log.error("Daily raw-metrics update requires the API (or SKIP_API=true with a manual export) — no automatic fallback here.")
@@ -126,6 +138,8 @@ def main():
 
     if len(df) == 0:
         log.warning("API returned zero responses — nothing to do.")
+        if not cfg.SKIP_API:
+            smf.save_checkpoint(cfg.LAST_FETCH_CHECKPOINT_RAW, FETCH_CHECKPOINT_TS)
         sys.exit(0)
 
     df[cfg.COL_RESPONDENT_ID] = normalize_id_series(df[cfg.COL_RESPONDENT_ID])
@@ -137,6 +151,8 @@ def main():
 
     if len(new_df) == 0:
         log.info("No new respondents — nothing to write.")
+        if not cfg.SKIP_API:
+            smf.save_checkpoint(cfg.LAST_FETCH_CHECKPOINT_RAW, FETCH_CHECKPOINT_TS)
         sys.exit(0)
 
     # ── Write raw metrics (additive upsert, per month) ──────────────────
@@ -147,6 +163,9 @@ def main():
     # (They remain eligible for the weekly full NLP run, which tracks its
     # own separate processed_ids.csv.)
     save_processed_raw_ids(new_df[cfg.COL_RESPONDENT_ID].tolist())
+
+    if not cfg.SKIP_API:
+        smf.save_checkpoint(cfg.LAST_FETCH_CHECKPOINT_RAW, FETCH_CHECKPOINT_TS)
 
     log.info(f"Done — {len(new_df)} new respondents added to raw metrics.")
 
