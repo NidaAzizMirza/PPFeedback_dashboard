@@ -18,9 +18,9 @@ models/embedding_model.pkl
 *.db
 !data/metrics.db
 *.csv
-*.xlsx
 !data/master.xlsx
 !processed_ids.csv
+!data/tags.csv
 
 # Archive files and folders
 archive/
