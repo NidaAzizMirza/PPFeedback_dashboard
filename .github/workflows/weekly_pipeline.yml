@@ -44,6 +44,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/ outputs/
+          # Explicit paths only — do NOT use a broad "git add outputs/" here.
+          # outputs/latest/*.xlsx is intentionally .gitignore'd (regenerated
+          # every run, not meant to live in git history). dashboard.html is
+          # the one output file that IS meant to be tracked, since GitHub
+          # Pages serves it directly from the repo.
+          git add data/master.xlsx data/processed_ids.csv data/metrics.db
+          git add outputs/latest/dashboard.html
           git diff --quiet --cached || git commit -m "Weekly full pipeline run — $(date -u +%Y-%m-%d)"
           git push
