@@ -1,6 +1,6 @@
-# Minimal dependencies for update_raw_metrics.py (daily job).
-# Deliberately excludes torch/transformers/spacy/sentence-transformers —
-# those are only needed by the weekly full pipeline (see requirements.txt).
+# Full dependencies for run_pipeline.py (weekly job) — includes the
+# heavy NLP stack (torch/transformers/spacy/sentence-transformers).
+# For the lightweight daily job's minimal deps, see requirements-daily.txt.
 
 # Core
 pandas
@@ -21,6 +21,8 @@ spacy
 beautifulsoup4
 pyspellchecker
 demoji
+sentencepiece
+protobuf
 
 # Dashboard
 streamlit
