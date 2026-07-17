@@ -43,6 +43,29 @@ LAST_FETCH_CHECKPOINT     = os.path.join(BASE_DIR, "data", "last_fetch_checkpoin
 # applied to it separately, using this path.
 LAST_FETCH_CHECKPOINT_RAW = os.path.join(BASE_DIR, "data", "last_fetch_checkpoint_raw.txt")
 
+# ── Local survey cache (refresh_survey_cache.py) ───────────────────────────
+# A once-a-day, no-NLP job (its own GitHub Action) that pulls new
+# responses since ITS OWN checkpoint and appends them to a local CSV
+# cache — separate from LAST_FETCH_CHECKPOINT and
+# LAST_FETCH_CHECKPOINT_RAW for the same reason those two are separate
+# from each other (see the comment above): each independent consumer of
+# the API needs its own checkpoint, or one job's fetch could silently
+# move the cutoff past responses another job still needs to see.
+#
+# Set USE_LOCAL_CACHE=true to make run_pipeline.py read straight from
+# this cache instead of calling the SurveyMonkey API (or the manual
+# inputs/ file) at all — lets you run the FULL pipeline, repeatedly,
+# against real data with zero API calls, e.g. to preview the dashboard
+# locally without burning quota. Requires refresh_survey_cache.py to
+# have been run at least once first (to build the initial cache).
+SURVEY_CACHE_FILE = os.path.join(BASE_DIR, "data", "survey_cache.csv")
+LAST_FETCH_CHECKPOINT_CACHE = os.path.join(BASE_DIR, "data", "last_fetch_checkpoint_cache.txt")
+USE_LOCAL_CACHE = os.getenv("USE_LOCAL_CACHE", "false").lower() == "true"
+# If the cache's checkpoint is older than this, warn (don't fail) —
+# signals refresh_survey_cache.py's daily job may have silently stopped
+# running, without blocking a run on data that's still perfectly usable.
+STALE_CACHE_WARNING_HOURS = 48
+
 MODELS_DIR        = os.path.join(BASE_DIR, "models")
 SVM_MODEL         = os.path.join(MODELS_DIR, "svm_final_model.pkl")
 SVM_ENCODER       = os.path.join(MODELS_DIR, "svm_final_label_encoder.pkl")

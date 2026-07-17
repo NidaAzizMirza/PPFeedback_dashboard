@@ -198,10 +198,15 @@ def step_ingest():
 
 def _fetch_raw_responses():
     """
-    Try pulling responses directly from the SurveyMonkey API first.
-    Falls back to the manual Excel export in inputs/ if the API isn't
-    configured or the request fails for any reason (non-rate-limit
-    failures only — see RateLimitExceeded handling below).
+    Three possible data sources, checked in this order:
+
+    1. USE_LOCAL_CACHE=true — read straight from the local cache file
+       built by refresh_survey_cache.py. Zero API calls. Intended for
+       repeatedly testing the full pipeline / dashboard locally.
+    2. SKIP_API=true — read from the manual export at inputs/new_export.xlsx.
+    3. Otherwise — fetch from the SurveyMonkey API directly (see
+       INCREMENTAL note below), falling back to the manual export file
+       on any non-rate-limit failure.
 
     API fetches are INCREMENTAL: they only ask for responses created
     since the last saved checkpoint (cfg.LAST_FETCH_CHECKPOINT), instead
@@ -210,11 +215,51 @@ def _fetch_raw_responses():
     500-request quota mid-run previously. The checkpoint itself is only
     advanced on a fully successful run, in main() — never here.
 
-    Returns (df, source) where source is "api" or "file" — callers need
-    this because API data has no spurious header row, unlike the Excel
-    export, and downstream preprocessing has to treat them differently.
+    Returns (df, source) where source is "cache", "api", or "file" —
+    callers need this because "file" data has a spurious extra header
+    row that "cache"/"api" data does not, and downstream preprocessing
+    has to treat them differently.
     """
     import survey_monkey_fetch as smf
+
+    if cfg.USE_LOCAL_CACHE:
+        log.info(
+            f"USE_LOCAL_CACHE is set — reading from local cache at "
+            f"{cfg.SURVEY_CACHE_FILE} instead of the SurveyMonkey API."
+        )
+        if not os.path.exists(cfg.SURVEY_CACHE_FILE):
+            log.error(
+                f"USE_LOCAL_CACHE is set but no cache file found at "
+                f"{cfg.SURVEY_CACHE_FILE}. Run refresh_survey_cache.py "
+                f"at least once first."
+            )
+            sys.exit(1)
+
+        cache_checkpoint = smf.load_checkpoint(cfg.LAST_FETCH_CHECKPOINT_CACHE)
+        age_hours = smf.checkpoint_age_hours(cache_checkpoint)
+        if age_hours is None:
+            log.warning(
+                "Cache file exists but has no checkpoint — freshness unknown. "
+                "Was it built by something other than refresh_survey_cache.py?"
+            )
+        elif age_hours > cfg.STALE_CACHE_WARNING_HOURS:
+            log.warning(
+                f"Local cache is {age_hours:.1f}h old (threshold: "
+                f"{cfg.STALE_CACHE_WARNING_HOURS}h) — refresh_survey_cache.py's "
+                f"daily job may have stopped running. Proceeding anyway; "
+                f"data just may not include the most recent responses."
+            )
+        else:
+            log.info(f"Cache is {age_hours:.1f}h old — within freshness threshold.")
+
+        df_cache = pd.read_csv(cfg.SURVEY_CACHE_FILE, dtype={cfg.COL_RESPONDENT_ID: str})
+        log.info(f"Loaded {len(df_cache)} responses from local cache")
+        # "cache" data is already flattened by fetch_survey_as_dataframe
+        # (same shape as "api"), so it correctly gets has_extra_header_row
+        # = False and is correctly excluded from the "api"-only checkpoint
+        # saves in main() — both checks already key off exact string
+        # equality with "api", so no changes needed there.
+        return df_cache, "cache"
 
     if cfg.SKIP_API:
         # Manual mode: you're exporting from SurveyMonkey yourself and

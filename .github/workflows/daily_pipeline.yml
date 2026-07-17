@@ -4,6 +4,15 @@ name: Daily raw metrics update
 # and NSAT. No NLP models involved, so this installs and runs fast even
 # though it fires daily. Full classification/sentiment/entities run
 # separately on their own weekly schedule (see weekly_pipeline.yml).
+#
+# Reads from the local survey cache (data/survey_cache.csv, refreshed
+# daily at 06:00 UTC by cache_refresh.yml) via USE_LOCAL_CACHE=true,
+# rather than calling the SurveyMonkey API itself. This means only ONE
+# job in the whole pipeline ever talks to SurveyMonkey — cache_refresh.yml
+# — instead of three separate jobs each maintaining their own API
+# checkpoint and each independently eating into the same 500/day quota.
+# That's also why this workflow no longer needs the SURVEYMONKEY_*
+# secrets at all.
 on:
   schedule:
     - cron: "0 7 * * *"
@@ -33,8 +42,7 @@ jobs:
 
       - name: Update raw metrics
         env:
-          SURVEYMONKEY_ACCESS_TOKEN: ${{ secrets.SURVEYMONKEY_ACCESS_TOKEN }}
-          SURVEYMONKEY_SURVEY_ID: ${{ secrets.SURVEYMONKEY_SURVEY_ID }}
+          USE_LOCAL_CACHE: "true"
         run: python update_raw_metrics.py
 
       - name: Commit and push updated data

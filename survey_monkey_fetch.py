@@ -74,6 +74,23 @@ def checkpoint_with_overlap(checkpoint_iso):
     return dt.strftime("%Y-%m-%dT%H:%M:%S+00:00")
 
 
+def checkpoint_age_hours(checkpoint_iso):
+    """
+    How many hours old a checkpoint timestamp is. Returns None if
+    checkpoint_iso is falsy (no checkpoint yet). Used by consumers of
+    the local survey cache to warn if refresh_survey_cache.py appears
+    to have silently stopped running, rather than failing outright —
+    stale data is still usable, just worth flagging.
+    """
+    if not checkpoint_iso:
+        return None
+    from datetime import datetime, timezone
+    dt = datetime.strptime(checkpoint_iso, "%Y-%m-%dT%H:%M:%S+00:00")
+    dt = dt.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    return (now - dt).total_seconds() / 3600
+
+
 class RateLimitExceeded(Exception):
     """
     Raised when SurveyMonkey's daily or per-minute rate limit is hit

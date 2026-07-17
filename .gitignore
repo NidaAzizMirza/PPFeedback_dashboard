@@ -39,3 +39,6 @@ outputs/archive/
 # Databases and Data files (xlsx)
 *.xlsx
 !data/master.xlsx
+
+!data/tags.csv
+!data/survey_cache.csv

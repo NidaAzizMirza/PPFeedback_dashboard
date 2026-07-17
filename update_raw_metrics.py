@@ -108,7 +108,31 @@ def main():
     log.info("=" * 60)
 
     # ── Fetch ────────────────────────────────────────────────────────────
-    if cfg.SKIP_API:
+    if cfg.USE_LOCAL_CACHE:
+        log.info(
+            f"USE_LOCAL_CACHE is set — reading from local cache at "
+            f"{cfg.SURVEY_CACHE_FILE} instead of the SurveyMonkey API."
+        )
+        if not os.path.exists(cfg.SURVEY_CACHE_FILE):
+            log.error(
+                f"USE_LOCAL_CACHE is set but no cache file found at "
+                f"{cfg.SURVEY_CACHE_FILE}. Run refresh_survey_cache.py "
+                f"at least once first."
+            )
+            sys.exit(1)
+
+        cache_checkpoint = smf.load_checkpoint(cfg.LAST_FETCH_CHECKPOINT_CACHE)
+        age_hours = smf.checkpoint_age_hours(cache_checkpoint)
+        if age_hours is not None and age_hours > cfg.STALE_CACHE_WARNING_HOURS:
+            log.warning(
+                f"Local cache is {age_hours:.1f}h old (threshold: "
+                f"{cfg.STALE_CACHE_WARNING_HOURS}h) — refresh_survey_cache.py's "
+                f"daily job may have stopped running. Proceeding anyway."
+            )
+
+        df = pd.read_csv(cfg.SURVEY_CACHE_FILE, dtype={cfg.COL_RESPONDENT_ID: str})
+        log.info(f"Loaded {len(df)} responses from local cache")
+    elif cfg.SKIP_API:
         log.info("SKIP_API is set — skipping SurveyMonkey API, reading manual export directly.")
         if not os.path.exists(cfg.INPUT_FILE):
             log.error(f"SKIP_API is set but no manual export file found at {cfg.INPUT_FILE}.")
