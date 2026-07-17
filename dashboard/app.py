@@ -21,13 +21,6 @@ Edit THIS file if you want to:
   - Change a page's layout or charts (Section 4 — PAGE FUNCTIONS)
   - Add a brand new page (Section 4 to write it, Section 6 to register it)
   - Change chart colours globally — edit dashboard_config.py instead
-
-KNOWN GAP (see "Rating distribution" card in Monthly view):
-  The per-star breakdown (★5: N, ★4: N, ...) shown in the earlier design
-  needs rating_1_count..rating_5_count columns that monthly_summary does
-  not currently have. That chart is left as a flagged placeholder rather
-  than faked — add those columns in aggregation_db.py / run_pipeline.py
-  and a loader in store.py to light it up.
 ============================================================================
 """
 
@@ -125,7 +118,8 @@ def _inject_css():
 
 
 def _kpi_card(label: str, value: str, delta: float | None = None,
-              delta_suffix: str = "", higher_is_better: bool = True):
+              delta_suffix: str = "", higher_is_better: bool = True,
+              sublabel: str | None = None):
     delta_html = ""
     if delta is not None:
         if abs(delta) < 1e-9:
@@ -135,6 +129,11 @@ def _kpi_card(label: str, value: str, delta: float | None = None,
         else:
             cls, arrow = "kpi-delta-down", "↓"
         delta_html = f'<div class="{cls}">{arrow} {abs(delta):.1f}{delta_suffix} vs prior month</div>'
+    elif sublabel:
+        # Same visual slot as the delta line, just neutral-colored —
+        # keeps the card's height consistent whether it shows a trend
+        # delta or a plain sublabel like "40% of respondents".
+        delta_html = f'<div class="kpi-delta-flat">{sublabel}</div>'
 
     st.markdown(
         f"""
@@ -254,6 +253,58 @@ def _single_sentiment_bar(pos_pct: float, neg_pct: float, neu_pct: float,
     ax.set_title(title, fontsize=11, loc="left", pad=8, color=PALETTE["ink"])
     for spine in ax.spines.values():
         spine.set_visible(False)
+    fig.tight_layout()
+    return fig
+
+
+def _with_alpha(hex_color: str, alpha: float) -> str:
+    """
+    Blend a hex color with the white paper background at the given
+    alpha, returning a solid hex color. Used to get lighter ★4/★2
+    shades from the existing positive/negative palette entries without
+    needing new colors in dashboard_config.py, and without matplotlib's
+    bar alpha also fading gridlines/labels behind the bar.
+    """
+    hex_color = hex_color.lstrip("#")
+    r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+    r2 = round(r * alpha + 255 * (1 - alpha))
+    g2 = round(g * alpha + 255 * (1 - alpha))
+    b2 = round(b * alpha + 255 * (1 - alpha))
+    return f"#{r2:02x}{g2:02x}{b2:02x}"
+
+
+def _rating_distribution_bar(counts: dict, title: str) -> plt.Figure:
+    """
+    Horizontal ★5..★1 bar chart, green-to-red, matching the earlier
+    GitHub Pages design. counts: {5: n, 4: n, 3: n, 2: n, 1: n}.
+    """
+    stars = [5, 4, 3, 2, 1]
+    values = [counts.get(s) or 0 for s in stars]
+    colors = [
+        PALETTE["positive"],
+        _with_alpha(PALETTE["positive"], 0.55),
+        PALETTE["neutral"],
+        _with_alpha(PALETTE["negative"], 0.55),
+        PALETTE["negative"],
+    ]
+    labels = [f"★{s}" for s in stars]
+
+    fig, ax = plt.subplots(figsize=(10, 3))
+    fig.patch.set_facecolor(PALETTE["paper"])
+    ax.set_facecolor(PALETTE["paper"])
+    bars = ax.barh(labels, values, color=colors, height=0.6)
+    max_val = max(values) if max(values) > 0 else 1
+    for bar, v in zip(bars, values):
+        ax.text(bar.get_width() + max_val * 0.01, bar.get_y() + bar.get_height() / 2,
+                 f"{int(v)}", va="center", fontsize=9, color=PALETTE["ink"])
+    ax.invert_yaxis()  # ★5 on top, matching the earlier design
+    if title:
+        ax.set_title(title, fontsize=12, loc="left", pad=10, color=PALETTE["ink"])
+    ax.set_xlabel("Responses")
+    ax.set_xlim(0, max_val * 1.15)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.grid(axis="x", color=PALETTE["grid"], linewidth=0.5)
     fig.tight_layout()
     return fig
 
@@ -712,8 +763,7 @@ def render_monthly_view():
     with c4:
         left_fb = int(row["total_with_feedback"]) if pd.notna(row["total_with_feedback"]) else 0
         pct = round(left_fb / row["total_respondents"] * 100, 0) if row["total_respondents"] else 0
-        _kpi_card("Left feedback", f"{left_fb:,}", )
-        st.caption(f"{pct:.0f}% of respondents")
+        _kpi_card("Left feedback", f"{left_fb:,}", sublabel=f"{pct:.0f}% of respondents")
 
     st.divider()
 
@@ -722,11 +772,12 @@ def render_monthly_view():
     rc1, rc2 = st.columns(2)
     with rc1:
         st.markdown("**Rating distribution — this month**")
-        st.info(
-            "Per-star breakdown isn't available yet — `monthly_summary` doesn't "
-            "currently store rating_1_count..rating_5_count. Add those columns "
-            "in aggregation_db.py to light this up."
-        )
+        rating_cols = ["rating_5", "rating_4", "rating_3", "rating_2", "rating_1"]
+        if all(c in row.index for c in rating_cols) and row[rating_cols].notna().any():
+            counts = {s: row[f"rating_{s}"] for s in [5, 4, 3, 2, 1]}
+            st.pyplot(_rating_distribution_bar(counts, ""))
+        else:
+            st.info("No rating breakdown recorded for this month yet.")
     with rc2:
         if len(summary) > 1:
             st.pyplot(_line_trend(summary, "month", "avg_rating",
