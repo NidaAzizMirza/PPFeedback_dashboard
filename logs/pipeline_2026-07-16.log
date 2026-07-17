@@ -1,0 +1,1502 @@
+2026-07-16 11:49:30,287 — INFO — ============================================================
+2026-07-16 11:49:30,287 — INFO — PIPELINE START — 2026-07-16 11:49:30
+2026-07-16 11:49:30,287 — INFO — ============================================================
+2026-07-16 11:49:30,287 — INFO — ============================================================
+2026-07-16 11:49:30,287 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-16 11:49:30,287 — INFO — ============================================================
+2026-07-16 11:49:30,319 — INFO — USE_LOCAL_CACHE is set — reading from local cache at /Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/data/survey_cache.csv instead of the SurveyMonkey API.
+2026-07-16 11:49:30,319 — ERROR — USE_LOCAL_CACHE is set but no cache file found at /Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/data/survey_cache.csv. Run refresh_survey_cache.py at least once first.
+2026-07-16 11:52:50,819 — INFO — ============================================================
+2026-07-16 11:52:50,819 — INFO — PIPELINE START — 2026-07-16 11:52:50
+2026-07-16 11:52:50,819 — INFO — ============================================================
+2026-07-16 11:52:50,819 — INFO — ============================================================
+2026-07-16 11:52:50,819 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-16 11:52:50,819 — INFO — ============================================================
+2026-07-16 11:52:50,825 — INFO — USE_LOCAL_CACHE is set — reading from local cache at /Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/data/survey_cache.csv instead of the SurveyMonkey API.
+2026-07-16 11:52:50,825 — WARNING — Cache file exists but has no checkpoint — freshness unknown. Was it built by something other than refresh_survey_cache.py?
+2026-07-16 11:52:50,870 — INFO — Loaded 12781 responses from local cache
+2026-07-16 11:52:50,896 — INFO — Found 12782 previously processed IDs
+2026-07-16 11:52:50,931 — INFO — New reviews to process: 12781 (source: cache)
+2026-07-16 11:52:50,947 — INFO — ============================================================
+2026-07-16 11:52:50,947 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-16 11:52:50,947 — INFO — ============================================================
+2026-07-16 11:52:50,948 — INFO — Columns before preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-16 11:52:50,948 — INFO — Rows before preprocessing: 12781
+2026-07-16 11:52:53,511 — INFO — Columns after preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-16 11:52:53,511 — INFO — Rows after preprocessing: 5123
+2026-07-16 11:52:53,512 — INFO — Non-null Feedback_clean: 5123
+2026-07-16 11:52:53,512 — INFO — Sample: ['i find it hard to upload documents as the drop down menu times out quicker than you can click on it', 'drawing a diagram of the site was necessarily challenging i do a lot of it work and it was difficult for me i do not think this will be possible for some people particularly those who did not have it skills or older i don’t want to be overcritical as i know it’s a difficult thing to design but i think it does need improvement', 'its seem straight forward uploading and completing my application']
+2026-07-16 11:52:53,512 — INFO — Preprocessing complete ✓
+2026-07-16 11:52:53,512 — INFO — ============================================================
+2026-07-16 11:52:53,512 — INFO — STEP 3 — Classify
+2026-07-16 11:52:53,512 — INFO — ============================================================
+2026-07-16 11:52:53,515 — INFO — Loading SVM model...
+2026-07-16 11:52:53,548 — INFO — No device provided, using mps
+2026-07-16 11:52:53,751 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:53,768 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:53,884 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:53,884 — WARNING — Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-16 11:52:53,896 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:53,906 — INFO — Loading SentenceTransformer model from sentence-transformers/all-mpnet-base-v2.
+2026-07-16 11:52:54,005 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:54,021 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:54,122 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:54,136 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/README.md "HTTP/1.1 200 OK"
+2026-07-16 11:52:54,294 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:54,315 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:54,434 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:54,450 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:54,588 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 11:52:54,691 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:54,704 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:54,977 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 11:52:55,077 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 11:52:55,181 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 11:52:55,281 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 11:52:55,382 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:55,396 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:55,527 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:55,551 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:55,675 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:55,688 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:55,788 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:55,800 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:55,917 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-16 11:52:56,034 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-16 11:52:56,227 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:52:56,238 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-07-16 11:52:56,370 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2 "HTTP/1.1 200 OK"
+2026-07-16 11:52:57,163 — INFO — Models loaded ✓
+2026-07-16 11:52:57,164 — INFO — Generating embeddings...
+2026-07-16 11:53:14,744 — INFO — Classification complete — method breakdown:
+2026-07-16 11:53:14,750 — INFO — prediction_method
+svm             2817
+svm_low_conf    1786
+fallback         520
+2026-07-16 11:53:14,750 — INFO — ============================================================
+2026-07-16 11:53:14,750 — INFO — STEP 4 — ABSA
+2026-07-16 11:53:14,750 — INFO — ============================================================
+2026-07-16 11:53:14,750 — INFO — Using device: MPS
+2026-07-16 11:53:14,750 — INFO — Loading ABSA model...
+2026-07-16 11:53:14,894 — INFO — HTTP Request: HEAD https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 11:53:14,908 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/yangheng/deberta-v3-base-absa-v1.1/10c9dff335a44073e1352360c3a7bc54dc58eb01/config.json "HTTP/1.1 200 OK"
+2026-07-16 11:53:15,299 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-16 11:53:15,409 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-16 11:53:15,840 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1 "HTTP/1.1 200 OK"
+2026-07-16 11:53:16,970 — INFO — ABSA model loaded ✓
+2026-07-16 11:53:16,986 — INFO — Word count distribution:
+count    5123.000000
+mean       18.994730
+std        21.943152
+min         0.000000
+25%         5.000000
+50%        12.000000
+75%        25.000000
+max       336.000000
+Name: Feedback_clean, dtype: float64
+2026-07-16 11:53:16,986 — INFO — Reviews with >= 2 words: 4824
+2026-07-16 11:53:16,987 — INFO — Reviews with >= 5 words: 4009
+2026-07-16 11:53:16,999 — INFO — Using 'Feedback' column for ABSA (avg 19.1 words vs 19.0 clean)
+2026-07-16 11:53:17,010 — INFO — Running ABSA on 4826 reviews (using column: Feedback)
+2026-07-16 11:53:17,015 — INFO —   ABSA progress: 0/4826
+2026-07-16 11:53:27,819 — INFO —   ABSA progress: 100/4826
+2026-07-16 11:53:37,181 — INFO —   ABSA progress: 200/4826
+2026-07-16 11:53:46,290 — INFO —   ABSA progress: 300/4826
+2026-07-16 11:53:57,826 — INFO —   ABSA progress: 400/4826
+2026-07-16 11:54:06,950 — INFO —   ABSA progress: 500/4826
+2026-07-16 11:54:15,528 — INFO —   ABSA progress: 600/4826
+2026-07-16 11:54:23,550 — INFO —   ABSA progress: 700/4826
+2026-07-16 11:54:32,634 — INFO —   ABSA progress: 800/4826
+2026-07-16 11:54:41,090 — INFO —   ABSA progress: 900/4826
+2026-07-16 11:54:50,223 — INFO —   ABSA progress: 1000/4826
+2026-07-16 11:54:58,491 — INFO —   ABSA progress: 1100/4826
+2026-07-16 11:55:06,192 — INFO —   ABSA progress: 1200/4826
+2026-07-16 11:55:14,845 — INFO —   ABSA progress: 1300/4826
+2026-07-16 11:55:23,785 — INFO —   ABSA progress: 1400/4826
+2026-07-16 11:55:32,585 — INFO —   ABSA progress: 1500/4826
+2026-07-16 11:55:42,358 — INFO —   ABSA progress: 1600/4826
+2026-07-16 11:55:50,669 — INFO —   ABSA progress: 1700/4826
+2026-07-16 11:55:59,184 — INFO —   ABSA progress: 1800/4826
+2026-07-16 11:56:07,866 — INFO —   ABSA progress: 1900/4826
+2026-07-16 11:56:16,056 — INFO —   ABSA progress: 2000/4826
+2026-07-16 11:56:25,930 — INFO —   ABSA progress: 2100/4826
+2026-07-16 11:56:35,546 — INFO —   ABSA progress: 2200/4826
+2026-07-16 11:56:46,625 — INFO —   ABSA progress: 2300/4826
+2026-07-16 11:56:54,601 — INFO —   ABSA progress: 2400/4826
+2026-07-16 11:57:02,860 — INFO —   ABSA progress: 2500/4826
+2026-07-16 11:57:10,868 — INFO —   ABSA progress: 2600/4826
+2026-07-16 11:57:20,665 — INFO —   ABSA progress: 2700/4826
+2026-07-16 11:57:29,648 — INFO —   ABSA progress: 2800/4826
+2026-07-16 11:57:38,622 — INFO —   ABSA progress: 2900/4826
+2026-07-16 11:57:47,061 — INFO —   ABSA progress: 3000/4826
+2026-07-16 11:57:57,635 — INFO —   ABSA progress: 3100/4826
+2026-07-16 11:58:06,385 — INFO —   ABSA progress: 3200/4826
+2026-07-16 11:58:15,259 — INFO —   ABSA progress: 3300/4826
+2026-07-16 11:58:23,220 — INFO —   ABSA progress: 3400/4826
+2026-07-16 11:58:31,528 — INFO —   ABSA progress: 3500/4826
+2026-07-16 11:58:39,611 — INFO —   ABSA progress: 3600/4826
+2026-07-16 11:58:47,782 — INFO —   ABSA progress: 3700/4826
+2026-07-16 11:58:55,441 — INFO —   ABSA progress: 3800/4826
+2026-07-16 11:59:03,903 — INFO —   ABSA progress: 3900/4826
+2026-07-16 11:59:11,571 — INFO —   ABSA progress: 4000/4826
+2026-07-16 11:59:20,044 — INFO —   ABSA progress: 4100/4826
+2026-07-16 11:59:28,619 — INFO —   ABSA progress: 4200/4826
+2026-07-16 11:59:37,896 — INFO —   ABSA progress: 4300/4826
+2026-07-16 11:59:46,648 — INFO —   ABSA progress: 4400/4826
+2026-07-16 11:59:55,050 — INFO —   ABSA progress: 4500/4826
+2026-07-16 12:00:03,845 — INFO —   ABSA progress: 4600/4826
+2026-07-16 12:00:13,533 — INFO —   ABSA progress: 4700/4826
+2026-07-16 12:00:25,384 — INFO —   ABSA progress: 4800/4826
+2026-07-16 12:00:28,164 — INFO — ABSA raw labels seen: {'Negative', 'Positive', 'Neutral'}
+2026-07-16 12:00:28,164 — INFO — ABSA call failures: 0 / 19304 approx calls
+2026-07-16 12:00:28,844 — INFO — ABSA complete ✓
+2026-07-16 12:00:28,848 — INFO — Sentiment distribution: {'negative': 83671, 'positive': 63800, 'neutral': 17543}
+2026-07-16 12:00:28,933 — INFO — ============================================================
+2026-07-16 12:00:28,933 — INFO — STEP 5 — Entity extraction
+2026-07-16 12:00:28,933 — INFO — ============================================================
+2026-07-16 12:00:29,471 — INFO — spaCy model loaded ✓
+2026-07-16 12:00:29,617 — INFO —   Entity progress: 0/165014
+2026-07-16 12:00:29,670 — INFO —   Entity progress: 500/165014
+2026-07-16 12:00:29,713 — INFO —   Entity progress: 1000/165014
+2026-07-16 12:00:29,780 — INFO —   Entity progress: 1500/165014
+2026-07-16 12:00:29,823 — INFO —   Entity progress: 2000/165014
+2026-07-16 12:00:29,874 — INFO —   Entity progress: 2500/165014
+2026-07-16 12:00:29,914 — INFO —   Entity progress: 3000/165014
+2026-07-16 12:00:29,955 — INFO —   Entity progress: 3500/165014
+2026-07-16 12:00:29,999 — INFO —   Entity progress: 4000/165014
+2026-07-16 12:00:30,036 — INFO —   Entity progress: 4500/165014
+2026-07-16 12:00:30,094 — INFO —   Entity progress: 5000/165014
+2026-07-16 12:00:30,160 — INFO —   Entity progress: 5500/165014
+2026-07-16 12:00:30,216 — INFO —   Entity progress: 6000/165014
+2026-07-16 12:00:30,269 — INFO —   Entity progress: 6500/165014
+2026-07-16 12:00:30,365 — INFO —   Entity progress: 7000/165014
+2026-07-16 12:00:30,405 — INFO —   Entity progress: 7500/165014
+2026-07-16 12:00:30,459 — INFO —   Entity progress: 8000/165014
+2026-07-16 12:00:30,504 — INFO —   Entity progress: 8500/165014
+2026-07-16 12:00:30,554 — INFO —   Entity progress: 9000/165014
+2026-07-16 12:00:30,604 — INFO —   Entity progress: 9500/165014
+2026-07-16 12:00:30,655 — INFO —   Entity progress: 10000/165014
+2026-07-16 12:00:30,695 — INFO —   Entity progress: 10500/165014
+2026-07-16 12:00:30,736 — INFO —   Entity progress: 11000/165014
+2026-07-16 12:00:30,792 — INFO —   Entity progress: 11500/165014
+2026-07-16 12:00:30,847 — INFO —   Entity progress: 12000/165014
+2026-07-16 12:00:30,887 — INFO —   Entity progress: 12500/165014
+2026-07-16 12:00:30,936 — INFO —   Entity progress: 13000/165014
+2026-07-16 12:00:30,987 — INFO —   Entity progress: 13500/165014
+2026-07-16 12:00:31,038 — INFO —   Entity progress: 14000/165014
+2026-07-16 12:00:31,085 — INFO —   Entity progress: 14500/165014
+2026-07-16 12:00:31,127 — INFO —   Entity progress: 15000/165014
+2026-07-16 12:00:31,173 — INFO —   Entity progress: 15500/165014
+2026-07-16 12:00:31,212 — INFO —   Entity progress: 16000/165014
+2026-07-16 12:00:31,274 — INFO —   Entity progress: 16500/165014
+2026-07-16 12:00:31,319 — INFO —   Entity progress: 17000/165014
+2026-07-16 12:00:31,359 — INFO —   Entity progress: 17500/165014
+2026-07-16 12:00:31,418 — INFO —   Entity progress: 18000/165014
+2026-07-16 12:00:31,471 — INFO —   Entity progress: 18500/165014
+2026-07-16 12:00:31,530 — INFO —   Entity progress: 19000/165014
+2026-07-16 12:00:31,574 — INFO —   Entity progress: 19500/165014
+2026-07-16 12:00:31,623 — INFO —   Entity progress: 20000/165014
+2026-07-16 12:00:31,665 — INFO —   Entity progress: 20500/165014
+2026-07-16 12:00:31,704 — INFO —   Entity progress: 21000/165014
+2026-07-16 12:00:31,740 — INFO —   Entity progress: 21500/165014
+2026-07-16 12:00:31,788 — INFO —   Entity progress: 22000/165014
+2026-07-16 12:00:31,832 — INFO —   Entity progress: 22500/165014
+2026-07-16 12:00:31,879 — INFO —   Entity progress: 23000/165014
+2026-07-16 12:00:31,926 — INFO —   Entity progress: 23500/165014
+2026-07-16 12:00:31,958 — INFO —   Entity progress: 24000/165014
+2026-07-16 12:00:32,005 — INFO —   Entity progress: 24500/165014
+2026-07-16 12:00:32,089 — INFO —   Entity progress: 25000/165014
+2026-07-16 12:00:32,132 — INFO —   Entity progress: 25500/165014
+2026-07-16 12:00:32,179 — INFO —   Entity progress: 26000/165014
+2026-07-16 12:00:32,224 — INFO —   Entity progress: 26500/165014
+2026-07-16 12:00:32,270 — INFO —   Entity progress: 27000/165014
+2026-07-16 12:00:32,327 — INFO —   Entity progress: 27500/165014
+2026-07-16 12:00:32,362 — INFO —   Entity progress: 28000/165014
+2026-07-16 12:00:32,407 — INFO —   Entity progress: 28500/165014
+2026-07-16 12:00:32,451 — INFO —   Entity progress: 29000/165014
+2026-07-16 12:00:32,500 — INFO —   Entity progress: 29500/165014
+2026-07-16 12:00:32,550 — INFO —   Entity progress: 30000/165014
+2026-07-16 12:00:32,601 — INFO —   Entity progress: 30500/165014
+2026-07-16 12:00:32,651 — INFO —   Entity progress: 31000/165014
+2026-07-16 12:00:32,694 — INFO —   Entity progress: 31500/165014
+2026-07-16 12:00:32,737 — INFO —   Entity progress: 32000/165014
+2026-07-16 12:00:32,781 — INFO —   Entity progress: 32500/165014
+2026-07-16 12:00:32,854 — INFO —   Entity progress: 33000/165014
+2026-07-16 12:00:32,904 — INFO —   Entity progress: 33500/165014
+2026-07-16 12:00:32,957 — INFO —   Entity progress: 34000/165014
+2026-07-16 12:00:33,012 — INFO —   Entity progress: 34500/165014
+2026-07-16 12:00:33,074 — INFO —   Entity progress: 35000/165014
+2026-07-16 12:00:33,129 — INFO —   Entity progress: 35500/165014
+2026-07-16 12:00:33,198 — INFO —   Entity progress: 36000/165014
+2026-07-16 12:00:33,242 — INFO —   Entity progress: 36500/165014
+2026-07-16 12:00:33,294 — INFO —   Entity progress: 37000/165014
+2026-07-16 12:00:33,328 — INFO —   Entity progress: 37500/165014
+2026-07-16 12:00:33,365 — INFO —   Entity progress: 38000/165014
+2026-07-16 12:00:33,426 — INFO —   Entity progress: 38500/165014
+2026-07-16 12:00:33,465 — INFO —   Entity progress: 39000/165014
+2026-07-16 12:00:33,504 — INFO —   Entity progress: 39500/165014
+2026-07-16 12:00:33,552 — INFO —   Entity progress: 40000/165014
+2026-07-16 12:00:33,619 — INFO —   Entity progress: 40500/165014
+2026-07-16 12:00:33,672 — INFO —   Entity progress: 41000/165014
+2026-07-16 12:00:33,726 — INFO —   Entity progress: 41500/165014
+2026-07-16 12:00:33,777 — INFO —   Entity progress: 42000/165014
+2026-07-16 12:00:33,823 — INFO —   Entity progress: 42500/165014
+2026-07-16 12:00:33,868 — INFO —   Entity progress: 43000/165014
+2026-07-16 12:00:33,911 — INFO —   Entity progress: 43500/165014
+2026-07-16 12:00:33,956 — INFO —   Entity progress: 44000/165014
+2026-07-16 12:00:34,005 — INFO —   Entity progress: 44500/165014
+2026-07-16 12:00:34,050 — INFO —   Entity progress: 45000/165014
+2026-07-16 12:00:34,101 — INFO —   Entity progress: 45500/165014
+2026-07-16 12:00:34,143 — INFO —   Entity progress: 46000/165014
+2026-07-16 12:00:34,178 — INFO —   Entity progress: 46500/165014
+2026-07-16 12:00:34,233 — INFO —   Entity progress: 47000/165014
+2026-07-16 12:00:34,284 — INFO —   Entity progress: 47500/165014
+2026-07-16 12:00:34,324 — INFO —   Entity progress: 48000/165014
+2026-07-16 12:00:34,396 — INFO —   Entity progress: 48500/165014
+2026-07-16 12:00:34,466 — INFO —   Entity progress: 49000/165014
+2026-07-16 12:00:34,529 — INFO —   Entity progress: 49500/165014
+2026-07-16 12:00:34,580 — INFO —   Entity progress: 50000/165014
+2026-07-16 12:00:34,619 — INFO —   Entity progress: 50500/165014
+2026-07-16 12:00:34,678 — INFO —   Entity progress: 51000/165014
+2026-07-16 12:00:34,725 — INFO —   Entity progress: 51500/165014
+2026-07-16 12:00:34,766 — INFO —   Entity progress: 52000/165014
+2026-07-16 12:00:34,797 — INFO —   Entity progress: 52500/165014
+2026-07-16 12:00:34,838 — INFO —   Entity progress: 53000/165014
+2026-07-16 12:00:34,886 — INFO —   Entity progress: 53500/165014
+2026-07-16 12:00:34,932 — INFO —   Entity progress: 54000/165014
+2026-07-16 12:00:34,971 — INFO —   Entity progress: 54500/165014
+2026-07-16 12:00:35,011 — INFO —   Entity progress: 55000/165014
+2026-07-16 12:00:35,065 — INFO —   Entity progress: 55500/165014
+2026-07-16 12:00:35,117 — INFO —   Entity progress: 56000/165014
+2026-07-16 12:00:35,161 — INFO —   Entity progress: 56500/165014
+2026-07-16 12:00:35,201 — INFO —   Entity progress: 57000/165014
+2026-07-16 12:00:35,239 — INFO —   Entity progress: 57500/165014
+2026-07-16 12:00:35,289 — INFO —   Entity progress: 58000/165014
+2026-07-16 12:00:35,334 — INFO —   Entity progress: 58500/165014
+2026-07-16 12:00:35,389 — INFO —   Entity progress: 59000/165014
+2026-07-16 12:00:35,433 — INFO —   Entity progress: 59500/165014
+2026-07-16 12:00:35,475 — INFO —   Entity progress: 60000/165014
+2026-07-16 12:00:35,522 — INFO —   Entity progress: 60500/165014
+2026-07-16 12:00:35,572 — INFO —   Entity progress: 61000/165014
+2026-07-16 12:00:35,623 — INFO —   Entity progress: 61500/165014
+2026-07-16 12:00:35,664 — INFO —   Entity progress: 62000/165014
+2026-07-16 12:00:35,709 — INFO —   Entity progress: 62500/165014
+2026-07-16 12:00:35,753 — INFO —   Entity progress: 63000/165014
+2026-07-16 12:00:35,801 — INFO —   Entity progress: 63500/165014
+2026-07-16 12:00:35,849 — INFO —   Entity progress: 64000/165014
+2026-07-16 12:00:35,900 — INFO —   Entity progress: 64500/165014
+2026-07-16 12:00:35,945 — INFO —   Entity progress: 65000/165014
+2026-07-16 12:00:36,002 — INFO —   Entity progress: 65500/165014
+2026-07-16 12:00:36,063 — INFO —   Entity progress: 66000/165014
+2026-07-16 12:00:36,121 — INFO —   Entity progress: 66500/165014
+2026-07-16 12:00:36,169 — INFO —   Entity progress: 67000/165014
+2026-07-16 12:00:36,205 — INFO —   Entity progress: 67500/165014
+2026-07-16 12:00:36,270 — INFO —   Entity progress: 68000/165014
+2026-07-16 12:00:36,316 — INFO —   Entity progress: 68500/165014
+2026-07-16 12:00:36,386 — INFO —   Entity progress: 69000/165014
+2026-07-16 12:00:36,437 — INFO —   Entity progress: 69500/165014
+2026-07-16 12:00:36,494 — INFO —   Entity progress: 70000/165014
+2026-07-16 12:00:36,558 — INFO —   Entity progress: 70500/165014
+2026-07-16 12:00:36,608 — INFO —   Entity progress: 71000/165014
+2026-07-16 12:00:36,654 — INFO —   Entity progress: 71500/165014
+2026-07-16 12:00:36,739 — INFO —   Entity progress: 72000/165014
+2026-07-16 12:00:36,781 — INFO —   Entity progress: 72500/165014
+2026-07-16 12:00:36,820 — INFO —   Entity progress: 73000/165014
+2026-07-16 12:00:36,866 — INFO —   Entity progress: 73500/165014
+2026-07-16 12:00:36,906 — INFO —   Entity progress: 74000/165014
+2026-07-16 12:00:36,948 — INFO —   Entity progress: 74500/165014
+2026-07-16 12:00:37,004 — INFO —   Entity progress: 75000/165014
+2026-07-16 12:00:37,042 — INFO —   Entity progress: 75500/165014
+2026-07-16 12:00:37,099 — INFO —   Entity progress: 76000/165014
+2026-07-16 12:00:37,161 — INFO —   Entity progress: 76500/165014
+2026-07-16 12:00:37,212 — INFO —   Entity progress: 77000/165014
+2026-07-16 12:00:37,262 — INFO —   Entity progress: 77500/165014
+2026-07-16 12:00:37,307 — INFO —   Entity progress: 78000/165014
+2026-07-16 12:00:37,350 — INFO —   Entity progress: 78500/165014
+2026-07-16 12:00:37,396 — INFO —   Entity progress: 79000/165014
+2026-07-16 12:00:37,452 — INFO —   Entity progress: 79500/165014
+2026-07-16 12:00:37,495 — INFO —   Entity progress: 80000/165014
+2026-07-16 12:00:37,546 — INFO —   Entity progress: 80500/165014
+2026-07-16 12:00:37,589 — INFO —   Entity progress: 81000/165014
+2026-07-16 12:00:37,647 — INFO —   Entity progress: 81500/165014
+2026-07-16 12:00:37,691 — INFO —   Entity progress: 82000/165014
+2026-07-16 12:00:37,736 — INFO —   Entity progress: 82500/165014
+2026-07-16 12:00:37,786 — INFO —   Entity progress: 83000/165014
+2026-07-16 12:00:37,832 — INFO —   Entity progress: 83500/165014
+2026-07-16 12:00:37,880 — INFO —   Entity progress: 84000/165014
+2026-07-16 12:00:37,919 — INFO —   Entity progress: 84500/165014
+2026-07-16 12:00:37,960 — INFO —   Entity progress: 85000/165014
+2026-07-16 12:00:38,008 — INFO —   Entity progress: 85500/165014
+2026-07-16 12:00:38,058 — INFO —   Entity progress: 86000/165014
+2026-07-16 12:00:38,106 — INFO —   Entity progress: 86500/165014
+2026-07-16 12:00:38,150 — INFO —   Entity progress: 87000/165014
+2026-07-16 12:00:38,198 — INFO —   Entity progress: 87500/165014
+2026-07-16 12:00:38,247 — INFO —   Entity progress: 88000/165014
+2026-07-16 12:00:38,288 — INFO —   Entity progress: 88500/165014
+2026-07-16 12:00:38,357 — INFO —   Entity progress: 89000/165014
+2026-07-16 12:00:38,407 — INFO —   Entity progress: 89500/165014
+2026-07-16 12:00:38,458 — INFO —   Entity progress: 90000/165014
+2026-07-16 12:00:38,502 — INFO —   Entity progress: 90500/165014
+2026-07-16 12:00:38,544 — INFO —   Entity progress: 91000/165014
+2026-07-16 12:00:38,587 — INFO —   Entity progress: 91500/165014
+2026-07-16 12:00:38,641 — INFO —   Entity progress: 92000/165014
+2026-07-16 12:00:38,716 — INFO —   Entity progress: 92500/165014
+2026-07-16 12:00:38,756 — INFO —   Entity progress: 93000/165014
+2026-07-16 12:00:38,797 — INFO —   Entity progress: 93500/165014
+2026-07-16 12:00:38,842 — INFO —   Entity progress: 94000/165014
+2026-07-16 12:00:38,886 — INFO —   Entity progress: 94500/165014
+2026-07-16 12:00:38,926 — INFO —   Entity progress: 95000/165014
+2026-07-16 12:00:38,971 — INFO —   Entity progress: 95500/165014
+2026-07-16 12:00:39,013 — INFO —   Entity progress: 96000/165014
+2026-07-16 12:00:39,060 — INFO —   Entity progress: 96500/165014
+2026-07-16 12:00:39,100 — INFO —   Entity progress: 97000/165014
+2026-07-16 12:00:39,145 — INFO —   Entity progress: 97500/165014
+2026-07-16 12:00:39,185 — INFO —   Entity progress: 98000/165014
+2026-07-16 12:00:39,235 — INFO —   Entity progress: 98500/165014
+2026-07-16 12:00:39,284 — INFO —   Entity progress: 99000/165014
+2026-07-16 12:00:39,335 — INFO —   Entity progress: 99500/165014
+2026-07-16 12:00:39,383 — INFO —   Entity progress: 100000/165014
+2026-07-16 12:00:39,433 — INFO —   Entity progress: 100500/165014
+2026-07-16 12:00:39,478 — INFO —   Entity progress: 101000/165014
+2026-07-16 12:00:39,527 — INFO —   Entity progress: 101500/165014
+2026-07-16 12:00:39,564 — INFO —   Entity progress: 102000/165014
+2026-07-16 12:00:39,622 — INFO —   Entity progress: 102500/165014
+2026-07-16 12:00:39,660 — INFO —   Entity progress: 103000/165014
+2026-07-16 12:00:39,713 — INFO —   Entity progress: 103500/165014
+2026-07-16 12:00:39,775 — INFO —   Entity progress: 104000/165014
+2026-07-16 12:00:39,821 — INFO —   Entity progress: 104500/165014
+2026-07-16 12:00:39,876 — INFO —   Entity progress: 105000/165014
+2026-07-16 12:00:39,920 — INFO —   Entity progress: 105500/165014
+2026-07-16 12:00:39,973 — INFO —   Entity progress: 106000/165014
+2026-07-16 12:00:40,016 — INFO —   Entity progress: 106500/165014
+2026-07-16 12:00:40,062 — INFO —   Entity progress: 107000/165014
+2026-07-16 12:00:40,113 — INFO —   Entity progress: 107500/165014
+2026-07-16 12:00:40,154 — INFO —   Entity progress: 108000/165014
+2026-07-16 12:00:40,194 — INFO —   Entity progress: 108500/165014
+2026-07-16 12:00:40,239 — INFO —   Entity progress: 109000/165014
+2026-07-16 12:00:40,286 — INFO —   Entity progress: 109500/165014
+2026-07-16 12:00:40,327 — INFO —   Entity progress: 110000/165014
+2026-07-16 12:00:40,367 — INFO —   Entity progress: 110500/165014
+2026-07-16 12:00:40,421 — INFO —   Entity progress: 111000/165014
+2026-07-16 12:00:40,468 — INFO —   Entity progress: 111500/165014
+2026-07-16 12:00:40,526 — INFO —   Entity progress: 112000/165014
+2026-07-16 12:00:40,576 — INFO —   Entity progress: 112500/165014
+2026-07-16 12:00:40,627 — INFO —   Entity progress: 113000/165014
+2026-07-16 12:00:40,671 — INFO —   Entity progress: 113500/165014
+2026-07-16 12:00:40,725 — INFO —   Entity progress: 114000/165014
+2026-07-16 12:00:40,768 — INFO —   Entity progress: 114500/165014
+2026-07-16 12:00:40,817 — INFO —   Entity progress: 115000/165014
+2026-07-16 12:00:40,865 — INFO —   Entity progress: 115500/165014
+2026-07-16 12:00:40,906 — INFO —   Entity progress: 116000/165014
+2026-07-16 12:00:40,951 — INFO —   Entity progress: 116500/165014
+2026-07-16 12:00:40,987 — INFO —   Entity progress: 117000/165014
+2026-07-16 12:00:41,035 — INFO —   Entity progress: 117500/165014
+2026-07-16 12:00:41,075 — INFO —   Entity progress: 118000/165014
+2026-07-16 12:00:41,134 — INFO —   Entity progress: 118500/165014
+2026-07-16 12:00:41,189 — INFO —   Entity progress: 119000/165014
+2026-07-16 12:00:41,229 — INFO —   Entity progress: 119500/165014
+2026-07-16 12:00:41,276 — INFO —   Entity progress: 120000/165014
+2026-07-16 12:00:41,327 — INFO —   Entity progress: 120500/165014
+2026-07-16 12:00:41,372 — INFO —   Entity progress: 121000/165014
+2026-07-16 12:00:41,405 — INFO —   Entity progress: 121500/165014
+2026-07-16 12:00:41,447 — INFO —   Entity progress: 122000/165014
+2026-07-16 12:00:41,499 — INFO —   Entity progress: 122500/165014
+2026-07-16 12:00:41,568 — INFO —   Entity progress: 123000/165014
+2026-07-16 12:00:41,639 — INFO —   Entity progress: 123500/165014
+2026-07-16 12:00:41,682 — INFO —   Entity progress: 124000/165014
+2026-07-16 12:00:41,723 — INFO —   Entity progress: 124500/165014
+2026-07-16 12:00:41,763 — INFO —   Entity progress: 125000/165014
+2026-07-16 12:00:41,827 — INFO —   Entity progress: 125500/165014
+2026-07-16 12:00:41,869 — INFO —   Entity progress: 126000/165014
+2026-07-16 12:00:41,905 — INFO —   Entity progress: 126500/165014
+2026-07-16 12:00:41,947 — INFO —   Entity progress: 127000/165014
+2026-07-16 12:00:42,005 — INFO —   Entity progress: 127500/165014
+2026-07-16 12:00:42,058 — INFO —   Entity progress: 128000/165014
+2026-07-16 12:00:42,098 — INFO —   Entity progress: 128500/165014
+2026-07-16 12:00:42,152 — INFO —   Entity progress: 129000/165014
+2026-07-16 12:00:42,193 — INFO —   Entity progress: 129500/165014
+2026-07-16 12:00:42,240 — INFO —   Entity progress: 130000/165014
+2026-07-16 12:00:42,292 — INFO —   Entity progress: 130500/165014
+2026-07-16 12:00:42,342 — INFO —   Entity progress: 131000/165014
+2026-07-16 12:00:42,391 — INFO —   Entity progress: 131500/165014
+2026-07-16 12:00:42,441 — INFO —   Entity progress: 132000/165014
+2026-07-16 12:00:42,479 — INFO —   Entity progress: 132500/165014
+2026-07-16 12:00:42,540 — INFO —   Entity progress: 133000/165014
+2026-07-16 12:00:42,583 — INFO —   Entity progress: 133500/165014
+2026-07-16 12:00:42,634 — INFO —   Entity progress: 134000/165014
+2026-07-16 12:00:42,689 — INFO —   Entity progress: 134500/165014
+2026-07-16 12:00:42,735 — INFO —   Entity progress: 135000/165014
+2026-07-16 12:00:42,780 — INFO —   Entity progress: 135500/165014
+2026-07-16 12:00:42,820 — INFO —   Entity progress: 136000/165014
+2026-07-16 12:00:42,859 — INFO —   Entity progress: 136500/165014
+2026-07-16 12:00:42,901 — INFO —   Entity progress: 137000/165014
+2026-07-16 12:00:42,949 — INFO —   Entity progress: 137500/165014
+2026-07-16 12:00:42,996 — INFO —   Entity progress: 138000/165014
+2026-07-16 12:00:43,040 — INFO —   Entity progress: 138500/165014
+2026-07-16 12:00:43,087 — INFO —   Entity progress: 139000/165014
+2026-07-16 12:00:43,128 — INFO —   Entity progress: 139500/165014
+2026-07-16 12:00:43,178 — INFO —   Entity progress: 140000/165014
+2026-07-16 12:00:43,218 — INFO —   Entity progress: 140500/165014
+2026-07-16 12:00:43,259 — INFO —   Entity progress: 141000/165014
+2026-07-16 12:00:43,299 — INFO —   Entity progress: 141500/165014
+2026-07-16 12:00:43,343 — INFO —   Entity progress: 142000/165014
+2026-07-16 12:00:43,413 — INFO —   Entity progress: 142500/165014
+2026-07-16 12:00:43,467 — INFO —   Entity progress: 143000/165014
+2026-07-16 12:00:43,509 — INFO —   Entity progress: 143500/165014
+2026-07-16 12:00:43,552 — INFO —   Entity progress: 144000/165014
+2026-07-16 12:00:43,594 — INFO —   Entity progress: 144500/165014
+2026-07-16 12:00:43,640 — INFO —   Entity progress: 145000/165014
+2026-07-16 12:00:43,697 — INFO —   Entity progress: 145500/165014
+2026-07-16 12:00:43,751 — INFO —   Entity progress: 146000/165014
+2026-07-16 12:00:43,800 — INFO —   Entity progress: 146500/165014
+2026-07-16 12:00:43,836 — INFO —   Entity progress: 147000/165014
+2026-07-16 12:00:43,882 — INFO —   Entity progress: 147500/165014
+2026-07-16 12:00:43,935 — INFO —   Entity progress: 148000/165014
+2026-07-16 12:00:43,994 — INFO —   Entity progress: 148500/165014
+2026-07-16 12:00:44,038 — INFO —   Entity progress: 149000/165014
+2026-07-16 12:00:44,097 — INFO —   Entity progress: 149500/165014
+2026-07-16 12:00:44,155 — INFO —   Entity progress: 150000/165014
+2026-07-16 12:00:44,201 — INFO —   Entity progress: 150500/165014
+2026-07-16 12:00:44,248 — INFO —   Entity progress: 151000/165014
+2026-07-16 12:00:44,288 — INFO —   Entity progress: 151500/165014
+2026-07-16 12:00:44,337 — INFO —   Entity progress: 152000/165014
+2026-07-16 12:00:44,375 — INFO —   Entity progress: 152500/165014
+2026-07-16 12:00:44,425 — INFO —   Entity progress: 153000/165014
+2026-07-16 12:00:44,474 — INFO —   Entity progress: 153500/165014
+2026-07-16 12:00:44,524 — INFO —   Entity progress: 154000/165014
+2026-07-16 12:00:44,576 — INFO —   Entity progress: 154500/165014
+2026-07-16 12:00:44,623 — INFO —   Entity progress: 155000/165014
+2026-07-16 12:00:44,670 — INFO —   Entity progress: 155500/165014
+2026-07-16 12:00:44,736 — INFO —   Entity progress: 156000/165014
+2026-07-16 12:00:44,789 — INFO —   Entity progress: 156500/165014
+2026-07-16 12:00:44,831 — INFO —   Entity progress: 157000/165014
+2026-07-16 12:00:44,884 — INFO —   Entity progress: 157500/165014
+2026-07-16 12:00:44,958 — INFO —   Entity progress: 158000/165014
+2026-07-16 12:00:45,003 — INFO —   Entity progress: 158500/165014
+2026-07-16 12:00:45,055 — INFO —   Entity progress: 159000/165014
+2026-07-16 12:00:45,109 — INFO —   Entity progress: 159500/165014
+2026-07-16 12:00:45,165 — INFO —   Entity progress: 160000/165014
+2026-07-16 12:00:45,221 — INFO —   Entity progress: 160500/165014
+2026-07-16 12:00:45,275 — INFO —   Entity progress: 161000/165014
+2026-07-16 12:00:45,331 — INFO —   Entity progress: 161500/165014
+2026-07-16 12:00:45,376 — INFO —   Entity progress: 162000/165014
+2026-07-16 12:00:45,417 — INFO —   Entity progress: 162500/165014
+2026-07-16 12:00:45,470 — INFO —   Entity progress: 163000/165014
+2026-07-16 12:00:45,511 — INFO —   Entity progress: 163500/165014
+2026-07-16 12:00:45,569 — INFO —   Entity progress: 164000/165014
+2026-07-16 12:00:45,637 — INFO —   Entity progress: 164500/165014
+2026-07-16 12:00:45,694 — INFO —   Entity progress: 165000/165014
+2026-07-16 12:00:45,770 — INFO — Entity extraction complete ✓
+2026-07-16 12:00:45,778 — INFO — ============================================================
+2026-07-16 12:00:45,778 — INFO — STEP 6 — Save outputs
+2026-07-16 12:00:45,778 — INFO — ============================================================
+2026-07-16 12:00:47,671 — WARNING — Dropped 164850 duplicate respondent rows on save
+2026-07-16 12:00:47,671 — INFO — Appended to master — total records: 5302
+2026-07-16 12:01:48,037 — INFO — Saved: results.xlsx
+2026-07-16 12:02:52,935 — INFO — Saved: research_output.xlsx
+2026-07-16 12:03:12,268 — INFO — Saved: product_output.xlsx
+2026-07-16 12:03:12,353 — INFO — Saved: leadership_output.xlsx
+2026-07-16 12:03:12,353 — INFO — All outputs saved ✓
+2026-07-16 12:03:12,386 — INFO — Marked 164 respondents as processed (165014 with feedback, -164850 rating-only).
+2026-07-16 12:03:14,125 — INFO — Dashboard regenerated ✓
+2026-07-16 12:03:14,125 — INFO — ============================================================
+2026-07-16 12:03:14,125 — INFO — PIPELINE COMPLETE — 12781 new reviews processed
+2026-07-16 12:03:14,125 — INFO — Master file now contains 5302 reviews
+2026-07-16 12:03:14,125 — INFO — Outputs: outputs/latest/ and outputs/archive/2026-07-16/
+2026-07-16 12:03:14,125 — INFO — ============================================================
+2026-07-16 12:15:04,010 — INFO — ============================================================
+2026-07-16 12:15:04,011 — INFO — PIPELINE START — 2026-07-16 12:15:04
+2026-07-16 12:15:04,011 — INFO — ============================================================
+2026-07-16 12:15:04,011 — INFO — ============================================================
+2026-07-16 12:15:04,011 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-16 12:15:04,011 — INFO — ============================================================
+2026-07-16 12:15:04,012 — INFO — USE_LOCAL_CACHE is set — reading from local cache at /Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/data/survey_cache.csv instead of the SurveyMonkey API.
+2026-07-16 12:15:04,012 — WARNING — Cache file exists but has no checkpoint — freshness unknown. Was it built by something other than refresh_survey_cache.py?
+2026-07-16 12:15:04,043 — INFO — Loaded 12781 responses from local cache
+2026-07-16 12:15:04,056 — INFO — Found 12946 previously processed IDs
+2026-07-16 12:15:04,090 — INFO — New reviews to process: 12781 (source: cache)
+2026-07-16 12:15:04,093 — INFO — ============================================================
+2026-07-16 12:15:04,093 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-16 12:15:04,093 — INFO — ============================================================
+2026-07-16 12:15:04,093 — INFO — Columns before preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-16 12:15:04,093 — INFO — Rows before preprocessing: 12781
+2026-07-16 12:15:06,651 — INFO — Columns after preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-16 12:15:06,651 — INFO — Rows after preprocessing: 5123
+2026-07-16 12:15:06,652 — INFO — Non-null Feedback_clean: 5123
+2026-07-16 12:15:06,652 — INFO — Sample: ['i find it hard to upload documents as the drop down menu times out quicker than you can click on it', 'drawing a diagram of the site was necessarily challenging i do a lot of it work and it was difficult for me i do not think this will be possible for some people particularly those who did not have it skills or older i don’t want to be overcritical as i know it’s a difficult thing to design but i think it does need improvement', 'its seem straight forward uploading and completing my application']
+2026-07-16 12:15:06,652 — INFO — Preprocessing complete ✓
+2026-07-16 12:15:06,652 — INFO — ============================================================
+2026-07-16 12:15:06,652 — INFO — STEP 3 — Classify
+2026-07-16 12:15:06,652 — INFO — ============================================================
+2026-07-16 12:15:06,655 — INFO — Loading SVM model...
+2026-07-16 12:15:06,664 — INFO — No device provided, using mps
+2026-07-16 12:15:06,884 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:06,885 — WARNING — Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-16 12:15:06,905 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:07,012 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:07,041 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:07,044 — INFO — Loading SentenceTransformer model from sentence-transformers/all-mpnet-base-v2.
+2026-07-16 12:15:07,153 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:07,170 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:07,276 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:07,298 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/README.md "HTTP/1.1 200 OK"
+2026-07-16 12:15:07,398 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:07,419 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:07,522 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:07,552 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:07,713 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 12:15:07,871 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:07,894 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:08,124 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 12:15:08,241 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 12:15:08,358 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 12:15:08,565 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 12:15:08,675 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:08,700 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:08,831 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:08,855 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:08,996 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:09,023 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:09,197 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:09,227 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:09,334 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-16 12:15:09,444 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-16 12:15:09,600 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:09,616 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:09,732 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2 "HTTP/1.1 200 OK"
+2026-07-16 12:15:10,360 — INFO — Models loaded ✓
+2026-07-16 12:15:10,361 — INFO — Generating embeddings...
+2026-07-16 12:15:30,048 — INFO — Classification complete — method breakdown:
+2026-07-16 12:15:30,064 — INFO — prediction_method
+svm             2817
+svm_low_conf    1786
+fallback         520
+2026-07-16 12:15:30,065 — INFO — ============================================================
+2026-07-16 12:15:30,065 — INFO — STEP 4 — ABSA
+2026-07-16 12:15:30,065 — INFO — ============================================================
+2026-07-16 12:15:30,065 — INFO — Using device: MPS
+2026-07-16 12:15:30,065 — INFO — Loading ABSA model...
+2026-07-16 12:15:30,234 — INFO — HTTP Request: HEAD https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 12:15:30,250 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/yangheng/deberta-v3-base-absa-v1.1/10c9dff335a44073e1352360c3a7bc54dc58eb01/config.json "HTTP/1.1 200 OK"
+2026-07-16 12:15:30,488 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-16 12:15:30,594 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-16 12:15:30,923 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1 "HTTP/1.1 200 OK"
+2026-07-16 12:15:32,247 — INFO — ABSA model loaded ✓
+2026-07-16 12:15:32,261 — INFO — Word count distribution:
+count    5123.000000
+mean       18.994730
+std        21.943152
+min         0.000000
+25%         5.000000
+50%        12.000000
+75%        25.000000
+max       336.000000
+Name: Feedback_clean, dtype: float64
+2026-07-16 12:15:32,262 — INFO — Reviews with >= 2 words: 4824
+2026-07-16 12:15:32,262 — INFO — Reviews with >= 5 words: 4009
+2026-07-16 12:15:32,277 — INFO — Using 'Feedback' column for ABSA (avg 19.1 words vs 19.0 clean)
+2026-07-16 12:15:32,293 — INFO — Running ABSA on 4826 reviews (using column: Feedback)
+2026-07-16 12:15:32,298 — INFO —   ABSA progress: 0/4826
+2026-07-16 12:15:44,578 — INFO —   ABSA progress: 100/4826
+2026-07-16 12:15:55,068 — INFO —   ABSA progress: 200/4826
+2026-07-16 12:16:05,260 — INFO —   ABSA progress: 300/4826
+2026-07-16 12:16:17,774 — INFO —   ABSA progress: 400/4826
+2026-07-16 12:16:28,159 — INFO —   ABSA progress: 500/4826
+2026-07-16 12:16:39,531 — INFO —   ABSA progress: 600/4826
+2026-07-16 12:16:52,859 — INFO —   ABSA progress: 700/4826
+2026-07-16 12:17:09,907 — INFO —   ABSA progress: 800/4826
+2026-07-16 12:17:27,240 — INFO —   ABSA progress: 900/4826
+2026-07-16 12:17:44,579 — INFO —   ABSA progress: 1000/4826
+2026-07-16 12:17:55,893 — INFO —   ABSA progress: 1100/4826
+2026-07-16 12:18:14,292 — INFO —   ABSA progress: 1200/4826
+2026-07-16 12:18:34,685 — INFO —   ABSA progress: 1300/4826
+2026-07-16 12:18:52,298 — INFO —   ABSA progress: 1400/4826
+2026-07-16 12:19:10,518 — INFO —   ABSA progress: 1500/4826
+2026-07-16 12:19:23,131 — INFO —   ABSA progress: 1600/4826
+2026-07-16 12:19:34,122 — INFO —   ABSA progress: 1700/4826
+2026-07-16 12:19:46,146 — INFO —   ABSA progress: 1800/4826
+2026-07-16 12:19:55,634 — INFO —   ABSA progress: 1900/4826
+2026-07-16 12:20:04,605 — INFO —   ABSA progress: 2000/4826
+2026-07-16 12:20:16,814 — INFO —   ABSA progress: 2100/4826
+2026-07-16 12:20:27,422 — INFO —   ABSA progress: 2200/4826
+2026-07-16 12:20:37,136 — INFO —   ABSA progress: 2300/4826
+2026-07-16 12:20:45,781 — INFO —   ABSA progress: 2400/4826
+2026-07-16 12:20:55,038 — INFO —   ABSA progress: 2500/4826
+2026-07-16 12:21:03,875 — INFO —   ABSA progress: 2600/4826
+2026-07-16 12:21:14,767 — INFO —   ABSA progress: 2700/4826
+2026-07-16 12:21:23,797 — INFO —   ABSA progress: 2800/4826
+2026-07-16 12:21:32,775 — INFO —   ABSA progress: 2900/4826
+2026-07-16 12:21:42,922 — INFO —   ABSA progress: 3000/4826
+2026-07-16 12:21:54,416 — INFO —   ABSA progress: 3100/4826
+2026-07-16 12:22:03,004 — INFO —   ABSA progress: 3200/4826
+2026-07-16 12:22:12,108 — INFO —   ABSA progress: 3300/4826
+2026-07-16 12:22:20,159 — INFO —   ABSA progress: 3400/4826
+2026-07-16 12:22:28,360 — INFO —   ABSA progress: 3500/4826
+2026-07-16 12:22:36,383 — INFO —   ABSA progress: 3600/4826
+2026-07-16 12:22:47,154 — INFO —   ABSA progress: 3700/4826
+2026-07-16 12:22:56,119 — INFO —   ABSA progress: 3800/4826
+2026-07-16 12:23:06,592 — INFO —   ABSA progress: 3900/4826
+2026-07-16 12:23:17,626 — INFO —   ABSA progress: 4000/4826
+2026-07-16 12:23:27,451 — INFO —   ABSA progress: 4100/4826
+2026-07-16 12:23:36,111 — INFO —   ABSA progress: 4200/4826
+2026-07-16 12:23:46,306 — INFO —   ABSA progress: 4300/4826
+2026-07-16 12:23:57,160 — INFO —   ABSA progress: 4400/4826
+2026-07-16 12:24:05,954 — INFO —   ABSA progress: 4500/4826
+2026-07-16 12:24:14,125 — INFO —   ABSA progress: 4600/4826
+2026-07-16 12:24:22,680 — INFO —   ABSA progress: 4700/4826
+2026-07-16 12:24:32,430 — INFO —   ABSA progress: 4800/4826
+2026-07-16 12:24:34,738 — INFO — ABSA raw labels seen: {'Positive', 'Neutral', 'Negative'}
+2026-07-16 12:24:34,738 — INFO — ABSA call failures: 0 / 19304 approx calls
+2026-07-16 12:24:35,950 — INFO — ABSA complete ✓
+2026-07-16 12:24:35,953 — INFO — Sentiment distribution: {'negative': 83671, 'positive': 63800, 'neutral': 17543}
+2026-07-16 12:24:36,042 — INFO — ============================================================
+2026-07-16 12:24:36,042 — INFO — STEP 5 — Entity extraction
+2026-07-16 12:24:36,042 — INFO — ============================================================
+2026-07-16 12:24:36,327 — INFO — spaCy model loaded ✓
+2026-07-16 12:24:36,458 — INFO —   Entity progress: 0/165014
+2026-07-16 12:24:36,510 — INFO —   Entity progress: 500/165014
+2026-07-16 12:24:36,553 — INFO —   Entity progress: 1000/165014
+2026-07-16 12:24:36,620 — INFO —   Entity progress: 1500/165014
+2026-07-16 12:24:36,664 — INFO —   Entity progress: 2000/165014
+2026-07-16 12:24:36,713 — INFO —   Entity progress: 2500/165014
+2026-07-16 12:24:36,753 — INFO —   Entity progress: 3000/165014
+2026-07-16 12:24:36,793 — INFO —   Entity progress: 3500/165014
+2026-07-16 12:24:36,836 — INFO —   Entity progress: 4000/165014
+2026-07-16 12:24:36,873 — INFO —   Entity progress: 4500/165014
+2026-07-16 12:24:36,927 — INFO —   Entity progress: 5000/165014
+2026-07-16 12:24:36,963 — INFO —   Entity progress: 5500/165014
+2026-07-16 12:24:37,006 — INFO —   Entity progress: 6000/165014
+2026-07-16 12:24:37,050 — INFO —   Entity progress: 6500/165014
+2026-07-16 12:24:37,111 — INFO —   Entity progress: 7000/165014
+2026-07-16 12:24:37,146 — INFO —   Entity progress: 7500/165014
+2026-07-16 12:24:37,191 — INFO —   Entity progress: 8000/165014
+2026-07-16 12:24:37,233 — INFO —   Entity progress: 8500/165014
+2026-07-16 12:24:37,279 — INFO —   Entity progress: 9000/165014
+2026-07-16 12:24:37,327 — INFO —   Entity progress: 9500/165014
+2026-07-16 12:24:37,376 — INFO —   Entity progress: 10000/165014
+2026-07-16 12:24:37,415 — INFO —   Entity progress: 10500/165014
+2026-07-16 12:24:37,455 — INFO —   Entity progress: 11000/165014
+2026-07-16 12:24:37,510 — INFO —   Entity progress: 11500/165014
+2026-07-16 12:24:37,563 — INFO —   Entity progress: 12000/165014
+2026-07-16 12:24:37,601 — INFO —   Entity progress: 12500/165014
+2026-07-16 12:24:37,649 — INFO —   Entity progress: 13000/165014
+2026-07-16 12:24:37,700 — INFO —   Entity progress: 13500/165014
+2026-07-16 12:24:37,750 — INFO —   Entity progress: 14000/165014
+2026-07-16 12:24:37,795 — INFO —   Entity progress: 14500/165014
+2026-07-16 12:24:37,836 — INFO —   Entity progress: 15000/165014
+2026-07-16 12:24:37,879 — INFO —   Entity progress: 15500/165014
+2026-07-16 12:24:37,916 — INFO —   Entity progress: 16000/165014
+2026-07-16 12:24:37,972 — INFO —   Entity progress: 16500/165014
+2026-07-16 12:24:38,014 — INFO —   Entity progress: 17000/165014
+2026-07-16 12:24:38,053 — INFO —   Entity progress: 17500/165014
+2026-07-16 12:24:38,107 — INFO —   Entity progress: 18000/165014
+2026-07-16 12:24:38,157 — INFO —   Entity progress: 18500/165014
+2026-07-16 12:24:38,214 — INFO —   Entity progress: 19000/165014
+2026-07-16 12:24:38,257 — INFO —   Entity progress: 19500/165014
+2026-07-16 12:24:38,306 — INFO —   Entity progress: 20000/165014
+2026-07-16 12:24:38,346 — INFO —   Entity progress: 20500/165014
+2026-07-16 12:24:38,382 — INFO —   Entity progress: 21000/165014
+2026-07-16 12:24:38,417 — INFO —   Entity progress: 21500/165014
+2026-07-16 12:24:38,464 — INFO —   Entity progress: 22000/165014
+2026-07-16 12:24:38,508 — INFO —   Entity progress: 22500/165014
+2026-07-16 12:24:38,553 — INFO —   Entity progress: 23000/165014
+2026-07-16 12:24:38,596 — INFO —   Entity progress: 23500/165014
+2026-07-16 12:24:38,627 — INFO —   Entity progress: 24000/165014
+2026-07-16 12:24:38,672 — INFO —   Entity progress: 24500/165014
+2026-07-16 12:24:38,750 — INFO —   Entity progress: 25000/165014
+2026-07-16 12:24:38,793 — INFO —   Entity progress: 25500/165014
+2026-07-16 12:24:38,838 — INFO —   Entity progress: 26000/165014
+2026-07-16 12:24:38,880 — INFO —   Entity progress: 26500/165014
+2026-07-16 12:24:38,916 — INFO —   Entity progress: 27000/165014
+2026-07-16 12:24:38,951 — INFO —   Entity progress: 27500/165014
+2026-07-16 12:24:38,986 — INFO —   Entity progress: 28000/165014
+2026-07-16 12:24:39,030 — INFO —   Entity progress: 28500/165014
+2026-07-16 12:24:39,072 — INFO —   Entity progress: 29000/165014
+2026-07-16 12:24:39,118 — INFO —   Entity progress: 29500/165014
+2026-07-16 12:24:39,166 — INFO —   Entity progress: 30000/165014
+2026-07-16 12:24:39,216 — INFO —   Entity progress: 30500/165014
+2026-07-16 12:24:39,264 — INFO —   Entity progress: 31000/165014
+2026-07-16 12:24:39,305 — INFO —   Entity progress: 31500/165014
+2026-07-16 12:24:39,345 — INFO —   Entity progress: 32000/165014
+2026-07-16 12:24:39,384 — INFO —   Entity progress: 32500/165014
+2026-07-16 12:24:39,432 — INFO —   Entity progress: 33000/165014
+2026-07-16 12:24:39,472 — INFO —   Entity progress: 33500/165014
+2026-07-16 12:24:39,520 — INFO —   Entity progress: 34000/165014
+2026-07-16 12:24:39,566 — INFO —   Entity progress: 34500/165014
+2026-07-16 12:24:39,608 — INFO —   Entity progress: 35000/165014
+2026-07-16 12:24:39,654 — INFO —   Entity progress: 35500/165014
+2026-07-16 12:24:39,700 — INFO —   Entity progress: 36000/165014
+2026-07-16 12:24:39,742 — INFO —   Entity progress: 36500/165014
+2026-07-16 12:24:39,788 — INFO —   Entity progress: 37000/165014
+2026-07-16 12:24:39,822 — INFO —   Entity progress: 37500/165014
+2026-07-16 12:24:39,857 — INFO —   Entity progress: 38000/165014
+2026-07-16 12:24:39,908 — INFO —   Entity progress: 38500/165014
+2026-07-16 12:24:39,944 — INFO —   Entity progress: 39000/165014
+2026-07-16 12:24:39,981 — INFO —   Entity progress: 39500/165014
+2026-07-16 12:24:40,022 — INFO —   Entity progress: 40000/165014
+2026-07-16 12:24:40,084 — INFO —   Entity progress: 40500/165014
+2026-07-16 12:24:40,133 — INFO —   Entity progress: 41000/165014
+2026-07-16 12:24:40,185 — INFO —   Entity progress: 41500/165014
+2026-07-16 12:24:40,234 — INFO —   Entity progress: 42000/165014
+2026-07-16 12:24:40,276 — INFO —   Entity progress: 42500/165014
+2026-07-16 12:24:40,319 — INFO —   Entity progress: 43000/165014
+2026-07-16 12:24:40,361 — INFO —   Entity progress: 43500/165014
+2026-07-16 12:24:40,405 — INFO —   Entity progress: 44000/165014
+2026-07-16 12:24:40,448 — INFO —   Entity progress: 44500/165014
+2026-07-16 12:24:40,489 — INFO —   Entity progress: 45000/165014
+2026-07-16 12:24:40,535 — INFO —   Entity progress: 45500/165014
+2026-07-16 12:24:40,575 — INFO —   Entity progress: 46000/165014
+2026-07-16 12:24:40,609 — INFO —   Entity progress: 46500/165014
+2026-07-16 12:24:40,662 — INFO —   Entity progress: 47000/165014
+2026-07-16 12:24:40,709 — INFO —   Entity progress: 47500/165014
+2026-07-16 12:24:40,747 — INFO —   Entity progress: 48000/165014
+2026-07-16 12:24:40,814 — INFO —   Entity progress: 48500/165014
+2026-07-16 12:24:40,882 — INFO —   Entity progress: 49000/165014
+2026-07-16 12:24:40,943 — INFO —   Entity progress: 49500/165014
+2026-07-16 12:24:40,994 — INFO —   Entity progress: 50000/165014
+2026-07-16 12:24:41,032 — INFO —   Entity progress: 50500/165014
+2026-07-16 12:24:41,089 — INFO —   Entity progress: 51000/165014
+2026-07-16 12:24:41,133 — INFO —   Entity progress: 51500/165014
+2026-07-16 12:24:41,172 — INFO —   Entity progress: 52000/165014
+2026-07-16 12:24:41,203 — INFO —   Entity progress: 52500/165014
+2026-07-16 12:24:41,242 — INFO —   Entity progress: 53000/165014
+2026-07-16 12:24:41,289 — INFO —   Entity progress: 53500/165014
+2026-07-16 12:24:41,332 — INFO —   Entity progress: 54000/165014
+2026-07-16 12:24:41,370 — INFO —   Entity progress: 54500/165014
+2026-07-16 12:24:41,409 — INFO —   Entity progress: 55000/165014
+2026-07-16 12:24:41,461 — INFO —   Entity progress: 55500/165014
+2026-07-16 12:24:41,508 — INFO —   Entity progress: 56000/165014
+2026-07-16 12:24:41,549 — INFO —   Entity progress: 56500/165014
+2026-07-16 12:24:41,587 — INFO —   Entity progress: 57000/165014
+2026-07-16 12:24:41,622 — INFO —   Entity progress: 57500/165014
+2026-07-16 12:24:41,670 — INFO —   Entity progress: 58000/165014
+2026-07-16 12:24:41,713 — INFO —   Entity progress: 58500/165014
+2026-07-16 12:24:41,765 — INFO —   Entity progress: 59000/165014
+2026-07-16 12:24:41,807 — INFO —   Entity progress: 59500/165014
+2026-07-16 12:24:41,847 — INFO —   Entity progress: 60000/165014
+2026-07-16 12:24:41,891 — INFO —   Entity progress: 60500/165014
+2026-07-16 12:24:41,938 — INFO —   Entity progress: 61000/165014
+2026-07-16 12:24:41,986 — INFO —   Entity progress: 61500/165014
+2026-07-16 12:24:42,025 — INFO —   Entity progress: 62000/165014
+2026-07-16 12:24:42,068 — INFO —   Entity progress: 62500/165014
+2026-07-16 12:24:42,111 — INFO —   Entity progress: 63000/165014
+2026-07-16 12:24:42,156 — INFO —   Entity progress: 63500/165014
+2026-07-16 12:24:42,203 — INFO —   Entity progress: 64000/165014
+2026-07-16 12:24:42,251 — INFO —   Entity progress: 64500/165014
+2026-07-16 12:24:42,295 — INFO —   Entity progress: 65000/165014
+2026-07-16 12:24:42,348 — INFO —   Entity progress: 65500/165014
+2026-07-16 12:24:42,401 — INFO —   Entity progress: 66000/165014
+2026-07-16 12:24:42,454 — INFO —   Entity progress: 66500/165014
+2026-07-16 12:24:42,492 — INFO —   Entity progress: 67000/165014
+2026-07-16 12:24:42,524 — INFO —   Entity progress: 67500/165014
+2026-07-16 12:24:42,559 — INFO —   Entity progress: 68000/165014
+2026-07-16 12:24:42,603 — INFO —   Entity progress: 68500/165014
+2026-07-16 12:24:42,669 — INFO —   Entity progress: 69000/165014
+2026-07-16 12:24:42,712 — INFO —   Entity progress: 69500/165014
+2026-07-16 12:24:42,758 — INFO —   Entity progress: 70000/165014
+2026-07-16 12:24:42,804 — INFO —   Entity progress: 70500/165014
+2026-07-16 12:24:42,843 — INFO —   Entity progress: 71000/165014
+2026-07-16 12:24:42,883 — INFO —   Entity progress: 71500/165014
+2026-07-16 12:24:42,950 — INFO —   Entity progress: 72000/165014
+2026-07-16 12:24:42,989 — INFO —   Entity progress: 72500/165014
+2026-07-16 12:24:43,021 — INFO —   Entity progress: 73000/165014
+2026-07-16 12:24:43,064 — INFO —   Entity progress: 73500/165014
+2026-07-16 12:24:43,098 — INFO —   Entity progress: 74000/165014
+2026-07-16 12:24:43,136 — INFO —   Entity progress: 74500/165014
+2026-07-16 12:24:43,170 — INFO —   Entity progress: 75000/165014
+2026-07-16 12:24:43,207 — INFO —   Entity progress: 75500/165014
+2026-07-16 12:24:43,261 — INFO —   Entity progress: 76000/165014
+2026-07-16 12:24:43,320 — INFO —   Entity progress: 76500/165014
+2026-07-16 12:24:43,368 — INFO —   Entity progress: 77000/165014
+2026-07-16 12:24:43,413 — INFO —   Entity progress: 77500/165014
+2026-07-16 12:24:43,456 — INFO —   Entity progress: 78000/165014
+2026-07-16 12:24:43,493 — INFO —   Entity progress: 78500/165014
+2026-07-16 12:24:43,536 — INFO —   Entity progress: 79000/165014
+2026-07-16 12:24:43,587 — INFO —   Entity progress: 79500/165014
+2026-07-16 12:24:43,626 — INFO —   Entity progress: 80000/165014
+2026-07-16 12:24:43,673 — INFO —   Entity progress: 80500/165014
+2026-07-16 12:24:43,713 — INFO —   Entity progress: 81000/165014
+2026-07-16 12:24:43,762 — INFO —   Entity progress: 81500/165014
+2026-07-16 12:24:43,804 — INFO —   Entity progress: 82000/165014
+2026-07-16 12:24:43,847 — INFO —   Entity progress: 82500/165014
+2026-07-16 12:24:43,894 — INFO —   Entity progress: 83000/165014
+2026-07-16 12:24:43,936 — INFO —   Entity progress: 83500/165014
+2026-07-16 12:24:43,983 — INFO —   Entity progress: 84000/165014
+2026-07-16 12:24:44,020 — INFO —   Entity progress: 84500/165014
+2026-07-16 12:24:44,059 — INFO —   Entity progress: 85000/165014
+2026-07-16 12:24:44,104 — INFO —   Entity progress: 85500/165014
+2026-07-16 12:24:44,151 — INFO —   Entity progress: 86000/165014
+2026-07-16 12:24:44,200 — INFO —   Entity progress: 86500/165014
+2026-07-16 12:24:44,242 — INFO —   Entity progress: 87000/165014
+2026-07-16 12:24:44,290 — INFO —   Entity progress: 87500/165014
+2026-07-16 12:24:44,335 — INFO —   Entity progress: 88000/165014
+2026-07-16 12:24:44,374 — INFO —   Entity progress: 88500/165014
+2026-07-16 12:24:44,440 — INFO —   Entity progress: 89000/165014
+2026-07-16 12:24:44,486 — INFO —   Entity progress: 89500/165014
+2026-07-16 12:24:44,534 — INFO —   Entity progress: 90000/165014
+2026-07-16 12:24:44,577 — INFO —   Entity progress: 90500/165014
+2026-07-16 12:24:44,617 — INFO —   Entity progress: 91000/165014
+2026-07-16 12:24:44,656 — INFO —   Entity progress: 91500/165014
+2026-07-16 12:24:44,706 — INFO —   Entity progress: 92000/165014
+2026-07-16 12:24:44,773 — INFO —   Entity progress: 92500/165014
+2026-07-16 12:24:44,812 — INFO —   Entity progress: 93000/165014
+2026-07-16 12:24:44,851 — INFO —   Entity progress: 93500/165014
+2026-07-16 12:24:44,895 — INFO —   Entity progress: 94000/165014
+2026-07-16 12:24:44,936 — INFO —   Entity progress: 94500/165014
+2026-07-16 12:24:44,974 — INFO —   Entity progress: 95000/165014
+2026-07-16 12:24:45,016 — INFO —   Entity progress: 95500/165014
+2026-07-16 12:24:45,055 — INFO —   Entity progress: 96000/165014
+2026-07-16 12:24:45,099 — INFO —   Entity progress: 96500/165014
+2026-07-16 12:24:45,136 — INFO —   Entity progress: 97000/165014
+2026-07-16 12:24:45,179 — INFO —   Entity progress: 97500/165014
+2026-07-16 12:24:45,217 — INFO —   Entity progress: 98000/165014
+2026-07-16 12:24:45,265 — INFO —   Entity progress: 98500/165014
+2026-07-16 12:24:45,312 — INFO —   Entity progress: 99000/165014
+2026-07-16 12:24:45,362 — INFO —   Entity progress: 99500/165014
+2026-07-16 12:24:45,407 — INFO —   Entity progress: 100000/165014
+2026-07-16 12:24:45,455 — INFO —   Entity progress: 100500/165014
+2026-07-16 12:24:45,494 — INFO —   Entity progress: 101000/165014
+2026-07-16 12:24:45,540 — INFO —   Entity progress: 101500/165014
+2026-07-16 12:24:45,574 — INFO —   Entity progress: 102000/165014
+2026-07-16 12:24:45,629 — INFO —   Entity progress: 102500/165014
+2026-07-16 12:24:45,666 — INFO —   Entity progress: 103000/165014
+2026-07-16 12:24:45,717 — INFO —   Entity progress: 103500/165014
+2026-07-16 12:24:45,778 — INFO —   Entity progress: 104000/165014
+2026-07-16 12:24:45,822 — INFO —   Entity progress: 104500/165014
+2026-07-16 12:24:45,875 — INFO —   Entity progress: 105000/165014
+2026-07-16 12:24:45,918 — INFO —   Entity progress: 105500/165014
+2026-07-16 12:24:45,968 — INFO —   Entity progress: 106000/165014
+2026-07-16 12:24:46,009 — INFO —   Entity progress: 106500/165014
+2026-07-16 12:24:46,053 — INFO —   Entity progress: 107000/165014
+2026-07-16 12:24:46,101 — INFO —   Entity progress: 107500/165014
+2026-07-16 12:24:46,141 — INFO —   Entity progress: 108000/165014
+2026-07-16 12:24:46,180 — INFO —   Entity progress: 108500/165014
+2026-07-16 12:24:46,224 — INFO —   Entity progress: 109000/165014
+2026-07-16 12:24:46,269 — INFO —   Entity progress: 109500/165014
+2026-07-16 12:24:46,308 — INFO —   Entity progress: 110000/165014
+2026-07-16 12:24:46,348 — INFO —   Entity progress: 110500/165014
+2026-07-16 12:24:46,400 — INFO —   Entity progress: 111000/165014
+2026-07-16 12:24:46,446 — INFO —   Entity progress: 111500/165014
+2026-07-16 12:24:46,502 — INFO —   Entity progress: 112000/165014
+2026-07-16 12:24:46,550 — INFO —   Entity progress: 112500/165014
+2026-07-16 12:24:46,599 — INFO —   Entity progress: 113000/165014
+2026-07-16 12:24:46,641 — INFO —   Entity progress: 113500/165014
+2026-07-16 12:24:46,693 — INFO —   Entity progress: 114000/165014
+2026-07-16 12:24:46,733 — INFO —   Entity progress: 114500/165014
+2026-07-16 12:24:46,779 — INFO —   Entity progress: 115000/165014
+2026-07-16 12:24:46,823 — INFO —   Entity progress: 115500/165014
+2026-07-16 12:24:46,862 — INFO —   Entity progress: 116000/165014
+2026-07-16 12:24:46,903 — INFO —   Entity progress: 116500/165014
+2026-07-16 12:24:46,936 — INFO —   Entity progress: 117000/165014
+2026-07-16 12:24:46,982 — INFO —   Entity progress: 117500/165014
+2026-07-16 12:24:47,019 — INFO —   Entity progress: 118000/165014
+2026-07-16 12:24:47,076 — INFO —   Entity progress: 118500/165014
+2026-07-16 12:24:47,130 — INFO —   Entity progress: 119000/165014
+2026-07-16 12:24:47,168 — INFO —   Entity progress: 119500/165014
+2026-07-16 12:24:47,214 — INFO —   Entity progress: 120000/165014
+2026-07-16 12:24:47,264 — INFO —   Entity progress: 120500/165014
+2026-07-16 12:24:47,308 — INFO —   Entity progress: 121000/165014
+2026-07-16 12:24:47,341 — INFO —   Entity progress: 121500/165014
+2026-07-16 12:24:47,382 — INFO —   Entity progress: 122000/165014
+2026-07-16 12:24:47,432 — INFO —   Entity progress: 122500/165014
+2026-07-16 12:24:47,478 — INFO —   Entity progress: 123000/165014
+2026-07-16 12:24:47,543 — INFO —   Entity progress: 123500/165014
+2026-07-16 12:24:47,584 — INFO —   Entity progress: 124000/165014
+2026-07-16 12:24:47,623 — INFO —   Entity progress: 124500/165014
+2026-07-16 12:24:47,662 — INFO —   Entity progress: 125000/165014
+2026-07-16 12:24:47,724 — INFO —   Entity progress: 125500/165014
+2026-07-16 12:24:47,763 — INFO —   Entity progress: 126000/165014
+2026-07-16 12:24:47,798 — INFO —   Entity progress: 126500/165014
+2026-07-16 12:24:47,839 — INFO —   Entity progress: 127000/165014
+2026-07-16 12:24:47,894 — INFO —   Entity progress: 127500/165014
+2026-07-16 12:24:47,945 — INFO —   Entity progress: 128000/165014
+2026-07-16 12:24:47,982 — INFO —   Entity progress: 128500/165014
+2026-07-16 12:24:48,032 — INFO —   Entity progress: 129000/165014
+2026-07-16 12:24:48,071 — INFO —   Entity progress: 129500/165014
+2026-07-16 12:24:48,116 — INFO —   Entity progress: 130000/165014
+2026-07-16 12:24:48,165 — INFO —   Entity progress: 130500/165014
+2026-07-16 12:24:48,234 — INFO —   Entity progress: 131000/165014
+2026-07-16 12:24:48,301 — INFO —   Entity progress: 131500/165014
+2026-07-16 12:24:48,350 — INFO —   Entity progress: 132000/165014
+2026-07-16 12:24:48,388 — INFO —   Entity progress: 132500/165014
+2026-07-16 12:24:48,451 — INFO —   Entity progress: 133000/165014
+2026-07-16 12:24:48,494 — INFO —   Entity progress: 133500/165014
+2026-07-16 12:24:48,544 — INFO —   Entity progress: 134000/165014
+2026-07-16 12:24:48,600 — INFO —   Entity progress: 134500/165014
+2026-07-16 12:24:48,644 — INFO —   Entity progress: 135000/165014
+2026-07-16 12:24:48,687 — INFO —   Entity progress: 135500/165014
+2026-07-16 12:24:48,727 — INFO —   Entity progress: 136000/165014
+2026-07-16 12:24:48,765 — INFO —   Entity progress: 136500/165014
+2026-07-16 12:24:48,807 — INFO —   Entity progress: 137000/165014
+2026-07-16 12:24:48,854 — INFO —   Entity progress: 137500/165014
+2026-07-16 12:24:48,901 — INFO —   Entity progress: 138000/165014
+2026-07-16 12:24:48,945 — INFO —   Entity progress: 138500/165014
+2026-07-16 12:24:48,991 — INFO —   Entity progress: 139000/165014
+2026-07-16 12:24:49,032 — INFO —   Entity progress: 139500/165014
+2026-07-16 12:24:49,081 — INFO —   Entity progress: 140000/165014
+2026-07-16 12:24:49,121 — INFO —   Entity progress: 140500/165014
+2026-07-16 12:24:49,162 — INFO —   Entity progress: 141000/165014
+2026-07-16 12:24:49,229 — INFO —   Entity progress: 141500/165014
+2026-07-16 12:24:49,273 — INFO —   Entity progress: 142000/165014
+2026-07-16 12:24:49,346 — INFO —   Entity progress: 142500/165014
+2026-07-16 12:24:49,400 — INFO —   Entity progress: 143000/165014
+2026-07-16 12:24:49,442 — INFO —   Entity progress: 143500/165014
+2026-07-16 12:24:49,486 — INFO —   Entity progress: 144000/165014
+2026-07-16 12:24:49,527 — INFO —   Entity progress: 144500/165014
+2026-07-16 12:24:49,573 — INFO —   Entity progress: 145000/165014
+2026-07-16 12:24:49,630 — INFO —   Entity progress: 145500/165014
+2026-07-16 12:24:49,685 — INFO —   Entity progress: 146000/165014
+2026-07-16 12:24:49,733 — INFO —   Entity progress: 146500/165014
+2026-07-16 12:24:49,770 — INFO —   Entity progress: 147000/165014
+2026-07-16 12:24:49,817 — INFO —   Entity progress: 147500/165014
+2026-07-16 12:24:49,871 — INFO —   Entity progress: 148000/165014
+2026-07-16 12:24:49,929 — INFO —   Entity progress: 148500/165014
+2026-07-16 12:24:49,973 — INFO —   Entity progress: 149000/165014
+2026-07-16 12:24:50,027 — INFO —   Entity progress: 149500/165014
+2026-07-16 12:24:50,079 — INFO —   Entity progress: 150000/165014
+2026-07-16 12:24:50,122 — INFO —   Entity progress: 150500/165014
+2026-07-16 12:24:50,165 — INFO —   Entity progress: 151000/165014
+2026-07-16 12:24:50,202 — INFO —   Entity progress: 151500/165014
+2026-07-16 12:24:50,247 — INFO —   Entity progress: 152000/165014
+2026-07-16 12:24:50,283 — INFO —   Entity progress: 152500/165014
+2026-07-16 12:24:50,330 — INFO —   Entity progress: 153000/165014
+2026-07-16 12:24:50,376 — INFO —   Entity progress: 153500/165014
+2026-07-16 12:24:50,424 — INFO —   Entity progress: 154000/165014
+2026-07-16 12:24:50,473 — INFO —   Entity progress: 154500/165014
+2026-07-16 12:24:50,516 — INFO —   Entity progress: 155000/165014
+2026-07-16 12:24:50,557 — INFO —   Entity progress: 155500/165014
+2026-07-16 12:24:50,619 — INFO —   Entity progress: 156000/165014
+2026-07-16 12:24:50,670 — INFO —   Entity progress: 156500/165014
+2026-07-16 12:24:50,712 — INFO —   Entity progress: 157000/165014
+2026-07-16 12:24:50,763 — INFO —   Entity progress: 157500/165014
+2026-07-16 12:24:50,835 — INFO —   Entity progress: 158000/165014
+2026-07-16 12:24:50,878 — INFO —   Entity progress: 158500/165014
+2026-07-16 12:24:50,927 — INFO —   Entity progress: 159000/165014
+2026-07-16 12:24:50,980 — INFO —   Entity progress: 159500/165014
+2026-07-16 12:24:51,032 — INFO —   Entity progress: 160000/165014
+2026-07-16 12:24:51,087 — INFO —   Entity progress: 160500/165014
+2026-07-16 12:24:51,139 — INFO —   Entity progress: 161000/165014
+2026-07-16 12:24:51,189 — INFO —   Entity progress: 161500/165014
+2026-07-16 12:24:51,230 — INFO —   Entity progress: 162000/165014
+2026-07-16 12:24:51,268 — INFO —   Entity progress: 162500/165014
+2026-07-16 12:24:51,320 — INFO —   Entity progress: 163000/165014
+2026-07-16 12:24:51,360 — INFO —   Entity progress: 163500/165014
+2026-07-16 12:24:51,413 — INFO —   Entity progress: 164000/165014
+2026-07-16 12:24:51,479 — INFO —   Entity progress: 164500/165014
+2026-07-16 12:24:51,535 — INFO —   Entity progress: 165000/165014
+2026-07-16 12:24:51,581 — INFO — Entity extraction complete ✓
+2026-07-16 12:24:51,584 — INFO — ============================================================
+2026-07-16 12:24:51,584 — INFO — STEP 6 — Save outputs
+2026-07-16 12:24:51,584 — INFO — ============================================================
+2026-07-16 12:24:52,457 — WARNING — Dropped 164850 duplicate respondent rows on save
+2026-07-16 12:24:52,458 — INFO — Appended to master — total records: 5466
+2026-07-16 12:25:55,153 — INFO — Saved: results.xlsx
+2026-07-16 12:27:02,016 — INFO — Saved: research_output.xlsx
+2026-07-16 12:27:21,276 — INFO — Saved: product_output.xlsx
+2026-07-16 12:27:21,347 — INFO — Saved: leadership_output.xlsx
+2026-07-16 12:27:21,347 — INFO — All outputs saved ✓
+2026-07-16 12:27:21,372 — INFO — Marked 164 respondents as processed (165014 with feedback, -164850 rating-only).
+2026-07-16 12:27:23,255 — INFO — Dashboard regenerated ✓
+2026-07-16 12:27:23,255 — INFO — ============================================================
+2026-07-16 12:27:23,255 — INFO — PIPELINE COMPLETE — 12781 new reviews processed
+2026-07-16 12:27:23,255 — INFO — Master file now contains 5466 reviews
+2026-07-16 12:27:23,255 — INFO — Outputs: outputs/latest/ and outputs/archive/2026-07-16/
+2026-07-16 12:27:23,256 — INFO — ============================================================
+2026-07-16 13:07:09,070 — INFO — ============================================================
+2026-07-16 13:07:09,070 — INFO — PIPELINE START — 2026-07-16 13:07:09
+2026-07-16 13:07:09,070 — INFO — ============================================================
+2026-07-16 13:07:09,070 — INFO — ============================================================
+2026-07-16 13:07:09,070 — INFO — STEP 1 — Ingest & deduplicate
+2026-07-16 13:07:09,070 — INFO — ============================================================
+2026-07-16 13:07:09,076 — INFO — USE_LOCAL_CACHE is set — reading from local cache at /Users/nidaaziz/PycharmProjects/autoanalysisUserFeedback/data/survey_cache.csv instead of the SurveyMonkey API.
+2026-07-16 13:07:09,077 — WARNING — Cache file exists but has no checkpoint — freshness unknown. Was it built by something other than refresh_survey_cache.py?
+2026-07-16 13:07:09,146 — INFO — Loaded 12781 responses from local cache
+2026-07-16 13:07:09,170 — INFO — Found 12946 previously processed IDs
+2026-07-16 13:07:09,205 — INFO — New reviews to process: 12781 (source: cache)
+2026-07-16 13:07:09,220 — INFO — ============================================================
+2026-07-16 13:07:09,220 — INFO — STEP 2 — External preprocessing (preprocessing.py)
+2026-07-16 13:07:09,220 — INFO — ============================================================
+2026-07-16 13:07:09,220 — INFO — Columns before preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rate your experience', 'Is there anything you would like to tell us about your experience?']
+2026-07-16 13:07:09,220 — INFO — Rows before preprocessing: 12781
+2026-07-16 13:07:11,896 — INFO — Columns after preprocessing: ['Respondent ID', 'Collector ID', 'Start Date', 'End Date', 'IP Address', 'Email Address', 'First Name', 'Last Name', 'Custom Data 1', 'rq_flag', 'Rating', 'Feedback', 'Feedback_clean']
+2026-07-16 13:07:11,896 — INFO — Rows after preprocessing: 5123
+2026-07-16 13:07:11,896 — INFO — Non-null Feedback_clean: 5123
+2026-07-16 13:07:11,896 — INFO — Sample: ['i find it hard to upload documents as the drop down menu times out quicker than you can click on it', 'drawing a diagram of the site was necessarily challenging i do a lot of it work and it was difficult for me i do not think this will be possible for some people particularly those who did not have it skills or older i don’t want to be overcritical as i know it’s a difficult thing to design but i think it does need improvement', 'its seem straight forward uploading and completing my application']
+2026-07-16 13:07:11,896 — INFO — Preprocessing complete ✓
+2026-07-16 13:07:11,896 — INFO — ============================================================
+2026-07-16 13:07:11,896 — INFO — STEP 3 — Classify
+2026-07-16 13:07:11,897 — INFO — ============================================================
+2026-07-16 13:07:11,965 — INFO — Loading SVM model...
+2026-07-16 13:07:11,984 — INFO — No device provided, using mps
+2026-07-16 13:07:12,208 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:12,230 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:12,348 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:12,371 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:12,379 — INFO — Loading SentenceTransformer model from sentence-transformers/all-mpnet-base-v2.
+2026-07-16 13:07:12,481 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:12,483 — WARNING — Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-16 13:07:12,497 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:12,594 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:12,606 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/README.md "HTTP/1.1 200 OK"
+2026-07-16 13:07:12,741 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:12,757 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:12,880 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:12,892 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:13,009 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 13:07:13,115 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:13,142 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:13,483 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 13:07:13,588 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 13:07:13,693 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 13:07:13,825 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-07-16 13:07:13,926 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:13,948 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:14,058 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:14,083 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:14,185 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:14,208 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:14,306 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:14,317 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:14,434 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-16 13:07:14,568 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-16 13:07:14,761 — INFO — HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:14,778 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:14,887 — INFO — HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2 "HTTP/1.1 200 OK"
+2026-07-16 13:07:15,412 — INFO — Models loaded ✓
+2026-07-16 13:07:15,412 — INFO — Generating embeddings...
+2026-07-16 13:07:38,617 — INFO — Classification complete — method breakdown:
+2026-07-16 13:07:38,621 — INFO — prediction_method
+svm             2817
+svm_low_conf    1786
+fallback         520
+2026-07-16 13:07:38,621 — INFO — ============================================================
+2026-07-16 13:07:38,621 — INFO — STEP 4 — ABSA
+2026-07-16 13:07:38,621 — INFO — ============================================================
+2026-07-16 13:07:38,621 — INFO — Using device: MPS
+2026-07-16 13:07:38,621 — INFO — Loading ABSA model...
+2026-07-16 13:07:38,760 — INFO — HTTP Request: HEAD https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-07-16 13:07:38,773 — INFO — HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/yangheng/deberta-v3-base-absa-v1.1/10c9dff335a44073e1352360c3a7bc54dc58eb01/config.json "HTTP/1.1 200 OK"
+2026-07-16 13:07:39,181 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-16 13:07:39,287 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-16 13:07:40,043 — INFO — HTTP Request: GET https://huggingface.co/api/models/yangheng/deberta-v3-base-absa-v1.1 "HTTP/1.1 200 OK"
+2026-07-16 13:07:40,745 — INFO — ABSA model loaded ✓
+2026-07-16 13:07:40,756 — INFO — Word count distribution:
+count    5123.000000
+mean       18.994730
+std        21.943152
+min         0.000000
+25%         5.000000
+50%        12.000000
+75%        25.000000
+max       336.000000
+Name: Feedback_clean, dtype: float64
+2026-07-16 13:07:40,756 — INFO — Reviews with >= 2 words: 4824
+2026-07-16 13:07:40,757 — INFO — Reviews with >= 5 words: 4009
+2026-07-16 13:07:40,769 — INFO — Using 'Feedback' column for ABSA (avg 19.1 words vs 19.0 clean)
+2026-07-16 13:07:40,778 — INFO — Running ABSA on 4826 reviews (using column: Feedback)
+2026-07-16 13:07:40,782 — INFO —   ABSA progress: 0/4826
+2026-07-16 13:07:53,107 — INFO —   ABSA progress: 100/4826
+2026-07-16 13:08:02,558 — INFO —   ABSA progress: 200/4826
+2026-07-16 13:08:12,099 — INFO —   ABSA progress: 300/4826
+2026-07-16 13:08:22,660 — INFO —   ABSA progress: 400/4826
+2026-07-16 13:08:32,165 — INFO —   ABSA progress: 500/4826
+2026-07-16 13:08:41,994 — INFO —   ABSA progress: 600/4826
+2026-07-16 13:08:51,553 — INFO —   ABSA progress: 700/4826
+2026-07-16 13:09:02,782 — INFO —   ABSA progress: 800/4826
+2026-07-16 13:09:11,397 — INFO —   ABSA progress: 900/4826
+2026-07-16 13:09:20,859 — INFO —   ABSA progress: 1000/4826
+2026-07-16 13:09:29,798 — INFO —   ABSA progress: 1100/4826
+2026-07-16 13:09:38,966 — INFO —   ABSA progress: 1200/4826
+2026-07-16 13:09:49,452 — INFO —   ABSA progress: 1300/4826
+2026-07-16 13:09:59,550 — INFO —   ABSA progress: 1400/4826
+2026-07-16 13:10:09,930 — INFO —   ABSA progress: 1500/4826
+2026-07-16 13:10:20,050 — INFO —   ABSA progress: 1600/4826
+2026-07-16 13:10:28,392 — INFO —   ABSA progress: 1700/4826
+2026-07-16 13:10:37,425 — INFO —   ABSA progress: 1800/4826
+2026-07-16 13:10:46,345 — INFO —   ABSA progress: 1900/4826
+2026-07-16 13:10:55,011 — INFO —   ABSA progress: 2000/4826
+2026-07-16 13:11:04,988 — INFO —   ABSA progress: 2100/4826
+2026-07-16 13:11:15,474 — INFO —   ABSA progress: 2200/4826
+2026-07-16 13:11:25,492 — INFO —   ABSA progress: 2300/4826
+2026-07-16 13:11:34,375 — INFO —   ABSA progress: 2400/4826
+2026-07-16 13:11:43,585 — INFO —   ABSA progress: 2500/4826
+2026-07-16 13:11:53,267 — INFO —   ABSA progress: 2600/4826
+2026-07-16 13:12:03,880 — INFO —   ABSA progress: 2700/4826
+2026-07-16 13:12:13,867 — INFO —   ABSA progress: 2800/4826
+2026-07-16 13:12:23,318 — INFO —   ABSA progress: 2900/4826
+2026-07-16 13:12:32,319 — INFO —   ABSA progress: 3000/4826
+2026-07-16 13:12:43,223 — INFO —   ABSA progress: 3100/4826
+2026-07-16 13:12:53,578 — INFO —   ABSA progress: 3200/4826
+2026-07-16 13:13:03,485 — INFO —   ABSA progress: 3300/4826
+2026-07-16 13:13:13,351 — INFO —   ABSA progress: 3400/4826
+2026-07-16 13:13:23,432 — INFO —   ABSA progress: 3500/4826
+2026-07-16 13:13:32,900 — INFO —   ABSA progress: 3600/4826
+2026-07-16 13:13:42,072 — INFO —   ABSA progress: 3700/4826
+2026-07-16 13:13:50,758 — INFO —   ABSA progress: 3800/4826
+2026-07-16 13:13:59,193 — INFO —   ABSA progress: 3900/4826
+2026-07-16 13:14:07,257 — INFO —   ABSA progress: 4000/4826
+2026-07-16 13:14:17,767 — INFO —   ABSA progress: 4100/4826
+2026-07-16 13:14:27,383 — INFO —   ABSA progress: 4200/4826
+2026-07-16 13:14:36,266 — INFO —   ABSA progress: 4300/4826
+2026-07-16 13:14:44,782 — INFO —   ABSA progress: 4400/4826
+2026-07-16 13:14:52,888 — INFO —   ABSA progress: 4500/4826
+2026-07-16 13:15:01,037 — INFO —   ABSA progress: 4600/4826
+2026-07-16 13:15:09,316 — INFO —   ABSA progress: 4700/4826
+2026-07-16 13:15:17,614 — INFO —   ABSA progress: 4800/4826
+2026-07-16 13:15:19,865 — INFO — ABSA raw labels seen: {'Neutral', 'Negative', 'Positive'}
+2026-07-16 13:15:19,865 — INFO — ABSA call failures: 0 / 19304 approx calls
+2026-07-16 13:15:20,383 — INFO — ABSA complete ✓
+2026-07-16 13:15:20,386 — INFO — Sentiment distribution: {'negative': 83671, 'positive': 63800, 'neutral': 17543}
+2026-07-16 13:15:20,451 — INFO — ============================================================
+2026-07-16 13:15:20,451 — INFO — STEP 5 — Entity extraction
+2026-07-16 13:15:20,451 — INFO — ============================================================
+2026-07-16 13:15:21,017 — INFO — spaCy model loaded ✓
+2026-07-16 13:15:21,159 — INFO —   Entity progress: 0/165014
+2026-07-16 13:15:21,210 — INFO —   Entity progress: 500/165014
+2026-07-16 13:15:21,252 — INFO —   Entity progress: 1000/165014
+2026-07-16 13:15:21,318 — INFO —   Entity progress: 1500/165014
+2026-07-16 13:15:21,361 — INFO —   Entity progress: 2000/165014
+2026-07-16 13:15:21,410 — INFO —   Entity progress: 2500/165014
+2026-07-16 13:15:21,449 — INFO —   Entity progress: 3000/165014
+2026-07-16 13:15:21,490 — INFO —   Entity progress: 3500/165014
+2026-07-16 13:15:21,533 — INFO —   Entity progress: 4000/165014
+2026-07-16 13:15:21,570 — INFO —   Entity progress: 4500/165014
+2026-07-16 13:15:21,623 — INFO —   Entity progress: 5000/165014
+2026-07-16 13:15:21,659 — INFO —   Entity progress: 5500/165014
+2026-07-16 13:15:21,703 — INFO —   Entity progress: 6000/165014
+2026-07-16 13:15:21,746 — INFO —   Entity progress: 6500/165014
+2026-07-16 13:15:21,807 — INFO —   Entity progress: 7000/165014
+2026-07-16 13:15:21,841 — INFO —   Entity progress: 7500/165014
+2026-07-16 13:15:21,885 — INFO —   Entity progress: 8000/165014
+2026-07-16 13:15:21,925 — INFO —   Entity progress: 8500/165014
+2026-07-16 13:15:21,970 — INFO —   Entity progress: 9000/165014
+2026-07-16 13:15:22,017 — INFO —   Entity progress: 9500/165014
+2026-07-16 13:15:22,065 — INFO —   Entity progress: 10000/165014
+2026-07-16 13:15:22,102 — INFO —   Entity progress: 10500/165014
+2026-07-16 13:15:22,140 — INFO —   Entity progress: 11000/165014
+2026-07-16 13:15:22,195 — INFO —   Entity progress: 11500/165014
+2026-07-16 13:15:22,248 — INFO —   Entity progress: 12000/165014
+2026-07-16 13:15:22,285 — INFO —   Entity progress: 12500/165014
+2026-07-16 13:15:22,332 — INFO —   Entity progress: 13000/165014
+2026-07-16 13:15:22,382 — INFO —   Entity progress: 13500/165014
+2026-07-16 13:15:22,433 — INFO —   Entity progress: 14000/165014
+2026-07-16 13:15:22,478 — INFO —   Entity progress: 14500/165014
+2026-07-16 13:15:22,518 — INFO —   Entity progress: 15000/165014
+2026-07-16 13:15:22,560 — INFO —   Entity progress: 15500/165014
+2026-07-16 13:15:22,597 — INFO —   Entity progress: 16000/165014
+2026-07-16 13:15:22,652 — INFO —   Entity progress: 16500/165014
+2026-07-16 13:15:22,694 — INFO —   Entity progress: 17000/165014
+2026-07-16 13:15:22,732 — INFO —   Entity progress: 17500/165014
+2026-07-16 13:15:22,785 — INFO —   Entity progress: 18000/165014
+2026-07-16 13:15:22,835 — INFO —   Entity progress: 18500/165014
+2026-07-16 13:15:22,891 — INFO —   Entity progress: 19000/165014
+2026-07-16 13:15:22,933 — INFO —   Entity progress: 19500/165014
+2026-07-16 13:15:22,981 — INFO —   Entity progress: 20000/165014
+2026-07-16 13:15:23,020 — INFO —   Entity progress: 20500/165014
+2026-07-16 13:15:23,056 — INFO —   Entity progress: 21000/165014
+2026-07-16 13:15:23,090 — INFO —   Entity progress: 21500/165014
+2026-07-16 13:15:23,137 — INFO —   Entity progress: 22000/165014
+2026-07-16 13:15:23,180 — INFO —   Entity progress: 22500/165014
+2026-07-16 13:15:23,225 — INFO —   Entity progress: 23000/165014
+2026-07-16 13:15:23,266 — INFO —   Entity progress: 23500/165014
+2026-07-16 13:15:23,295 — INFO —   Entity progress: 24000/165014
+2026-07-16 13:15:23,341 — INFO —   Entity progress: 24500/165014
+2026-07-16 13:15:23,419 — INFO —   Entity progress: 25000/165014
+2026-07-16 13:15:23,461 — INFO —   Entity progress: 25500/165014
+2026-07-16 13:15:23,507 — INFO —   Entity progress: 26000/165014
+2026-07-16 13:15:23,549 — INFO —   Entity progress: 26500/165014
+2026-07-16 13:15:23,586 — INFO —   Entity progress: 27000/165014
+2026-07-16 13:15:23,619 — INFO —   Entity progress: 27500/165014
+2026-07-16 13:15:23,653 — INFO —   Entity progress: 28000/165014
+2026-07-16 13:15:23,695 — INFO —   Entity progress: 28500/165014
+2026-07-16 13:15:23,737 — INFO —   Entity progress: 29000/165014
+2026-07-16 13:15:23,784 — INFO —   Entity progress: 29500/165014
+2026-07-16 13:15:23,832 — INFO —   Entity progress: 30000/165014
+2026-07-16 13:15:23,882 — INFO —   Entity progress: 30500/165014
+2026-07-16 13:15:23,930 — INFO —   Entity progress: 31000/165014
+2026-07-16 13:15:23,970 — INFO —   Entity progress: 31500/165014
+2026-07-16 13:15:24,010 — INFO —   Entity progress: 32000/165014
+2026-07-16 13:15:24,048 — INFO —   Entity progress: 32500/165014
+2026-07-16 13:15:24,096 — INFO —   Entity progress: 33000/165014
+2026-07-16 13:15:24,136 — INFO —   Entity progress: 33500/165014
+2026-07-16 13:15:24,183 — INFO —   Entity progress: 34000/165014
+2026-07-16 13:15:24,229 — INFO —   Entity progress: 34500/165014
+2026-07-16 13:15:24,270 — INFO —   Entity progress: 35000/165014
+2026-07-16 13:15:24,316 — INFO —   Entity progress: 35500/165014
+2026-07-16 13:15:24,361 — INFO —   Entity progress: 36000/165014
+2026-07-16 13:15:24,403 — INFO —   Entity progress: 36500/165014
+2026-07-16 13:15:24,449 — INFO —   Entity progress: 37000/165014
+2026-07-16 13:15:24,482 — INFO —   Entity progress: 37500/165014
+2026-07-16 13:15:24,517 — INFO —   Entity progress: 38000/165014
+2026-07-16 13:15:24,567 — INFO —   Entity progress: 38500/165014
+2026-07-16 13:15:24,603 — INFO —   Entity progress: 39000/165014
+2026-07-16 13:15:24,639 — INFO —   Entity progress: 39500/165014
+2026-07-16 13:15:24,679 — INFO —   Entity progress: 40000/165014
+2026-07-16 13:15:24,741 — INFO —   Entity progress: 40500/165014
+2026-07-16 13:15:24,791 — INFO —   Entity progress: 41000/165014
+2026-07-16 13:15:24,843 — INFO —   Entity progress: 41500/165014
+2026-07-16 13:15:24,892 — INFO —   Entity progress: 42000/165014
+2026-07-16 13:15:24,933 — INFO —   Entity progress: 42500/165014
+2026-07-16 13:15:24,976 — INFO —   Entity progress: 43000/165014
+2026-07-16 13:15:25,018 — INFO —   Entity progress: 43500/165014
+2026-07-16 13:15:25,061 — INFO —   Entity progress: 44000/165014
+2026-07-16 13:15:25,105 — INFO —   Entity progress: 44500/165014
+2026-07-16 13:15:25,146 — INFO —   Entity progress: 45000/165014
+2026-07-16 13:15:25,191 — INFO —   Entity progress: 45500/165014
+2026-07-16 13:15:25,231 — INFO —   Entity progress: 46000/165014
+2026-07-16 13:15:25,264 — INFO —   Entity progress: 46500/165014
+2026-07-16 13:15:25,317 — INFO —   Entity progress: 47000/165014
+2026-07-16 13:15:25,363 — INFO —   Entity progress: 47500/165014
+2026-07-16 13:15:25,400 — INFO —   Entity progress: 48000/165014
+2026-07-16 13:15:25,467 — INFO —   Entity progress: 48500/165014
+2026-07-16 13:15:25,534 — INFO —   Entity progress: 49000/165014
+2026-07-16 13:15:25,595 — INFO —   Entity progress: 49500/165014
+2026-07-16 13:15:25,645 — INFO —   Entity progress: 50000/165014
+2026-07-16 13:15:25,683 — INFO —   Entity progress: 50500/165014
+2026-07-16 13:15:25,739 — INFO —   Entity progress: 51000/165014
+2026-07-16 13:15:25,783 — INFO —   Entity progress: 51500/165014
+2026-07-16 13:15:25,822 — INFO —   Entity progress: 52000/165014
+2026-07-16 13:15:25,852 — INFO —   Entity progress: 52500/165014
+2026-07-16 13:15:25,892 — INFO —   Entity progress: 53000/165014
+2026-07-16 13:15:25,938 — INFO —   Entity progress: 53500/165014
+2026-07-16 13:15:25,980 — INFO —   Entity progress: 54000/165014
+2026-07-16 13:15:26,018 — INFO —   Entity progress: 54500/165014
+2026-07-16 13:15:26,056 — INFO —   Entity progress: 55000/165014
+2026-07-16 13:15:26,109 — INFO —   Entity progress: 55500/165014
+2026-07-16 13:15:26,155 — INFO —   Entity progress: 56000/165014
+2026-07-16 13:15:26,196 — INFO —   Entity progress: 56500/165014
+2026-07-16 13:15:26,233 — INFO —   Entity progress: 57000/165014
+2026-07-16 13:15:26,268 — INFO —   Entity progress: 57500/165014
+2026-07-16 13:15:26,316 — INFO —   Entity progress: 58000/165014
+2026-07-16 13:15:26,358 — INFO —   Entity progress: 58500/165014
+2026-07-16 13:15:26,410 — INFO —   Entity progress: 59000/165014
+2026-07-16 13:15:26,452 — INFO —   Entity progress: 59500/165014
+2026-07-16 13:15:26,491 — INFO —   Entity progress: 60000/165014
+2026-07-16 13:15:26,536 — INFO —   Entity progress: 60500/165014
+2026-07-16 13:15:26,582 — INFO —   Entity progress: 61000/165014
+2026-07-16 13:15:26,629 — INFO —   Entity progress: 61500/165014
+2026-07-16 13:15:26,669 — INFO —   Entity progress: 62000/165014
+2026-07-16 13:15:26,711 — INFO —   Entity progress: 62500/165014
+2026-07-16 13:15:26,754 — INFO —   Entity progress: 63000/165014
+2026-07-16 13:15:26,799 — INFO —   Entity progress: 63500/165014
+2026-07-16 13:15:26,855 — INFO —   Entity progress: 64000/165014
+2026-07-16 13:15:26,937 — INFO —   Entity progress: 64500/165014
+2026-07-16 13:15:26,985 — INFO —   Entity progress: 65000/165014
+2026-07-16 13:15:27,091 — INFO —   Entity progress: 65500/165014
+2026-07-16 13:15:27,236 — INFO —   Entity progress: 66000/165014
+2026-07-16 13:15:27,337 — INFO —   Entity progress: 66500/165014
+2026-07-16 13:15:27,400 — INFO —   Entity progress: 67000/165014
+2026-07-16 13:15:27,462 — INFO —   Entity progress: 67500/165014
+2026-07-16 13:15:27,536 — INFO —   Entity progress: 68000/165014
+2026-07-16 13:15:27,601 — INFO —   Entity progress: 68500/165014
+2026-07-16 13:15:27,737 — INFO —   Entity progress: 69000/165014
+2026-07-16 13:15:27,807 — INFO —   Entity progress: 69500/165014
+2026-07-16 13:15:27,853 — INFO —   Entity progress: 70000/165014
+2026-07-16 13:15:27,899 — INFO —   Entity progress: 70500/165014
+2026-07-16 13:15:27,938 — INFO —   Entity progress: 71000/165014
+2026-07-16 13:15:27,978 — INFO —   Entity progress: 71500/165014
+2026-07-16 13:15:28,045 — INFO —   Entity progress: 72000/165014
+2026-07-16 13:15:28,083 — INFO —   Entity progress: 72500/165014
+2026-07-16 13:15:28,116 — INFO —   Entity progress: 73000/165014
+2026-07-16 13:15:28,159 — INFO —   Entity progress: 73500/165014
+2026-07-16 13:15:28,193 — INFO —   Entity progress: 74000/165014
+2026-07-16 13:15:28,231 — INFO —   Entity progress: 74500/165014
+2026-07-16 13:15:28,265 — INFO —   Entity progress: 75000/165014
+2026-07-16 13:15:28,302 — INFO —   Entity progress: 75500/165014
+2026-07-16 13:15:28,356 — INFO —   Entity progress: 76000/165014
+2026-07-16 13:15:28,415 — INFO —   Entity progress: 76500/165014
+2026-07-16 13:15:28,463 — INFO —   Entity progress: 77000/165014
+2026-07-16 13:15:28,508 — INFO —   Entity progress: 77500/165014
+2026-07-16 13:15:28,550 — INFO —   Entity progress: 78000/165014
+2026-07-16 13:15:28,587 — INFO —   Entity progress: 78500/165014
+2026-07-16 13:15:28,630 — INFO —   Entity progress: 79000/165014
+2026-07-16 13:15:28,681 — INFO —   Entity progress: 79500/165014
+2026-07-16 13:15:28,719 — INFO —   Entity progress: 80000/165014
+2026-07-16 13:15:28,766 — INFO —   Entity progress: 80500/165014
+2026-07-16 13:15:28,805 — INFO —   Entity progress: 81000/165014
+2026-07-16 13:15:28,854 — INFO —   Entity progress: 81500/165014
+2026-07-16 13:15:28,896 — INFO —   Entity progress: 82000/165014
+2026-07-16 13:15:28,938 — INFO —   Entity progress: 82500/165014
+2026-07-16 13:15:28,985 — INFO —   Entity progress: 83000/165014
+2026-07-16 13:15:29,027 — INFO —   Entity progress: 83500/165014
+2026-07-16 13:15:29,074 — INFO —   Entity progress: 84000/165014
+2026-07-16 13:15:29,110 — INFO —   Entity progress: 84500/165014
+2026-07-16 13:15:29,149 — INFO —   Entity progress: 85000/165014
+2026-07-16 13:15:29,194 — INFO —   Entity progress: 85500/165014
+2026-07-16 13:15:29,241 — INFO —   Entity progress: 86000/165014
+2026-07-16 13:15:29,286 — INFO —   Entity progress: 86500/165014
+2026-07-16 13:15:29,327 — INFO —   Entity progress: 87000/165014
+2026-07-16 13:15:29,374 — INFO —   Entity progress: 87500/165014
+2026-07-16 13:15:29,418 — INFO —   Entity progress: 88000/165014
+2026-07-16 13:15:29,458 — INFO —   Entity progress: 88500/165014
+2026-07-16 13:15:29,524 — INFO —   Entity progress: 89000/165014
+2026-07-16 13:15:29,570 — INFO —   Entity progress: 89500/165014
+2026-07-16 13:15:29,617 — INFO —   Entity progress: 90000/165014
+2026-07-16 13:15:29,660 — INFO —   Entity progress: 90500/165014
+2026-07-16 13:15:29,699 — INFO —   Entity progress: 91000/165014
+2026-07-16 13:15:29,738 — INFO —   Entity progress: 91500/165014
+2026-07-16 13:15:29,787 — INFO —   Entity progress: 92000/165014
+2026-07-16 13:15:29,854 — INFO —   Entity progress: 92500/165014
+2026-07-16 13:15:29,892 — INFO —   Entity progress: 93000/165014
+2026-07-16 13:15:29,931 — INFO —   Entity progress: 93500/165014
+2026-07-16 13:15:29,974 — INFO —   Entity progress: 94000/165014
+2026-07-16 13:15:30,015 — INFO —   Entity progress: 94500/165014
+2026-07-16 13:15:30,053 — INFO —   Entity progress: 95000/165014
+2026-07-16 13:15:30,094 — INFO —   Entity progress: 95500/165014
+2026-07-16 13:15:30,133 — INFO —   Entity progress: 96000/165014
+2026-07-16 13:15:30,177 — INFO —   Entity progress: 96500/165014
+2026-07-16 13:15:30,214 — INFO —   Entity progress: 97000/165014
+2026-07-16 13:15:30,258 — INFO —   Entity progress: 97500/165014
+2026-07-16 13:15:30,298 — INFO —   Entity progress: 98000/165014
+2026-07-16 13:15:30,350 — INFO —   Entity progress: 98500/165014
+2026-07-16 13:15:30,399 — INFO —   Entity progress: 99000/165014
+2026-07-16 13:15:30,450 — INFO —   Entity progress: 99500/165014
+2026-07-16 13:15:30,498 — INFO —   Entity progress: 100000/165014
+2026-07-16 13:15:30,548 — INFO —   Entity progress: 100500/165014
+2026-07-16 13:15:30,589 — INFO —   Entity progress: 101000/165014
+2026-07-16 13:15:30,637 — INFO —   Entity progress: 101500/165014
+2026-07-16 13:15:30,671 — INFO —   Entity progress: 102000/165014
+2026-07-16 13:15:30,729 — INFO —   Entity progress: 102500/165014
+2026-07-16 13:15:30,766 — INFO —   Entity progress: 103000/165014
+2026-07-16 13:15:30,818 — INFO —   Entity progress: 103500/165014
+2026-07-16 13:15:30,880 — INFO —   Entity progress: 104000/165014
+2026-07-16 13:15:30,925 — INFO —   Entity progress: 104500/165014
+2026-07-16 13:15:30,978 — INFO —   Entity progress: 105000/165014
+2026-07-16 13:15:31,021 — INFO —   Entity progress: 105500/165014
+2026-07-16 13:15:31,073 — INFO —   Entity progress: 106000/165014
+2026-07-16 13:15:31,114 — INFO —   Entity progress: 106500/165014
+2026-07-16 13:15:31,159 — INFO —   Entity progress: 107000/165014
+2026-07-16 13:15:31,208 — INFO —   Entity progress: 107500/165014
+2026-07-16 13:15:31,248 — INFO —   Entity progress: 108000/165014
+2026-07-16 13:15:31,287 — INFO —   Entity progress: 108500/165014
+2026-07-16 13:15:31,331 — INFO —   Entity progress: 109000/165014
+2026-07-16 13:15:31,390 — INFO —   Entity progress: 109500/165014
+2026-07-16 13:15:31,433 — INFO —   Entity progress: 110000/165014
+2026-07-16 13:15:31,473 — INFO —   Entity progress: 110500/165014
+2026-07-16 13:15:31,529 — INFO —   Entity progress: 111000/165014
+2026-07-16 13:15:31,576 — INFO —   Entity progress: 111500/165014
+2026-07-16 13:15:31,633 — INFO —   Entity progress: 112000/165014
+2026-07-16 13:15:31,684 — INFO —   Entity progress: 112500/165014
+2026-07-16 13:15:31,733 — INFO —   Entity progress: 113000/165014
+2026-07-16 13:15:31,776 — INFO —   Entity progress: 113500/165014
+2026-07-16 13:15:31,829 — INFO —   Entity progress: 114000/165014
+2026-07-16 13:15:31,870 — INFO —   Entity progress: 114500/165014
+2026-07-16 13:15:31,916 — INFO —   Entity progress: 115000/165014
+2026-07-16 13:15:31,961 — INFO —   Entity progress: 115500/165014
+2026-07-16 13:15:32,000 — INFO —   Entity progress: 116000/165014
+2026-07-16 13:15:32,042 — INFO —   Entity progress: 116500/165014
+2026-07-16 13:15:32,075 — INFO —   Entity progress: 117000/165014
+2026-07-16 13:15:32,121 — INFO —   Entity progress: 117500/165014
+2026-07-16 13:15:32,159 — INFO —   Entity progress: 118000/165014
+2026-07-16 13:15:32,217 — INFO —   Entity progress: 118500/165014
+2026-07-16 13:15:32,272 — INFO —   Entity progress: 119000/165014
+2026-07-16 13:15:32,310 — INFO —   Entity progress: 119500/165014
+2026-07-16 13:15:32,357 — INFO —   Entity progress: 120000/165014
+2026-07-16 13:15:32,408 — INFO —   Entity progress: 120500/165014
+2026-07-16 13:15:32,452 — INFO —   Entity progress: 121000/165014
+2026-07-16 13:15:32,485 — INFO —   Entity progress: 121500/165014
+2026-07-16 13:15:32,526 — INFO —   Entity progress: 122000/165014
+2026-07-16 13:15:32,577 — INFO —   Entity progress: 122500/165014
+2026-07-16 13:15:32,624 — INFO —   Entity progress: 123000/165014
+2026-07-16 13:15:32,689 — INFO —   Entity progress: 123500/165014
+2026-07-16 13:15:32,731 — INFO —   Entity progress: 124000/165014
+2026-07-16 13:15:32,771 — INFO —   Entity progress: 124500/165014
+2026-07-16 13:15:32,810 — INFO —   Entity progress: 125000/165014
+2026-07-16 13:15:32,873 — INFO —   Entity progress: 125500/165014
+2026-07-16 13:15:32,913 — INFO —   Entity progress: 126000/165014
+2026-07-16 13:15:32,948 — INFO —   Entity progress: 126500/165014
+2026-07-16 13:15:32,989 — INFO —   Entity progress: 127000/165014
+2026-07-16 13:15:33,045 — INFO —   Entity progress: 127500/165014
+2026-07-16 13:15:33,097 — INFO —   Entity progress: 128000/165014
+2026-07-16 13:15:33,135 — INFO —   Entity progress: 128500/165014
+2026-07-16 13:15:33,186 — INFO —   Entity progress: 129000/165014
+2026-07-16 13:15:33,224 — INFO —   Entity progress: 129500/165014
+2026-07-16 13:15:33,270 — INFO —   Entity progress: 130000/165014
+2026-07-16 13:15:33,320 — INFO —   Entity progress: 130500/165014
+2026-07-16 13:15:33,367 — INFO —   Entity progress: 131000/165014
+2026-07-16 13:15:33,416 — INFO —   Entity progress: 131500/165014
+2026-07-16 13:15:33,464 — INFO —   Entity progress: 132000/165014
+2026-07-16 13:15:33,501 — INFO —   Entity progress: 132500/165014
+2026-07-16 13:15:33,562 — INFO —   Entity progress: 133000/165014
+2026-07-16 13:15:33,604 — INFO —   Entity progress: 133500/165014
+2026-07-16 13:15:33,654 — INFO —   Entity progress: 134000/165014
+2026-07-16 13:15:33,709 — INFO —   Entity progress: 134500/165014
+2026-07-16 13:15:33,753 — INFO —   Entity progress: 135000/165014
+2026-07-16 13:15:33,797 — INFO —   Entity progress: 135500/165014
+2026-07-16 13:15:33,837 — INFO —   Entity progress: 136000/165014
+2026-07-16 13:15:33,876 — INFO —   Entity progress: 136500/165014
+2026-07-16 13:15:33,918 — INFO —   Entity progress: 137000/165014
+2026-07-16 13:15:33,965 — INFO —   Entity progress: 137500/165014
+2026-07-16 13:15:34,013 — INFO —   Entity progress: 138000/165014
+2026-07-16 13:15:34,057 — INFO —   Entity progress: 138500/165014
+2026-07-16 13:15:34,104 — INFO —   Entity progress: 139000/165014
+2026-07-16 13:15:34,146 — INFO —   Entity progress: 139500/165014
+2026-07-16 13:15:34,196 — INFO —   Entity progress: 140000/165014
+2026-07-16 13:15:34,235 — INFO —   Entity progress: 140500/165014
+2026-07-16 13:15:34,276 — INFO —   Entity progress: 141000/165014
+2026-07-16 13:15:34,317 — INFO —   Entity progress: 141500/165014
+2026-07-16 13:15:34,361 — INFO —   Entity progress: 142000/165014
+2026-07-16 13:15:34,434 — INFO —   Entity progress: 142500/165014
+2026-07-16 13:15:34,490 — INFO —   Entity progress: 143000/165014
+2026-07-16 13:15:34,536 — INFO —   Entity progress: 143500/165014
+2026-07-16 13:15:34,584 — INFO —   Entity progress: 144000/165014
+2026-07-16 13:15:34,629 — INFO —   Entity progress: 144500/165014
+2026-07-16 13:15:34,678 — INFO —   Entity progress: 145000/165014
+2026-07-16 13:15:34,738 — INFO —   Entity progress: 145500/165014
+2026-07-16 13:15:34,795 — INFO —   Entity progress: 146000/165014
+2026-07-16 13:15:34,845 — INFO —   Entity progress: 146500/165014
+2026-07-16 13:15:34,883 — INFO —   Entity progress: 147000/165014
+2026-07-16 13:15:34,930 — INFO —   Entity progress: 147500/165014
+2026-07-16 13:15:34,984 — INFO —   Entity progress: 148000/165014
+2026-07-16 13:15:35,044 — INFO —   Entity progress: 148500/165014
+2026-07-16 13:15:35,089 — INFO —   Entity progress: 149000/165014
+2026-07-16 13:15:35,144 — INFO —   Entity progress: 149500/165014
+2026-07-16 13:15:35,197 — INFO —   Entity progress: 150000/165014
+2026-07-16 13:15:35,239 — INFO —   Entity progress: 150500/165014
+2026-07-16 13:15:35,283 — INFO —   Entity progress: 151000/165014
+2026-07-16 13:15:35,320 — INFO —   Entity progress: 151500/165014
+2026-07-16 13:15:35,366 — INFO —   Entity progress: 152000/165014
+2026-07-16 13:15:35,401 — INFO —   Entity progress: 152500/165014
+2026-07-16 13:15:35,449 — INFO —   Entity progress: 153000/165014
+2026-07-16 13:15:35,495 — INFO —   Entity progress: 153500/165014
+2026-07-16 13:15:35,543 — INFO —   Entity progress: 154000/165014
+2026-07-16 13:15:35,593 — INFO —   Entity progress: 154500/165014
+2026-07-16 13:15:35,636 — INFO —   Entity progress: 155000/165014
+2026-07-16 13:15:35,677 — INFO —   Entity progress: 155500/165014
+2026-07-16 13:15:35,739 — INFO —   Entity progress: 156000/165014
+2026-07-16 13:15:35,790 — INFO —   Entity progress: 156500/165014
+2026-07-16 13:15:35,831 — INFO —   Entity progress: 157000/165014
+2026-07-16 13:15:35,883 — INFO —   Entity progress: 157500/165014
+2026-07-16 13:15:35,957 — INFO —   Entity progress: 158000/165014
+2026-07-16 13:15:36,002 — INFO —   Entity progress: 158500/165014
+2026-07-16 13:15:36,053 — INFO —   Entity progress: 159000/165014
+2026-07-16 13:15:36,107 — INFO —   Entity progress: 159500/165014
+2026-07-16 13:15:36,163 — INFO —   Entity progress: 160000/165014
+2026-07-16 13:15:36,219 — INFO —   Entity progress: 160500/165014
+2026-07-16 13:15:36,272 — INFO —   Entity progress: 161000/165014
+2026-07-16 13:15:36,322 — INFO —   Entity progress: 161500/165014
+2026-07-16 13:15:36,364 — INFO —   Entity progress: 162000/165014
+2026-07-16 13:15:36,402 — INFO —   Entity progress: 162500/165014
+2026-07-16 13:15:36,455 — INFO —   Entity progress: 163000/165014
+2026-07-16 13:15:36,497 — INFO —   Entity progress: 163500/165014
+2026-07-16 13:15:36,552 — INFO —   Entity progress: 164000/165014
+2026-07-16 13:15:36,620 — INFO —   Entity progress: 164500/165014
+2026-07-16 13:15:36,676 — INFO —   Entity progress: 165000/165014
+2026-07-16 13:15:36,727 — INFO — Entity extraction complete ✓
+2026-07-16 13:15:36,729 — INFO — ============================================================
+2026-07-16 13:15:36,729 — INFO — STEP 6 — Save outputs
+2026-07-16 13:15:36,729 — INFO — ============================================================
+2026-07-16 13:15:38,157 — WARNING — Dropped 165014 duplicate respondent rows on save
+2026-07-16 13:15:38,157 — INFO — Appended to master — total records: 5466
+2026-07-16 13:16:41,843 — INFO — Saved: results.xlsx
+2026-07-16 13:17:54,227 — INFO — Saved: research_output.xlsx
+2026-07-16 13:18:13,833 — INFO — Saved: product_output.xlsx
+2026-07-16 13:18:13,922 — INFO — Saved: leadership_output.xlsx
+2026-07-16 13:18:13,922 — INFO — All outputs saved ✓
+2026-07-16 13:18:13,962 — INFO — Marked 164 respondents as processed (165014 with feedback, -164850 rating-only).
+2026-07-16 13:18:15,871 — INFO — Dashboard regenerated ✓
+2026-07-16 13:18:15,872 — INFO — ============================================================
+2026-07-16 13:18:15,872 — INFO — PIPELINE COMPLETE — 12781 new reviews processed
+2026-07-16 13:18:15,872 — INFO — Master file now contains 5466 reviews
+2026-07-16 13:18:15,872 — INFO — Outputs: outputs/latest/ and outputs/archive/2026-07-16/
+2026-07-16 13:18:15,872 — INFO — ============================================================
