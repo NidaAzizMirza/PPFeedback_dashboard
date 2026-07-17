@@ -25,3 +25,5 @@ demoji
 # Dashboard
 streamlit
 matplotlib
+
+grep -qxF 'tiktoken' requirements.txt || echo 'tiktoken' >> requirements.txt
