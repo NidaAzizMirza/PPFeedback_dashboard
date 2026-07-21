@@ -10,12 +10,13 @@ __pycache__/
 # Archive files and folders
 archive/
 
-
 # Excel lock files
 ~$*
 
 # Heavy ML Models and folders
-review_topic_model/
+# NOTE: review_topic_model is a 484MB FILE (not a directory) — no trailing
+# slash, or the pattern only matches directories and misses it entirely.
+review_topic_model
 models/embedding_model.pkl
 *.pkl
 !models/svm_final_model.pkl
@@ -28,9 +29,16 @@ inputs/
 *.db
 !data/metrics.db
 *.csv
-!data/master.xlsx
-!processed_ids.csv
+# NOTE: exceptions below need the full "data/" path — a bare filename like
+# "!processed_ids.csv" only un-ignores that name in the repo ROOT, not
+# inside data/, so it silently stays ignored. This exact bug is why
+# data/processed_ids_raw.csv (needed for every daily run's dedup state)
+# was never being committed.
+!data/processed_ids.csv
+!data/processed_ids_raw.csv
 !data/tags.csv
+!data/survey_cache.csv
+!data/manuallytagged_complete.csv
 
 # Weekly pipeline output exports — not tracked, regenerated every run
 outputs/latest/*.xlsx
@@ -40,5 +48,8 @@ outputs/archive/
 *.xlsx
 !data/master.xlsx
 
-!data/tags.csv
-!data/survey_cache.csv
+# Local pipeline logs — regenerated every run, not meant to live in git
+logs/
+
+# One-off local utility scripts — not part of the pipeline itself
+fix_corrupted_ids.py
