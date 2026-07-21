@@ -60,10 +60,21 @@ matplotlib.use("Agg")
 
 # Emoji used in place of the raw positive/negative/neutral text labels
 # (Browse Reviews) — matches the SurveyMonkey-style face icons.
+# SENTIMENT_EMOJI = {
+#     "positive": "🙂",
+#     "neutral": "😐",
+#     "negative": "🙁",
+# }
 SENTIMENT_EMOJI = {
-    "positive": "🙂",
-    "neutral": "😐",
-    "negative": "🙁",
+    "positive": '<span style="color:#2E8B57;">●</span> 🙂',
+    "neutral": '<span style="color:#D9D9D9;">●</span> 😐',
+    "negative": '<span style="color:#C0392B;">●</span> 🙁',
+}
+
+SENTIMENT_COLORS = {
+    "positive": "#2E8B57",
+    "neutral": "#D9D9D9",
+    "negative": "#C0392B",
 }
 
 
@@ -772,9 +783,36 @@ def page_sentiment(months: list[str] | None):
         neg_pct = (trend["negative_count"] / totals * 100).fillna(0)
         neu_pct = (100 - pos_pct - neg_pct).clip(lower=0)
 
-        ax.bar(trend["month"], neg_pct, color=SENTIMENT_COLORS["negative"], label="Negative")
-        ax.bar(trend["month"], neu_pct, bottom=neg_pct, color=SENTIMENT_COLORS["neutral"], label="Neutral")
-        ax.bar(trend["month"], pos_pct, bottom=neg_pct + neu_pct, color=SENTIMENT_COLORS["positive"], label="Positive")
+        # ax.bar(trend["month"], neg_pct, color=SENTIMENT_COLORS["negative"], label="Negative")
+        # ax.bar(trend["month"], neu_pct, bottom=neg_pct, color=SENTIMENT_COLORS["neutral"], label="Neutral")
+        # ax.bar(trend["month"], pos_pct, bottom=neg_pct + neu_pct, color=SENTIMENT_COLORS["positive"], label="Positive")
+
+        # Same colour logic as rating distribution:
+        # Negative (red) → Neutral (grey) → Positive (green)
+        colors = {
+            "negative": PALETTE["negative"],
+            "neutral": PALETTE["neutral"],
+            "positive": PALETTE["positive"],
+        }
+
+        x = np.arange(len(trend))
+
+        bottom = np.zeros(len(trend))
+
+        for name, values in [
+            ("negative", neg_pct),
+            ("neutral", neu_pct),
+            ("positive", pos_pct),
+        ]:
+            ax.bar(
+                x,
+                values,
+                bottom=bottom,
+                color=colors[name],
+                width=0.6,
+                label=name.title()
+            )
+            bottom += values
 
         # Percentage labels inside each segment (matching the count labels
         # on the Rating distribution chart).
@@ -788,11 +826,25 @@ def page_sentiment(months: list[str] | None):
 
         ax.set_ylabel("% of reviews")
         # ax.legend(frameon=True, fontsize=8)
-        _legend_outside_top_right(ax, fontsize=8)
-        ax.tick_params(axis="x", rotation=0)
+        # _legend_outside_top_right(ax, fontsize=8)
+        handles, labels = ax.get_legend_handles_labels()
+
+        order = ["Positive", "Neutral", "Negative"]
+        ordered = [handles[labels.index(x)] for x in order]
+
+        _legend_outside_top_right(
+            ax,
+            fontsize=8,
+            handles=ordered,
+            labels=order,
+        )
+        # ax.tick_params(axis="x", rotation=0)
+        ax.set_xticks(x)
+        ax.set_xticklabels(trend["month"], rotation=0, ha="center")
         ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
         # fig.tight_layout()
-        fig.tight_layout(rect=[0, 0, 0.82, 1])
+        # fig.tight_layout(rect=[0, 0, 0.82, 1])
+        fig.tight_layout(rect=[0, 0, 0.85, 1])
         st.pyplot(fig)
         plt.close(fig)
     else:
@@ -934,8 +986,10 @@ def page_browse_reviews(months: list[str] | None):
         sent_options = ["All"] + sent_values
         sent_filter = st.selectbox(
             "Sentiment", sent_options,
+            # format_func=lambda v: v if v == "All" else f"{SENTIMENT_EMOJI.get(v, '')} {v.title()}",
             format_func=lambda v: v if v == "All" else f"{SENTIMENT_EMOJI.get(v, '')} {v.title()}",
         )
+
     with col3:
         search = st.text_input("Search feedback text")
 
@@ -958,13 +1012,19 @@ def page_browse_reviews(months: list[str] | None):
         display_df["grouping_sentiment"] = display_df["grouping_sentiment"].map(
             lambda v: f"{SENTIMENT_EMOJI.get(v, '')} {str(v).title()}" if pd.notna(v) else v
         )
+        # display_df["grouping_sentiment"] = display_df["grouping_sentiment"].map(
+        #     lambda v: f"{SENTIMENT_EMOJI.get(v, '')} {str(v).title()}" if pd.notna(v) else v
+        # )
     display_df = display_df.rename(columns={
         "respondent_id": "Respondent", "month": "Month", "rating": "Rating",
         "grouping_sentiment": "Sentiment", "primary_tag_group": "Tag group",
         "primary_tag": "Tag", "feedback_clean": "Feedback",
     })
-    st.dataframe(display_df, use_container_width=True, height=600)
-
+    # st.dataframe(display_df, use_container_width=True, height=600)
+    st.write(
+        display_df.to_html(escape=False, index=False),
+        unsafe_allow_html=True
+    )
 
 def _render_comment_themes_month(selected_month: str):
     """Thematic analysis + Feature & error analysis for one month — used by
