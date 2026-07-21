@@ -76,7 +76,31 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
+def _legend_outside_top_right(ax, fontsize=9, ncol=1, handles=None, labels=None):
+    """
+    Place the legend outside the plot, aligned with the top-right,
+    matching the 'Rating distribution across months' chart.
+    """
+    if handles is None or labels is None:
+        ax.legend(
+            loc="upper left",
+            bbox_to_anchor=(1.01, 1),
+            frameon=True,
+            fontsize=fontsize,
+            borderaxespad=0,
+            ncol=ncol,
+        )
+    else:
+        ax.legend(
+            handles,
+            labels,
+            loc="upper left",
+            bbox_to_anchor=(1.01, 1),
+            frameon=True,
+            fontsize=fontsize,
+            borderaxespad=0,
+            ncol=ncol,
+        )
 
 def _inject_css():
     """Card + pill styling to match the earlier GitHub Pages design."""
@@ -238,7 +262,7 @@ def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
     ax.set_yticklabels(categories, fontsize=9)
     ax.set_xlabel("% of reviews" if pct else "Reviews")
     ax.set_title(title, fontsize=12, loc="left", pad=12, color=PALETTE["ink"])
-    ax.legend(frameon=True, fontsize=8, bbox_to_anchor=(1.01, 1), loc="upper left")
+    ax.legend(frameon=True, fontsize=8, loc="upper left")
     ax.set_xlim(0, lefts.max() * 1.05 if lefts.max() > 0 else 1)
     for spine in ax.spines.values():
         spine.set_color(PALETTE["grid"])
@@ -454,25 +478,31 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
         if pd.notna(v):
             ax2.annotate(f"{v:.1f}%", (xi, v), textcoords="offset points",
                          xytext=(0, -16), ha="center", fontsize=9, color=color_nsat, fontweight="bold")
-    for spine_name in ("top",):
-        ax2.spines[spine_name].set_visible(False)
+    # for spine_name in ("top",):
+    #     ax2.spines[spine_name].set_visible(False)
 
     # ── X-axis & layout ───────────────────────────────────────────────────
     ax1.set_xticks(x)
     ax1.set_xticklabels(month_labels, rotation=0, ha="center", fontsize=10)
-    ax1.set_xlabel("Month", fontsize=11)
+    # ax1.set_xlabel("Month", fontsize=11)
     ax1.grid(axis="y", color=PALETTE["grid"], linestyle="--", linewidth=0.6, alpha=0.6)
     ax1.set_axisbelow(True)
-    for spine in ax1.spines.values():
-        spine.set_color(PALETTE["grid"])
+    # for spine in ax1.spines.values():
+    #     spine.set_color(PALETTE["grid"])
 
     # Combined legend, sitting INSIDE the axes (upper-left) so it can't
     # collide with the title above it.
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     lines3, labels3 = ax_count.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2 + lines3, labels1 + labels2 + labels3,
-               loc="upper left", framealpha=0.9, fontsize=9)
+    # ax1.legend(lines1 + lines2 + lines3, labels1 + labels2 + labels3,
+    #            loc="upper left", framealpha=0.9, fontsize=9)
+    _legend_outside_top_right(
+        ax1,
+        fontsize=9,
+        handles=lines1 + lines2 + lines3,
+        labels=labels1 + labels2 + labels3,
+    )
 
     fig.tight_layout()
     return fig
@@ -533,7 +563,13 @@ def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
     # Legend in 5★-on-top reading order.
     order = ["5 star", "4 star", "3 star", "2 star", "1 star"]
     ordered = [handles[labels.index(l)] for l in order]
-    ax.legend(ordered, order, loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
+    # ax.legend(ordered, order, loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
+    _legend_outside_top_right(
+        ax,
+        fontsize=9,
+        handles=ordered,
+        labels=order,
+    )
     ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
     for spine in ax.spines.values():
         spine.set_color(PALETTE["grid"])
@@ -751,10 +787,12 @@ def page_sentiment(months: list[str] | None):
                             fontsize=9, color=PALETTE["paper"], fontweight="bold")
 
         ax.set_ylabel("% of reviews")
-        ax.legend(frameon=True, fontsize=8)
+        # ax.legend(frameon=True, fontsize=8)
+        _legend_outside_top_right(ax, fontsize=8)
         ax.tick_params(axis="x", rotation=0)
         ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
-        fig.tight_layout()
+        # fig.tight_layout()
+        fig.tight_layout(rect=[0, 0, 0.82, 1])
         st.pyplot(fig)
         plt.close(fig)
     else:
