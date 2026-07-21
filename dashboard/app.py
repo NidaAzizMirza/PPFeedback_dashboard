@@ -429,6 +429,14 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
              color=color_nsat, label="NSAT %", zorder=4)
     ax2.set_ylabel("NSAT %", color=color_nsat, fontsize=11)
     ax2.tick_params(axis="y", labelcolor=color_nsat)
+    # Push the NSAT axis range up so the line sits in the upper portion of
+    # the chart (above the rating line) instead of autoscaling to the data's
+    # own min/max, which put low-NSAT months down near the bars/comments.
+    nsat_vals = trend["nsat"].dropna()
+    if not nsat_vals.empty:
+        nmin, nmax = float(nsat_vals.min()), float(nsat_vals.max())
+        span = max(nmax - nmin, 1e-6)
+        ax2.set_ylim(nmin - span * 3, nmax + span * 0.6)
     for xi, v in zip(x, trend["nsat"]):
         if pd.notna(v):
             ax2.annotate(f"{v:.1f}%", (xi, v), textcoords="offset points",
@@ -440,8 +448,6 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     ax1.set_xticks(x)
     ax1.set_xticklabels(month_labels, rotation=0, ha="center", fontsize=10)
     ax1.set_xlabel("Month", fontsize=11)
-    ax1.set_title("Ratings, NSAT, responses & comments", fontsize=13, loc="left",
-                   pad=12, color=PALETTE["ink"])
     ax1.grid(axis="y", color=PALETTE["grid"], linestyle="--", linewidth=0.6, alpha=0.6)
     ax1.set_axisbelow(True)
     for spine in ax1.spines.values():
