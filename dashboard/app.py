@@ -173,7 +173,7 @@ def _line_trend(df: pd.DataFrame, x: str, y: str, title: str,
     ax.plot(df[x], df[y], marker="o", color=color, linewidth=2)
     ax.set_title(title, fontsize=12, loc="left", pad=10, color=PALETTE["ink"])
     ax.set_ylabel(ylabel)
-    ax.tick_params(axis="x", rotation=30, colors=PALETTE["ink"])
+    ax.tick_params(axis="x", rotation=0, colors=PALETTE["ink"])
     ax.tick_params(axis="y", colors=PALETTE["ink"])
     ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
     for spine in ax.spines.values():
@@ -190,7 +190,7 @@ def _bar_trend(df: pd.DataFrame, x: str, y: str, title: str,
     ax.bar(df[x], df[y], color=PALETTE["primary"], width=0.5)
     ax.set_title(title, fontsize=12, loc="left", pad=10, color=PALETTE["ink"])
     ax.set_ylabel(ylabel)
-    ax.tick_params(axis="x", rotation=30, colors=PALETTE["ink"])
+    ax.tick_params(axis="x", rotation=0, colors=PALETTE["ink"])
     ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
     for spine in ax.spines.values():
         spine.set_color(PALETTE["grid"])
@@ -578,7 +578,7 @@ def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.F
     im = ax.imshow(pivot.values, cmap=cmap, vmin=0, vmax=100, aspect="auto")
 
     ax.set_xticks(np.arange(len(pivot.columns)))
-    ax.set_xticklabels(pivot.columns, rotation=30, ha="right")
+    ax.set_xticklabels(pivot.columns, rotation=0, ha="center")
     ax.set_yticks(np.arange(len(pivot.index)))
     ax.set_yticklabels(pivot.index, fontsize=9)
 
