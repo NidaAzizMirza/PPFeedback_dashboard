@@ -374,7 +374,7 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     color_avg = PALETTE["primary"]
     color_nsat = PALETTE["positive"]
     color_comment = PALETTE["accent"]
-    color_resp = _with_alpha(PALETTE["muted"], 0.35)
+    color_resp = _with_alpha(PALETTE["muted"], 0.6)
 
     # Nice "Nov 2025" x-labels when the month column parses as YYYY-MM;
     # falls back to the raw string (e.g. "2025-11") otherwise.
@@ -399,10 +399,10 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     ax_count.set_ylim(0, count_max * 2.0)  # keeps bars/comments in the lower half
 
     ax_count.bar(x, responses, width=0.6, color=color_resp, zorder=1,
-                 label="Total responses", edgecolor=PALETTE["grid"])
+                 label="Total responses", edgecolor=PALETTE["muted"], linewidth=0.8)
     for xi, v in zip(x, responses):
         ax_count.annotate(f"{int(v):,}", (xi, v), textcoords="offset points",
-                           xytext=(0, 4), ha="center", fontsize=8, color=PALETTE["muted"])
+                           xytext=(0, 4), ha="center", fontsize=8, color=PALETTE["ink"])
 
     ax_count.plot(x, comments, marker="^", linewidth=2, markersize=6, linestyle="--",
                   color=color_comment, zorder=3, label="Comments")
@@ -481,10 +481,12 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
 def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
     """
     Rating distribution across months — 100%-stacked bar per month, one
-    segment per star level, real counts labeled inside each segment.
+    segment per star level, percentage labeled inside each segment.
     Uses the SAME 5-color green-to-red scheme as _rating_distribution_bar
     (Monthly view) so the two stay visually consistent: ★5/★4 green
-    shades, ★3 amber, ★2/★1 red shades.
+    shades, ★3 amber, ★2/★1 red shades. Labeling style (percentage inside
+    each segment, same font/weight/color) matches the Sentiment split
+    over time chart on the Sentiment page.
     """
     star_cols = ["rating_5", "rating_4", "rating_3", "rating_2", "rating_1"]
     data = view.dropna(subset=star_cols, how="all").copy()
@@ -517,10 +519,9 @@ def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
     for col in ["rating_1", "rating_2", "rating_3", "rating_4", "rating_5"]:
         vals = pct[col].values
         ax.bar(x, vals, bottom=bottom, color=colors[col], width=0.6, label=star_labels[col])
-        counts = data[col].values
-        for xi, (b, v, c) in enumerate(zip(bottom, vals, counts)):
-            if v > 3 and pd.notna(c):
-                ax.text(xi, b + v / 2, f"{int(c):,}", ha="center", va="center",
+        for xi, (b, v) in enumerate(zip(bottom, vals)):
+            if v > 3:
+                ax.text(xi, b + v / 2, f"{v:.1f}%", ha="center", va="center",
                          fontsize=9, color=PALETTE["paper"], fontweight="bold")
         bottom += vals
 
@@ -528,7 +529,6 @@ def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
     ax.set_xticklabels(month_labels, rotation=0, ha="center")
     ax.set_ylabel("Ratings (%)")
     ax.set_ylim(0, 100)
-    ax.set_title("Rating distribution", fontsize=13, loc="left", pad=12, color=PALETTE["ink"])
     handles, labels = ax.get_legend_handles_labels()
     # Legend in 5★-on-top reading order.
     order = ["5 star", "4 star", "3 star", "2 star", "1 star"]
@@ -739,6 +739,17 @@ def page_sentiment(months: list[str] | None):
         ax.bar(trend["month"], neg_pct, color=SENTIMENT_COLORS["negative"], label="Negative")
         ax.bar(trend["month"], neu_pct, bottom=neg_pct, color=SENTIMENT_COLORS["neutral"], label="Neutral")
         ax.bar(trend["month"], pos_pct, bottom=neg_pct + neu_pct, color=SENTIMENT_COLORS["positive"], label="Positive")
+
+        # Percentage labels inside each segment (matching the count labels
+        # on the Rating distribution chart).
+        x_pos = np.arange(len(trend))
+        bottoms = {"neg": np.zeros(len(trend)), "neu": neg_pct.values, "pos": (neg_pct + neu_pct).values}
+        for key, vals in zip(["neg", "neu", "pos"], [neg_pct, neu_pct, pos_pct]):
+            for xi, (b, v) in enumerate(zip(bottoms[key], vals.values)):
+                if v > 3:
+                    ax.text(xi, b + v / 2, f"{v:.1f}%", ha="center", va="center",
+                            fontsize=9, color=PALETTE["paper"], fontweight="bold")
+
         ax.set_ylabel("% of reviews")
         ax.legend(frameon=True, fontsize=8)
         ax.tick_params(axis="x", rotation=0)
@@ -1098,8 +1109,8 @@ def render_monthly_view():
             pos_pct = row["positive_count"] / total * 100
             neg_pct = row["negative_count"] / total * 100
             neu_pct = 100 - pos_pct - neg_pct
-            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct,
-                                             "Overall comment sentiment — this month"))
+            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct, ""))
+                                             # "Overall comment sentiment — this month"))
     else:
         st.info("No NLP sentiment data yet for this month. Run the pipeline without SKIP_NLP.")
 
