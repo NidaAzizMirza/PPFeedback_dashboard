@@ -343,94 +343,118 @@ def _diverging_sentiment_bar(df: pd.DataFrame, group_col: str, score_col: str,
     return fig
 
 
+RATING_SCALE = (1, 5)
+
+
 def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     """
     Single combined chart replacing the old separate volume / avg rating /
-    NSAT graphs on the Overview page (change #2):
-      - grey bars   : total respondents (own visual scale, real counts labeled)
-      - blue line   : average rating (left axis, 1-5 scale)
-      - green line  : NSAT % (right axis, 0-100 scale — genuinely to scale)
-      - purple line : respondents who left feedback (own visual scale,
-                      real counts labeled)
+    NSAT graphs on the Overview page (change #2). Styled to match Nida's
+    reference `plot_monthly_combined` (generate_dashboard.py) as closely as
+    possible while pulling colors from dashboard_config.py instead of
+    hardcoded hex:
+      - grey bars     : total responses, on a genuinely-scaled but hidden
+                        count axis (so it isn't squashed flat by rating/NSAT)
+      - purple dashed : comments (total_with_feedback), same hidden count axis
+      - blue line     : average rating, left axis, fixed 1-5 scale
+      - green dashed  : NSAT %, right axis, its own natural scale
 
-    Bars and the "comments" line don't share a real numeric axis with the
-    rating line — there's no single scale that fits 1-5, 0-100%, and raw
-    counts in the thousands on the same plot without one of them going
-    flat. Instead (matching the reference design) they're normalised to
-    sit visually within the rating axis's range, with their real values
-    printed as data labels so nothing is misleading.
+    Unlike the first pass, this uses a REAL third axis for the counts
+    (twinx, hidden) rather than manually normalising into the rating
+    axis's range — that's what was causing the label collisions
+    (NSAT % text landing on top of bar-count text, legend overlapping
+    the title). Fixed-point label offsets (textcoords="offset points")
+    keep annotations a constant pixel distance from their marker
+    regardless of axis scale, which is what actually prevents overlap.
     """
-    fig, ax_rating = plt.subplots(figsize=(11, 5))
+    import matplotlib.ticker as mticker
+
+    color_avg = PALETTE["primary"]
+    color_nsat = PALETTE["positive"]
+    color_comment = PALETTE["accent"]
+    color_resp = _with_alpha(PALETTE["muted"], 0.35)
+
+    # Nice "Nov 2025" x-labels when the month column parses as YYYY-MM;
+    # falls back to the raw string (e.g. "2025-11") otherwise.
+    parsed = pd.to_datetime(trend["month"], format="%Y-%m", errors="coerce")
+    month_labels = parsed.dt.strftime("%b %Y") if parsed.notna().all() else trend["month"]
+
+    x = list(range(len(trend)))
+
+    fig, ax1 = plt.subplots(figsize=(11, 5.5))
     fig.patch.set_facecolor(PALETTE["paper"])
-    ax_rating.set_facecolor(PALETTE["paper"])
+    ax1.set_facecolor(PALETTE["paper"])
 
-    months = trend["month"].tolist()
-    x = np.arange(len(months))
+    # ── Background: response bars + comment line on a hidden count axis ──
+    ax_count = ax1.twinx()
+    ax_count.spines["right"].set_visible(False)
+    ax_count.set_yticks([])
 
-    rating_top = float(trend["avg_rating"].max()) * 1.35 if trend["avg_rating"].notna().any() else 5
-    ax_rating.set_ylim(0, rating_top)
+    responses = trend["total_respondents"].astype(float)
+    comments = trend["total_with_feedback"].astype(float) if "total_with_feedback" in trend else responses * 0
+    count_max = max(responses.max(), comments.max())
+    count_max = count_max if count_max > 0 else 1
+    ax_count.set_ylim(0, count_max * 2.0)  # keeps bars/comments in the lower half
 
-    # --- background bars: response volume (visual scale only) -----------
-    respondents = trend["total_respondents"].astype(float)
-    bar_scale_max = rating_top * 0.72
-    bar_heights = respondents / respondents.max() * bar_scale_max if respondents.max() else respondents * 0
-    ax_rating.bar(x, bar_heights, color=_with_alpha(PALETTE["muted"], 0.28),
-                  width=0.55, zorder=1, label="Total responses")
-    for xi, (h, real) in enumerate(zip(bar_heights, respondents)):
-        ax_rating.text(xi, h + rating_top * 0.015, f"{int(real):,}", ha="center",
-                        va="bottom", fontsize=7.5, color=PALETTE["muted"])
+    ax_count.bar(x, responses, width=0.6, color=color_resp, zorder=1,
+                 label="Total responses", edgecolor=PALETTE["grid"])
+    for xi, v in zip(x, responses):
+        ax_count.annotate(f"{int(v):,}", (xi, v), textcoords="offset points",
+                           xytext=(0, 4), ha="center", fontsize=8, color=PALETTE["muted"])
 
-    # --- comments line: respondents who left feedback (visual scale only)
-    comments = trend["total_with_feedback"].astype(float) if "total_with_feedback" in trend else None
-    if comments is not None and comments.notna().any():
-        comments_scale_max = rating_top * 0.28
-        comments_norm = comments / comments.max() * comments_scale_max if comments.max() else comments * 0
-        ax_rating.plot(x, comments_norm, marker="^", linestyle="--", linewidth=1.6,
-                        color=PALETTE["accent"], zorder=3, label="Comments")
-        for xi, (v, real) in enumerate(zip(comments_norm, comments)):
-            if pd.notna(real):
-                ax_rating.text(xi, v + rating_top * 0.02, f"{int(real):,}", ha="center",
-                                va="bottom", fontsize=7.5, color=PALETTE["accent"])
+    ax_count.plot(x, comments, marker="^", linewidth=2, markersize=6, linestyle="--",
+                  color=color_comment, zorder=3, label="Comments")
+    for xi, v in zip(x, comments):
+        if pd.notna(v):
+            ax_count.annotate(f"{int(v):,}", (xi, v), textcoords="offset points",
+                               xytext=(0, 8), ha="center", fontsize=8, color=color_comment)
 
-    # --- average rating: real values, primary axis -----------------------
-    ax_rating.plot(x, trend["avg_rating"], marker="o", linewidth=2.2,
-                    color=PALETTE["primary"], zorder=4, label="Avg rating")
+    # ── Average rating (left axis, fixed 1-5 scale) ──────────────────────
+    ax1.plot(x, trend["avg_rating"], marker="o", linewidth=2.5, markersize=7,
+             color=color_avg, label="Avg rating", zorder=4)
+    ax1.set_ylabel("Average rating", color=color_avg, fontsize=11)
+    ax1.tick_params(axis="y", labelcolor=color_avg)
+    ax1.set_ylim(RATING_SCALE[0] - 0.5, RATING_SCALE[1] + 0.5)
+    ax1.yaxis.set_major_locator(mticker.MultipleLocator(1))
     for xi, v in zip(x, trend["avg_rating"]):
         if pd.notna(v):
-            ax_rating.text(xi, v + rating_top * 0.02, f"{v:.2f}", ha="center",
-                            va="bottom", fontsize=8, color=PALETTE["primary"], fontweight="bold")
+            ax1.annotate(f"{v:.2f}", (xi, v), textcoords="offset points",
+                         xytext=(0, 10), ha="center", fontsize=9, color=color_avg, fontweight="bold")
 
-    ax_rating.set_ylabel("Average rating (1-5) / responses / comments", fontsize=9)
-    ax_rating.set_xticks(x)
-    ax_rating.set_xticklabels(months, rotation=30)
-    ax_rating.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
-    for spine in ax_rating.spines.values():
-        spine.set_color(PALETTE["grid"])
-
-    # --- NSAT: real values, secondary axis --------------------------------
-    ax_nsat = ax_rating.twinx()
-    ax_nsat.set_facecolor("none")
-    ax_nsat.plot(x, trend["nsat"], marker="s", linestyle="--", linewidth=1.8,
-                 color=PALETTE["positive"], zorder=5, label="NSAT %")
+    # ── NSAT % (right axis, its own natural scale) ───────────────────────
+    ax2 = ax1.twinx()
+    ax2.spines["right"].set_position(("axes", 1.0))
+    ax2.set_facecolor("none")
+    ax2.plot(x, trend["nsat"], marker="s", linewidth=2.5, markersize=7, linestyle="--",
+             color=color_nsat, label="NSAT %", zorder=4)
+    ax2.set_ylabel("NSAT %", color=color_nsat, fontsize=11)
+    ax2.tick_params(axis="y", labelcolor=color_nsat)
     for xi, v in zip(x, trend["nsat"]):
         if pd.notna(v):
-            ax_nsat.text(xi, v + 0.8, f"{v:.1f}%", ha="center", va="bottom",
-                         fontsize=8, color=PALETTE["positive"], fontweight="bold")
-    ax_nsat.set_ylabel("NSAT %", fontsize=9, color=PALETTE["positive"])
-    ax_nsat.tick_params(axis="y", colors=PALETTE["positive"])
-    nsat_vals = trend["nsat"].dropna()
-    if not nsat_vals.empty:
-        ax_nsat.set_ylim(max(0, nsat_vals.min() - 15), nsat_vals.max() + 15)
-    for spine in ax_nsat.spines.values():
-        spine.set_visible(False)
+            ax2.annotate(f"{v:.1f}%", (xi, v), textcoords="offset points",
+                         xytext=(0, -16), ha="center", fontsize=9, color=color_nsat, fontweight="bold")
+    for spine_name in ("top",):
+        ax2.spines[spine_name].set_visible(False)
 
-    lines1, labels1 = ax_rating.get_legend_handles_labels()
-    lines2, labels2 = ax_nsat.get_legend_handles_labels()
-    ax_rating.legend(lines1 + lines2, labels1 + labels2, frameon=True, fontsize=8,
-                      loc="upper left", bbox_to_anchor=(0, 1.15), ncol=4)
+    # ── X-axis & layout ───────────────────────────────────────────────────
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(month_labels, rotation=0, ha="center", fontsize=10)
+    ax1.set_xlabel("Month", fontsize=11)
+    ax1.set_title("Ratings, NSAT, responses & comments", fontsize=13, loc="left",
+                   pad=12, color=PALETTE["ink"])
+    ax1.grid(axis="y", color=PALETTE["grid"], linestyle="--", linewidth=0.6, alpha=0.6)
+    ax1.set_axisbelow(True)
+    for spine in ax1.spines.values():
+        spine.set_color(PALETTE["grid"])
 
-    ax_rating.set_title("Ratings, NSAT, responses & comments", fontsize=12, loc="left",
-                         pad=32, color=PALETTE["ink"])
+    # Combined legend, sitting INSIDE the axes (upper-left) so it can't
+    # collide with the title above it.
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    lines3, labels3 = ax_count.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2 + lines3, labels1 + labels2 + labels3,
+               loc="upper left", framealpha=0.9, fontsize=9)
+
     fig.tight_layout()
     return fig
 
