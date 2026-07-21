@@ -10,16 +10,16 @@ survey files or the SurveyMonkey API directly. Run run_pipeline.py (or the
 scheduled GitHub Action) first to populate data.
 
 Page structure:
-    Tab 1 — Monthly view      : single-month "at a glance" snapshot (KPI
-                                 cards, ratings, this-month sentiment split),
+    Tab 1 — Feedback ratings  : ratings/NSAT/volume side of things, split
+                                 into its own Month by month (KPI cards,
+                                 ratings, this-month sentiment split,
                                  styled to match the earlier GitHub Pages
-                                 design.
-    Tab 2 — Aggregate view    : high-level multi-month trends (Overview
-                                 overlay chart + Sentiment split).
-    Tab 3 — Feedback comments : everything derived from free-text comments
+                                 design) and Aggregate (Overview overlay
+                                 chart + Sentiment split trend) sub-tabs.
+    Tab 2 — Feedback comments : everything derived from free-text comments
                                  (tag groups, features, errors, browse
-                                 reviews), with its own Month by month /
-                                 Aggregate sub-tabs.
+                                 reviews), split the same way into its own
+                                 Month by month / Aggregate sub-tabs.
 
 Edit THIS file if you want to:
   - Change a page's layout or charts (Section 4 — PAGE FUNCTIONS)
@@ -250,18 +250,20 @@ def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
 def _single_sentiment_bar(pos_pct: float, neg_pct: float, neu_pct: float,
                            title: str) -> plt.Figure:
     """One horizontal 100%-stacked bar — matches the 'Overall comment sentiment' card."""
-    fig, ax = plt.subplots(figsize=(10, 1.4))
+    fig, ax = plt.subplots(figsize=(10, 2.2))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
     segments = [("negative", neg_pct), ("neutral", neu_pct), ("positive", pos_pct)]
+    y_pos = -0.35
     left = 0
     for name, val in segments:
-        ax.barh([0], [val], left=left, color=SENTIMENT_COLORS[name], height=0.6)
+        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=0.3)
         if val > 3:
-            ax.text(left + val / 2, 0, f"{val:.1f}%", ha="center", va="center",
+            ax.text(left + val / 2, y_pos, f"{val:.1f}%", ha="center", va="center",
                      fontsize=10, color=PALETTE["paper"], fontweight="bold")
         left += val
     ax.set_xlim(0, 100)
+    ax.set_ylim(-1, 1)
     ax.set_yticks([])
     ax.set_title(title, fontsize=11, loc="left", pad=8, color=PALETTE["ink"])
     for spine in ax.spines.values():
@@ -441,8 +443,8 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
         rating_bot_lim, rating_top_lim = RATING_SCALE[0] - 0.5, RATING_SCALE[1] + 0.5
         rating_max = float(trend["avg_rating"].max()) if trend["avg_rating"].notna().any() else RATING_SCALE[1]
         rating_max_frac = (rating_max - rating_bot_lim) / (rating_top_lim - rating_bot_lim)
-        f_min = min(max(rating_max_frac + 0.10, 0.65), 0.82)  # NSAT's lowest point sits here
-        f_max = min(f_min + 0.16, 0.97)                        # NSAT's highest point sits here
+        f_min = max(0.85, min(rating_max_frac + 0.12, 0.90))  # NSAT's lowest point sits here
+        f_max = min(f_min + 0.12, 0.99)                        # NSAT's highest point sits here
         gap = f_max - f_min
         height = span / gap
         nsat_low = nmin - f_min * height
@@ -558,17 +560,20 @@ def _sidebar():
     st.sidebar.caption("DB: `data/metrics.db`")
 
 
-def _aggregate_month_picker(months: list[str], key_prefix: str = "agg") -> list[str]:
+def _aggregate_month_picker(months: list[str], key_prefix: str = "agg") -> list[str] | None:
     """Month selector used inside any 'Aggregate' sub-tab. key_prefix keeps
-    widget keys unique when this is used in more than one tab at once."""
+    widget keys unique when this is used in more than one tab at once.
+    Returns None for 'All time' (no filter), or the (possibly empty) list
+    of months selected — an empty list here is a deliberate "show nothing"
+    state, not the same as "no filter"."""
     mode = st.radio("View", ["All time", "Select months"], index=0, horizontal=True,
                      key=f"{key_prefix}_mode")
     if mode == "All time":
-        return []
+        return None
     selected = st.multiselect("Select months", options=months, default=months,
                                key=f"{key_prefix}_months")
     if not selected:
-        st.warning("Select at least one month.")
+        st.warning("No months selected — pick at least one to see data.")
     return selected
 
 
@@ -576,7 +581,7 @@ def _aggregate_month_picker(months: list[str], key_prefix: str = "agg") -> list[
 # SECTION 4 — PAGE FUNCTIONS (Aggregate view)
 # ============================================================================
 
-def page_overview(months: list[str]):
+def page_overview(months: list[str] | None):
     st.header("📊 Overview")
 
     summary = load_monthly_summary()
@@ -584,7 +589,7 @@ def page_overview(months: list[str]):
         st.warning("No data yet.")
         return
 
-    view = filter_by_months(summary, months) if months else summary
+    view = filter_by_months(summary, months)
     if view.empty:
         st.warning("No data for the selected period.")
         return
@@ -618,7 +623,7 @@ def page_overview(months: list[str]):
                "once more months are collected.")
 
 
-def page_sentiment(months: list[str]):
+def page_sentiment(months: list[str] | None):
     st.header("💬 Sentiment")
 
     summary = load_monthly_summary()
@@ -626,7 +631,7 @@ def page_sentiment(months: list[str]):
         st.warning("No data yet.")
         return
 
-    view = filter_by_months(summary, months) if months else summary
+    view = filter_by_months(summary, months)
     if view.empty or view["positive_count"].isna().all():
         st.info("No NLP sentiment data yet for this period. "
                "Run the pipeline without SKIP_NLP to populate this.")
@@ -651,7 +656,7 @@ def page_sentiment(months: list[str]):
     trend = trend[trend["positive_count"].notna()]
     if len(trend) > 1:
         st.subheader("Sentiment split over time")
-        fig, ax = plt.subplots(figsize=(10, 4))
+        fig, ax = plt.subplots(figsize=(10, 5))
         fig.patch.set_facecolor(PALETTE["paper"])
         ax.set_facecolor(PALETTE["paper"])
         totals = trend["positive_count"] + trend["negative_count"] + trend["neutral_count"]
@@ -664,7 +669,7 @@ def page_sentiment(months: list[str]):
         ax.bar(trend["month"], pos_pct, bottom=neg_pct + neu_pct, color=SENTIMENT_COLORS["positive"], label="Positive")
         ax.set_ylabel("% of reviews")
         ax.legend(frameon=True, fontsize=8)
-        ax.tick_params(axis="x", rotation=30)
+        ax.tick_params(axis="x", rotation=0)
         ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
         fig.tight_layout()
         st.pyplot(fig)
@@ -687,7 +692,7 @@ def render_aggregate_view():
 # / errors / browse reviews; everything derived from free-text comments)
 # ============================================================================
 
-def page_tag_groups(months: list[str]):
+def page_tag_groups(months: list[str] | None):
     st.header("🏷️ Tag Groups")
 
     df = load_tag_group_trends()
@@ -695,7 +700,7 @@ def page_tag_groups(months: list[str]):
         st.info("No tag data yet. Run the pipeline without SKIP_NLP.")
         return
 
-    view = filter_by_months(df, months) if months else df
+    view = filter_by_months(df, months)
     if view.empty:
         st.warning("No data for the selected period.")
         return
@@ -715,7 +720,7 @@ def page_tag_groups(months: list[str]):
     st.dataframe(display, use_container_width=True)
 
 
-def page_features(months: list[str]):
+def page_features(months: list[str] | None):
     st.header("🧩 Features")
 
     df = load_feature_trends()
@@ -723,7 +728,7 @@ def page_features(months: list[str]):
         st.info("No feature data yet. Run the pipeline without SKIP_NLP.")
         return
 
-    view = filter_by_months(df, months) if months else df
+    view = filter_by_months(df, months)
     if view.empty:
         st.warning("No data for the selected period.")
         return
@@ -764,7 +769,7 @@ def page_features(months: list[str]):
         plt.close(heatmap_fig)
 
 
-def page_errors(months: list[str]):
+def page_errors(months: list[str] | None):
     st.header("⚠️ Errors")
 
     df = load_error_trends()
@@ -772,7 +777,7 @@ def page_errors(months: list[str]):
         st.info("No error pattern data yet. Run the pipeline without SKIP_NLP.")
         return
 
-    view = filter_by_months(df, months) if months else df
+    view = filter_by_months(df, months)
     if view.empty:
         st.warning("No data for the selected period.")
         return
@@ -791,10 +796,10 @@ def page_errors(months: list[str]):
     plt.close(fig)
 
 
-def page_browse_reviews(months: list[str]):
+def page_browse_reviews(months: list[str] | None):
     st.header("🔎 Browse Reviews")
 
-    df = load_review_detail(months if months else None)
+    df = load_review_detail(months)
     if df.empty:
         st.info("No tagged reviews yet. Run the pipeline without SKIP_NLP.")
         return
@@ -1037,6 +1042,17 @@ def render_monthly_view():
 # SECTION 6 — PAGE ROUTER
 # ============================================================================
 
+def render_feedback_ratings_view():
+    """Ratings/NSAT/volume side of the dashboard — Monthly view + Aggregate
+    view merged under one top-level tab, split the same way as Feedback
+    comments (Month by month / Aggregate), for a consistent structure."""
+    sub_month, sub_agg = st.tabs(["Month by month", "Aggregate"])
+    with sub_month:
+        render_monthly_view()
+    with sub_agg:
+        render_aggregate_view()
+
+
 def main():
     _inject_css()
 
@@ -1053,12 +1069,10 @@ def main():
 
     st.title("🗺️ Planning Portal Feedback Dashboard")
 
-    tab1, tab2, tab3 = st.tabs(["Monthly view", "Aggregate view", "Feedback comments"])
+    tab1, tab2 = st.tabs(["Feedback ratings", "Feedback comments"])
     with tab1:
-        render_monthly_view()
+        render_feedback_ratings_view()
     with tab2:
-        render_aggregate_view()
-    with tab3:
         render_feedback_comments_view()
 
 

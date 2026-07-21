@@ -79,8 +79,17 @@ def load_error_trends() -> pd.DataFrame:
 def load_review_detail(months: list[str] | None = None) -> pd.DataFrame:
     """
     Individual tagged reviews, optionally filtered to a list of months.
-    Pass months=None (or an empty list) for all months.
+
+    months=None            -> all months (no filter)
+    months=[] (empty list)  -> explicitly zero months selected -> empty result
+    months=[...]            -> only those months
+
+    (Previously an empty list was treated the same as None, which is the
+    bug behind "select months isn't working" — deselecting everything
+    silently fell back to showing all-time data instead of nothing.)
     """
+    if months is not None and len(months) == 0:
+        return pd.DataFrame()
     if months:
         placeholders = ",".join(["?"] * len(months))
         query = f"SELECT * FROM review_detail WHERE month IN ({placeholders}) ORDER BY run_date DESC"
@@ -88,8 +97,18 @@ def load_review_detail(months: list[str] | None = None) -> pd.DataFrame:
     return _read_sql("SELECT * FROM review_detail ORDER BY run_date DESC")
 
 
-def filter_by_months(df: pd.DataFrame, months: list[str]) -> pd.DataFrame:
-    """Helper: filter any month-keyed table down to a list of selected months."""
-    if not months or "month" not in df.columns:
+def filter_by_months(df: pd.DataFrame, months: list[str] | None) -> pd.DataFrame:
+    """
+    Helper: filter any month-keyed table down to a list of selected months.
+
+    months=None            -> return df unfiltered (all-time)
+    months=[] (empty list)  -> return an empty frame (explicitly nothing selected)
+    months=[...]            -> filter to those months
+    """
+    if months is None:
         return df
+    if "month" not in df.columns:
+        return df
+    if len(months) == 0:
+        return df.iloc[0:0].copy()
     return df[df["month"].isin(months)].copy()
