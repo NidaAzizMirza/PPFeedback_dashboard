@@ -167,7 +167,7 @@ def _kpi_card(label: str, value: str, delta: float | None = None,
 def _line_trend(df: pd.DataFrame, x: str, y: str, title: str,
                  ylabel: str = "", color: str = None) -> plt.Figure:
     color = color or PALETTE["primary"]
-    fig, ax = plt.subplots(figsize=(10, 3.5))
+    fig, ax = plt.subplots(figsize=(10, 4))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
     ax.plot(df[x], df[y], marker="o", color=color, linewidth=2)
@@ -304,7 +304,7 @@ def _rating_distribution_bar(counts: dict, title: str) -> plt.Figure:
     ]
     labels = [f"★{s}" for s in stars]
 
-    fig, ax = plt.subplots(figsize=(10, 3))
+    fig, ax = plt.subplots(figsize=(10, 4))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
     bars = ax.barh(labels, values, color=colors, height=0.6)
@@ -478,6 +478,69 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     return fig
 
 
+def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
+    """
+    Rating distribution across months — 100%-stacked bar per month, one
+    segment per star level, real counts labeled inside each segment.
+    Uses the SAME 5-color green-to-red scheme as _rating_distribution_bar
+    (Monthly view) so the two stay visually consistent: ★5/★4 green
+    shades, ★3 amber, ★2/★1 red shades.
+    """
+    star_cols = ["rating_5", "rating_4", "rating_3", "rating_2", "rating_1"]
+    data = view.dropna(subset=star_cols, how="all").copy()
+    if data.empty:
+        return None
+
+    parsed = pd.to_datetime(data["month"], format="%Y-%m", errors="coerce")
+    month_labels = parsed.dt.strftime("%b %Y") if parsed.notna().all() else data["month"]
+
+    colors = {
+        "rating_5": PALETTE["positive"],
+        "rating_4": _with_alpha(PALETTE["positive"], 0.55),
+        "rating_3": PALETTE["neutral"],
+        "rating_2": _with_alpha(PALETTE["negative"], 0.55),
+        "rating_1": PALETTE["negative"],
+    }
+    star_labels = {"rating_5": "5 star", "rating_4": "4 star", "rating_3": "3 star",
+                   "rating_2": "2 star", "rating_1": "1 star"}
+
+    totals = data[star_cols].sum(axis=1).replace(0, np.nan)
+    pct = data[star_cols].div(totals, axis=0).fillna(0) * 100
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    fig.patch.set_facecolor(PALETTE["paper"])
+    ax.set_facecolor(PALETTE["paper"])
+
+    x = np.arange(len(data))
+    bottom = np.zeros(len(data))
+    # Bottom-to-top order 1★→5★ so 5★ ends up on top, matching the reference.
+    for col in ["rating_1", "rating_2", "rating_3", "rating_4", "rating_5"]:
+        vals = pct[col].values
+        ax.bar(x, vals, bottom=bottom, color=colors[col], width=0.6, label=star_labels[col])
+        counts = data[col].values
+        for xi, (b, v, c) in enumerate(zip(bottom, vals, counts)):
+            if v > 3 and pd.notna(c):
+                ax.text(xi, b + v / 2, f"{int(c):,}", ha="center", va="center",
+                         fontsize=9, color=PALETTE["paper"], fontweight="bold")
+        bottom += vals
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(month_labels, rotation=0, ha="center")
+    ax.set_ylabel("Ratings (%)")
+    ax.set_ylim(0, 100)
+    ax.set_title("Rating distribution", fontsize=13, loc="left", pad=12, color=PALETTE["ink"])
+    handles, labels = ax.get_legend_handles_labels()
+    # Legend in 5★-on-top reading order.
+    order = ["5 star", "4 star", "3 star", "2 star", "1 star"]
+    ordered = [handles[labels.index(l)] for l in order]
+    ax.legend(ordered, order, loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
+    ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
+    for spine in ax.spines.values():
+        spine.set_color(PALETTE["grid"])
+    fig.tight_layout()
+    return fig
+
+
 def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.Figure | None:
     """
     Feature x month heatmap, cell color = % negative mentions.
@@ -618,6 +681,15 @@ def page_overview(months: list[str] | None):
     if len(trend) > 1:
         st.subheader("Ratings, NSAT, responses & comments over time")
         st.pyplot(_overlay_trend_chart(trend))
+
+        st.divider()
+        st.subheader("Rating distribution across months")
+        rating_fig = _rating_distribution_stacked(trend)
+        if rating_fig is not None:
+            st.pyplot(rating_fig)
+            plt.close(rating_fig)
+        else:
+            st.info("No rating breakdown recorded across these months yet.")
     else:
         st.info("Only one month of data so far — trend charts will appear "
                "once more months are collected.")
@@ -1005,19 +1077,13 @@ def render_monthly_view():
 
     # ---- Ratings section ------------------------------------------------
     st.subheader("Ratings")
-    rc1, rc2 = st.columns(2)
-    with rc1:
-        st.markdown("**Rating distribution — this month**")
-        rating_cols = ["rating_5", "rating_4", "rating_3", "rating_2", "rating_1"]
-        if all(c in row.index for c in rating_cols) and row[rating_cols].notna().any():
-            counts = {s: row[f"rating_{s}"] for s in [5, 4, 3, 2, 1]}
-            st.pyplot(_rating_distribution_bar(counts, ""))
-        else:
-            st.info("No rating breakdown recorded for this month yet.")
-    with rc2:
-        if len(summary) > 1:
-            st.pyplot(_line_trend(summary, "month", "avg_rating",
-                                  "Average rating — all months", ylabel="Avg rating (1-5)"))
+    st.markdown("**Rating distribution — this month**")
+    rating_cols = ["rating_5", "rating_4", "rating_3", "rating_2", "rating_1"]
+    if all(c in row.index for c in rating_cols) and row[rating_cols].notna().any():
+        counts = {s: row[f"rating_{s}"] for s in [5, 4, 3, 2, 1]}
+        st.pyplot(_rating_distribution_bar(counts, ""))
+    else:
+        st.info("No rating breakdown recorded for this month yet.")
 
     st.divider()
 
