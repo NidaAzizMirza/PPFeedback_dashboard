@@ -429,14 +429,25 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
              color=color_nsat, label="NSAT %", zorder=4)
     ax2.set_ylabel("NSAT %", color=color_nsat, fontsize=11)
     ax2.tick_params(axis="y", labelcolor=color_nsat)
-    # Push the NSAT axis range up so the line sits in the upper portion of
-    # the chart (above the rating line) instead of autoscaling to the data's
-    # own min/max, which put low-NSAT months down near the bars/comments.
+    # Push the NSAT axis range up so the line sits clearly ABOVE the rating
+    # line, with a guaranteed gap — not just "somewhat higher". Anchored off
+    # where the rating line actually falls on its own axis (rather than a
+    # fixed multiplier), since a fixed multiplier still let them cross when
+    # NSAT dipped and rating ticked up in the same month (e.g. Feb 2026).
     nsat_vals = trend["nsat"].dropna()
     if not nsat_vals.empty:
         nmin, nmax = float(nsat_vals.min()), float(nsat_vals.max())
         span = max(nmax - nmin, 1e-6)
-        ax2.set_ylim(nmin - span * 3, nmax + span * 0.6)
+        rating_bot_lim, rating_top_lim = RATING_SCALE[0] - 0.5, RATING_SCALE[1] + 0.5
+        rating_max = float(trend["avg_rating"].max()) if trend["avg_rating"].notna().any() else RATING_SCALE[1]
+        rating_max_frac = (rating_max - rating_bot_lim) / (rating_top_lim - rating_bot_lim)
+        f_min = min(max(rating_max_frac + 0.10, 0.65), 0.82)  # NSAT's lowest point sits here
+        f_max = min(f_min + 0.16, 0.97)                        # NSAT's highest point sits here
+        gap = f_max - f_min
+        height = span / gap
+        nsat_low = nmin - f_min * height
+        nsat_high = nsat_low + height
+        ax2.set_ylim(nsat_low, nsat_high)
     for xi, v in zip(x, trend["nsat"]):
         if pd.notna(v):
             ax2.annotate(f"{v:.1f}%", (xi, v), textcoords="offset points",
