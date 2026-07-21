@@ -10,12 +10,16 @@ survey files or the SurveyMonkey API directly. Run run_pipeline.py (or the
 scheduled GitHub Action) first to populate data.
 
 Page structure:
-    Tab 1 — Monthly view   : single-month "at a glance" snapshot (KPI cards,
-                              this-month sentiment/tag/feature/error charts),
-                              styled to match the earlier GitHub Pages design.
-    Tab 2 — Aggregate view : the original multi-month trends dashboard
-                              (Overview / Sentiment / Tag Groups / Features /
-                              Errors / Monthly Comparison / Browse Reviews).
+    Tab 1 — Monthly view      : single-month "at a glance" snapshot (KPI
+                                 cards, ratings, this-month sentiment split),
+                                 styled to match the earlier GitHub Pages
+                                 design.
+    Tab 2 — Aggregate view    : high-level multi-month trends (Overview
+                                 overlay chart + Sentiment split).
+    Tab 3 — Feedback comments : everything derived from free-text comments
+                                 (tag groups, features, errors, browse
+                                 reviews), with its own Month by month /
+                                 Aggregate sub-tabs.
 
 Edit THIS file if you want to:
   - Change a page's layout or charts (Section 4 — PAGE FUNCTIONS)
@@ -31,6 +35,7 @@ from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -52,6 +57,14 @@ from store import (
 )
 
 matplotlib.use("Agg")
+
+# Emoji used in place of the raw positive/negative/neutral text labels
+# (Browse Reviews) — matches the SurveyMonkey-style face icons.
+SENTIMENT_EMOJI = {
+    "positive": "🙂",
+    "neutral": "😐",
+    "negative": "🙁",
+}
 
 
 # ============================================================================
@@ -330,6 +343,157 @@ def _diverging_sentiment_bar(df: pd.DataFrame, group_col: str, score_col: str,
     return fig
 
 
+def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
+    """
+    Single combined chart replacing the old separate volume / avg rating /
+    NSAT graphs on the Overview page (change #2):
+      - grey bars   : total respondents (own visual scale, real counts labeled)
+      - blue line   : average rating (left axis, 1-5 scale)
+      - green line  : NSAT % (right axis, 0-100 scale — genuinely to scale)
+      - purple line : respondents who left feedback (own visual scale,
+                      real counts labeled)
+
+    Bars and the "comments" line don't share a real numeric axis with the
+    rating line — there's no single scale that fits 1-5, 0-100%, and raw
+    counts in the thousands on the same plot without one of them going
+    flat. Instead (matching the reference design) they're normalised to
+    sit visually within the rating axis's range, with their real values
+    printed as data labels so nothing is misleading.
+    """
+    fig, ax_rating = plt.subplots(figsize=(11, 5))
+    fig.patch.set_facecolor(PALETTE["paper"])
+    ax_rating.set_facecolor(PALETTE["paper"])
+
+    months = trend["month"].tolist()
+    x = np.arange(len(months))
+
+    rating_top = float(trend["avg_rating"].max()) * 1.35 if trend["avg_rating"].notna().any() else 5
+    ax_rating.set_ylim(0, rating_top)
+
+    # --- background bars: response volume (visual scale only) -----------
+    respondents = trend["total_respondents"].astype(float)
+    bar_scale_max = rating_top * 0.72
+    bar_heights = respondents / respondents.max() * bar_scale_max if respondents.max() else respondents * 0
+    ax_rating.bar(x, bar_heights, color=_with_alpha(PALETTE["muted"], 0.28),
+                  width=0.55, zorder=1, label="Total responses")
+    for xi, (h, real) in enumerate(zip(bar_heights, respondents)):
+        ax_rating.text(xi, h + rating_top * 0.015, f"{int(real):,}", ha="center",
+                        va="bottom", fontsize=7.5, color=PALETTE["muted"])
+
+    # --- comments line: respondents who left feedback (visual scale only)
+    comments = trend["total_with_feedback"].astype(float) if "total_with_feedback" in trend else None
+    if comments is not None and comments.notna().any():
+        comments_scale_max = rating_top * 0.28
+        comments_norm = comments / comments.max() * comments_scale_max if comments.max() else comments * 0
+        ax_rating.plot(x, comments_norm, marker="^", linestyle="--", linewidth=1.6,
+                        color=PALETTE["accent"], zorder=3, label="Comments")
+        for xi, (v, real) in enumerate(zip(comments_norm, comments)):
+            if pd.notna(real):
+                ax_rating.text(xi, v + rating_top * 0.02, f"{int(real):,}", ha="center",
+                                va="bottom", fontsize=7.5, color=PALETTE["accent"])
+
+    # --- average rating: real values, primary axis -----------------------
+    ax_rating.plot(x, trend["avg_rating"], marker="o", linewidth=2.2,
+                    color=PALETTE["primary"], zorder=4, label="Avg rating")
+    for xi, v in zip(x, trend["avg_rating"]):
+        if pd.notna(v):
+            ax_rating.text(xi, v + rating_top * 0.02, f"{v:.2f}", ha="center",
+                            va="bottom", fontsize=8, color=PALETTE["primary"], fontweight="bold")
+
+    ax_rating.set_ylabel("Average rating (1-5) / responses / comments", fontsize=9)
+    ax_rating.set_xticks(x)
+    ax_rating.set_xticklabels(months, rotation=30)
+    ax_rating.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
+    for spine in ax_rating.spines.values():
+        spine.set_color(PALETTE["grid"])
+
+    # --- NSAT: real values, secondary axis --------------------------------
+    ax_nsat = ax_rating.twinx()
+    ax_nsat.set_facecolor("none")
+    ax_nsat.plot(x, trend["nsat"], marker="s", linestyle="--", linewidth=1.8,
+                 color=PALETTE["positive"], zorder=5, label="NSAT %")
+    for xi, v in zip(x, trend["nsat"]):
+        if pd.notna(v):
+            ax_nsat.text(xi, v + 0.8, f"{v:.1f}%", ha="center", va="bottom",
+                         fontsize=8, color=PALETTE["positive"], fontweight="bold")
+    ax_nsat.set_ylabel("NSAT %", fontsize=9, color=PALETTE["positive"])
+    ax_nsat.tick_params(axis="y", colors=PALETTE["positive"])
+    nsat_vals = trend["nsat"].dropna()
+    if not nsat_vals.empty:
+        ax_nsat.set_ylim(max(0, nsat_vals.min() - 15), nsat_vals.max() + 15)
+    for spine in ax_nsat.spines.values():
+        spine.set_visible(False)
+
+    lines1, labels1 = ax_rating.get_legend_handles_labels()
+    lines2, labels2 = ax_nsat.get_legend_handles_labels()
+    ax_rating.legend(lines1 + lines2, labels1 + labels2, frameon=True, fontsize=8,
+                      loc="upper left", bbox_to_anchor=(0, 1.15), ncol=4)
+
+    ax_rating.set_title("Ratings, NSAT, responses & comments", fontsize=12, loc="left",
+                         pad=32, color=PALETTE["ink"])
+    fig.tight_layout()
+    return fig
+
+
+def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.Figure | None:
+    """
+    Feature x month heatmap, cell color = % negative mentions.
+    Replaces the "features to compare" line chart (change #5) — the line
+    chart got unreadable once more than 2-3 features were selected;
+    a heatmap scales to many features/months at a glance instead.
+    """
+    if feat_view.empty:
+        return None
+
+    grouped = feat_view.groupby(["month", "feature"]).agg(
+        total_mentions=("total_mentions", "sum"),
+        negative_mentions=("negative_mentions", "sum"),
+    ).reset_index()
+    grouped["negative_pct"] = (grouped["negative_mentions"] / grouped["total_mentions"] * 100).round(1)
+
+    top_features = (
+        grouped.groupby("feature")["total_mentions"].sum()
+        .sort_values(ascending=False).head(top_n).index.tolist()
+    )
+    grouped = grouped[grouped["feature"].isin(top_features)]
+    if grouped.empty:
+        return None
+
+    pivot = grouped.pivot_table(index="feature", columns="month", values="negative_pct")
+    pivot = pivot.loc[top_features]  # keep ranked order, most-mentioned feature on top
+
+    cmap = LinearSegmentedColormap.from_list(
+        "neg_pct", [PALETTE["positive"], PALETTE["paper"], PALETTE["negative"]]
+    )
+
+    fig, ax = plt.subplots(figsize=(10, max(4, len(pivot) * 0.5)))
+    fig.patch.set_facecolor(PALETTE["paper"])
+    ax.set_facecolor(PALETTE["paper"])
+    im = ax.imshow(pivot.values, cmap=cmap, vmin=0, vmax=100, aspect="auto")
+
+    ax.set_xticks(np.arange(len(pivot.columns)))
+    ax.set_xticklabels(pivot.columns, rotation=30, ha="right")
+    ax.set_yticks(np.arange(len(pivot.index)))
+    ax.set_yticklabels(pivot.index, fontsize=9)
+
+    for i in range(len(pivot.index)):
+        for j in range(len(pivot.columns)):
+            v = pivot.values[i, j]
+            if pd.notna(v):
+                text_color = PALETTE["paper"] if v > 65 or v < 20 else PALETTE["ink"]
+                ax.text(j, i, f"{v:.0f}%", ha="center", va="center",
+                         fontsize=8, color=text_color)
+
+    ax.set_title("Feature comparison across months — % negative mentions",
+                  fontsize=12, loc="left", pad=10, color=PALETTE["ink"])
+    cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
+    cbar.set_label("% negative", fontsize=8)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    fig.tight_layout()
+    return fig
+
+
 # ============================================================================
 # SECTION 3 — SIDEBAR
 # ============================================================================
@@ -353,20 +517,22 @@ def _sidebar():
     st.sidebar.caption("DB: `data/metrics.db`")
 
 
-def _aggregate_month_picker(months: list[str]) -> list[str]:
-    """Month selector used only inside the Aggregate view tab."""
+def _aggregate_month_picker(months: list[str], key_prefix: str = "agg") -> list[str]:
+    """Month selector used inside any 'Aggregate' sub-tab. key_prefix keeps
+    widget keys unique when this is used in more than one tab at once."""
     mode = st.radio("View", ["All time", "Select months"], index=0, horizontal=True,
-                     key="agg_mode")
+                     key=f"{key_prefix}_mode")
     if mode == "All time":
         return []
-    selected = st.multiselect("Select months", options=months, default=months, key="agg_months")
+    selected = st.multiselect("Select months", options=months, default=months,
+                               key=f"{key_prefix}_months")
     if not selected:
         st.warning("Select at least one month.")
     return selected
 
 
 # ============================================================================
-# SECTION 4 — PAGE FUNCTIONS (Aggregate view — unchanged behaviour)
+# SECTION 4 — PAGE FUNCTIONS (Aggregate view)
 # ============================================================================
 
 def page_overview(months: list[str]):
@@ -402,19 +568,10 @@ def page_overview(months: list[str]):
 
     st.divider()
 
-    trend = summary.sort_values("month")
+    trend = view.sort_values("month")
     if len(trend) > 1:
-        st.subheader("Respondent volume over time")
-        st.pyplot(_bar_trend(trend, "month", "total_respondents",
-                             "", ylabel="Respondents"))
-
-        st.subheader("Average rating over time")
-        st.pyplot(_line_trend(trend, "month", "avg_rating",
-                              "", ylabel="Avg rating (1-5)"))
-
-        st.subheader("NSAT over time")
-        st.pyplot(_line_trend(trend, "month", "nsat", "",
-                              ylabel="NSAT %", color=PALETTE["accent"]))
+        st.subheader("Ratings, NSAT, responses & comments over time")
+        st.pyplot(_overlay_trend_chart(trend))
     else:
         st.info("Only one month of data so far — trend charts will appear "
                "once more months are collected.")
@@ -474,6 +631,20 @@ def page_sentiment(months: list[str]):
     else:
         st.info("Only one month of sentiment data so far.")
 
+
+def render_aggregate_view():
+    months_all = load_available_months()
+    months = _aggregate_month_picker(months_all, key_prefix="agg")
+    st.divider()
+    page_overview(months)
+    st.divider()
+    page_sentiment(months)
+
+
+# ============================================================================
+# SECTION 4B — PAGE FUNCTIONS (Feedback comments tab — tag groups / features
+# / errors / browse reviews; everything derived from free-text comments)
+# ============================================================================
 
 def page_tag_groups(months: list[str]):
     st.header("🏷️ Tag Groups")
@@ -540,6 +711,17 @@ def page_features(months: list[str]):
     st.subheader("All features")
     st.dataframe(agg, use_container_width=True)
 
+    # ---- Feature comparison across months (heatmap — was the "features
+    #      to compare" line chart, replaced per change #5) ----------------
+    st.divider()
+    st.subheader("Feature comparison across months")
+    heatmap_fig = _feature_negative_heatmap(view)
+    if heatmap_fig is None:
+        st.info("Not enough data across months to build the comparison heatmap yet.")
+    else:
+        st.pyplot(heatmap_fig)
+        plt.close(heatmap_fig)
+
 
 def page_errors(months: list[str]):
     st.header("⚠️ Errors")
@@ -581,8 +763,12 @@ def page_browse_reviews(months: list[str]):
         tag_options = ["All"] + sorted(df["primary_tag_group"].dropna().unique().tolist())
         tag_filter = st.selectbox("Tag group", tag_options)
     with col2:
-        sent_options = ["All"] + sorted(df["grouping_sentiment"].dropna().unique().tolist())
-        sent_filter = st.selectbox("Sentiment", sent_options)
+        sent_values = sorted(df["grouping_sentiment"].dropna().unique().tolist())
+        sent_options = ["All"] + sent_values
+        sent_filter = st.selectbox(
+            "Sentiment", sent_options,
+            format_func=lambda v: v if v == "All" else f"{SENTIMENT_EMOJI.get(v, '')} {v.title()}",
+        )
     with col3:
         search = st.text_input("Search feedback text")
 
@@ -600,120 +786,124 @@ def page_browse_reviews(months: list[str]):
         "primary_tag_group", "primary_tag", "feedback_clean",
     ]
     show_cols = [c for c in show_cols if c in filtered.columns]
-    st.dataframe(filtered[show_cols], use_container_width=True, height=600)
-
-
-def page_monthly_comparison(months: list[str]):
-    st.header("📅 Monthly Comparison")
-
-    summary = load_monthly_summary()
-    if summary.empty:
-        st.warning("No data yet.")
-        return
-
-    view = filter_by_months(summary, months) if months else summary
-    view = view.sort_values("month")
-    if view.empty:
-        st.warning("No data for the selected period.")
-        return
-
-    st.subheader("Month-by-month summary")
-    table_cols = ["month", "total_respondents", "avg_rating", "nsat"]
-    table_cols = [c for c in table_cols if c in view.columns]
-    display_table = view[table_cols].rename(columns={
-        "month": "Month", "total_respondents": "Responses",
-        "avg_rating": "Avg Rating", "nsat": "NSAT %",
+    display_df = filtered[show_cols].copy()
+    if "grouping_sentiment" in display_df.columns:
+        display_df["grouping_sentiment"] = display_df["grouping_sentiment"].map(
+            lambda v: f"{SENTIMENT_EMOJI.get(v, '')} {str(v).title()}" if pd.notna(v) else v
+        )
+    display_df = display_df.rename(columns={
+        "respondent_id": "Respondent", "month": "Month", "rating": "Rating",
+        "grouping_sentiment": "Sentiment", "primary_tag_group": "Tag group",
+        "primary_tag": "Tag", "feedback_clean": "Feedback",
     })
-    st.dataframe(display_table, use_container_width=True)
+    st.dataframe(display_df, use_container_width=True, height=600)
 
-    if len(view) > 1:
-        col1, col2 = st.columns(2)
-        with col1:
-            st.pyplot(_bar_trend(view, "month", "total_respondents",
-                                 "Responses per month", ylabel="Responses"))
-        with col2:
-            st.pyplot(_line_trend(view, "month", "avg_rating",
-                                  "Average rating per month", ylabel="Avg rating (1-5)"))
 
-        st.pyplot(_line_trend(view, "month", "nsat", "NSAT per month",
-                              ylabel="NSAT %", color=PALETTE["accent"]))
+def _render_comment_themes_month(selected_month: str):
+    """Thematic analysis + Feature & error analysis for one month — used by
+    the Feedback comments tab's Month by month sub-tab."""
+    tag_df = load_tag_group_trends()
+    tag_month = tag_df[tag_df["month"] == selected_month] if not tag_df.empty else tag_df
+
+    st.subheader("Thematic analysis")
+    if tag_month.empty:
+        st.info("No tag data yet for this month. Run the pipeline without SKIP_NLP.")
+    else:
+        tc1, tc2 = st.columns(2)
+        with tc1:
+            vol = tag_month.groupby("tag_group")["total_reviews"].sum().sort_values(ascending=False)
+            sentiment_by_group = tag_month.groupby("tag_group")["avg_sentiment_score"].mean()
+            colors = [SENTIMENT_COLORS["positive"] if sentiment_by_group.get(g, 0) >= 0
+                      else SENTIMENT_COLORS["negative"] for g in vol.index]
+            fig, ax = plt.subplots(figsize=(10, max(4, len(vol) * 0.4)))
+            fig.patch.set_facecolor(PALETTE["paper"])
+            ax.set_facecolor(PALETTE["paper"])
+            ax.barh(vol.index[::-1], vol.values[::-1], color=colors[::-1])
+            ax.set_title("Tag group mentions — this month", fontsize=12, loc="left", color=PALETTE["ink"])
+            ax.set_xlabel("Volume of comments per theme")
+            ax.grid(axis="x", color=PALETTE["grid"], linewidth=0.5)
+            fig.tight_layout()
+            st.pyplot(fig)
+            plt.close(fig)
+        with tc2:
+            st.pyplot(_diverging_sentiment_bar(tag_month, "tag_group", "avg_sentiment_score",
+                                                "Tag group sentiment — this month"))
 
     st.divider()
-    st.subheader("Feature comparison across months")
 
-    feat_df = load_feature_trends()
-    if feat_df.empty:
-        st.info("No feature data yet. Run the pipeline without SKIP_NLP.")
+    st.subheader("Feature & error analysis")
+    fc1, fc2 = st.columns(2)
+    with fc1:
+        feat_df = load_feature_trends()
+        feat_month = feat_df[feat_df["month"] == selected_month] if not feat_df.empty else feat_df
+        if feat_month.empty:
+            st.info("No feature data yet for this month.")
+        else:
+            agg = feat_month.groupby("feature").agg(
+                total_mentions=("total_mentions", "sum"),
+                negative_mentions=("negative_mentions", "sum"),
+            )
+            agg["negative_pct"] = round(agg["negative_mentions"] / agg["total_mentions"] * 100, 1)
+            top = agg.sort_values("negative_pct", ascending=False).head(10)
+            fig, ax = plt.subplots(figsize=(6, max(3, len(top) * 0.4)))
+            fig.patch.set_facecolor(PALETTE["paper"])
+            ax.set_facecolor(PALETTE["paper"])
+            ax.barh(top.index[::-1], top["negative_pct"][::-1], color=SENTIMENT_COLORS["negative"])
+            ax.set_title("Most negatively mentioned features", fontsize=11, loc="left", color=PALETTE["ink"])
+            ax.set_xlabel("% of mentions that are negative")
+            ax.set_xlim(0, 100)
+            fig.tight_layout()
+            st.pyplot(fig)
+            plt.close(fig)
+    with fc2:
+        err_df = load_error_trends()
+        err_month = err_df[err_df["month"] == selected_month] if not err_df.empty else err_df
+        if err_month.empty:
+            st.info("No error pattern data yet for this month.")
+        else:
+            top_err = err_month.groupby("error_pattern")["count"].sum().sort_values(ascending=False).head(10)
+            fig, ax = plt.subplots(figsize=(6, max(3, len(top_err) * 0.4)))
+            fig.patch.set_facecolor(PALETTE["paper"])
+            ax.set_facecolor(PALETTE["paper"])
+            ax.barh(top_err.index[::-1], top_err.values[::-1], color=PALETTE["neutral"])
+            ax.set_title("Top error patterns", fontsize=11, loc="left", color=PALETTE["ink"])
+            ax.set_xlabel("Most frequently reported issues")
+            fig.tight_layout()
+            st.pyplot(fig)
+            plt.close(fig)
+
+
+def render_feedback_comments_view():
+    months = load_available_months()
+    if not months:
+        st.info("No data yet.")
         return
 
-    feat_view = filter_by_months(feat_df, months) if months else feat_df
-    if feat_view.empty:
-        st.info("No feature data for the selected period.")
-        return
+    sub_month, sub_agg = st.tabs(["Month by month", "Aggregate"])
 
-    totals_by_feature = feat_view.groupby("feature")["total_mentions"].sum().sort_values(ascending=False)
-    default_features = totals_by_feature.head(6).index.tolist()
-    all_features = totals_by_feature.index.tolist()
+    with sub_month:
+        default_month = st.session_state.get("selected_month", months[-1])
+        selected = st.selectbox(
+            "Month", months, index=months.index(default_month) if default_month in months else len(months) - 1,
+            key="comments_month_select",
+        )
+        st.divider()
+        _render_comment_themes_month(selected)
 
-    selected_features = st.multiselect(
-        "Features to compare (defaults to top 6 by mention volume)",
-        options=all_features, default=default_features,
-    )
-    if not selected_features:
-        st.info("Select at least one feature to compare.")
-        return
-
-    metric = st.radio("Compare by", ["% negative mentions", "Total mentions"], horizontal=True)
-    value_col = "negative_pct" if metric == "% negative mentions" else "total_mentions"
-
-    pivot = feat_view[feat_view["feature"].isin(selected_features)].pivot_table(
-        index="month", columns="feature", values=value_col, aggfunc="mean"
-    ).sort_index()
-
-    if pivot.empty:
-        st.info("Not enough data to compare these features over time.")
-        return
-
-    fig, ax = plt.subplots(figsize=(10, 4.5))
-    fig.patch.set_facecolor(PALETTE["paper"])
-    ax.set_facecolor(PALETTE["paper"])
-    for i, feature in enumerate(pivot.columns):
-        color = SERIES_COLORS[i % len(SERIES_COLORS)]
-        ax.plot(pivot.index, pivot[feature], marker="o", label=feature, color=color, linewidth=2)
-    ax.set_ylabel(metric)
-    ax.tick_params(axis="x", rotation=30)
-    ax.legend(frameon=True, fontsize=8, bbox_to_anchor=(1.01, 1), loc="upper left")
-    ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
-    for spine in ax.spines.values():
-        spine.set_color(PALETTE["grid"])
-    fig.tight_layout(rect=[0, 0, 0.82, 1])
-    st.pyplot(fig)
-    plt.close(fig)
-
-    st.dataframe(pivot.round(1), use_container_width=True)
-
-
-def render_aggregate_view():
-    months_all = load_available_months()
-    months = _aggregate_month_picker(months_all)
-    st.divider()
-    page_overview(months)
-    st.divider()
-    page_sentiment(months)
-    st.divider()
-    page_tag_groups(months)
-    st.divider()
-    page_features(months)
-    st.divider()
-    page_errors(months)
-    st.divider()
-    page_monthly_comparison(months)
-    st.divider()
-    page_browse_reviews(months)
+    with sub_agg:
+        agg_months = _aggregate_month_picker(months, key_prefix="comments_agg")
+        st.divider()
+        page_tag_groups(agg_months)
+        st.divider()
+        page_features(agg_months)
+        st.divider()
+        page_errors(agg_months)
+        st.divider()
+        page_browse_reviews(agg_months)
 
 
 # ============================================================================
-# SECTION 5 — MONTHLY SNAPSHOT VIEW (new — matches the preferred design)
+# SECTION 5 — MONTHLY SNAPSHOT VIEW (matches the preferred design)
 # ============================================================================
 
 def render_monthly_view():
@@ -786,6 +976,9 @@ def render_monthly_view():
     st.divider()
 
     # ---- Sentiment section ------------------------------------------------
+    # Note (change #1): the "NSAT — all months" and "Comment sentiment —
+    # all months" trend charts that used to live here have been removed;
+    # this section now only shows this month's sentiment split.
     st.subheader("Sentiment — comments only")
     if pd.notna(row.get("positive_count")):
         total = row["positive_count"] + row["negative_count"] + row["neutral_count"]
@@ -795,106 +988,8 @@ def render_monthly_view():
             neu_pct = 100 - pos_pct - neg_pct
             st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct,
                                              "Overall comment sentiment — this month"))
-        sc1, sc2 = st.columns(2)
-        with sc1:
-            if len(summary) > 1:
-                st.pyplot(_line_trend(summary, "month", "nsat", "NSAT score — all months",
-                                      ylabel="NSAT %", color=PALETTE["accent"]))
-        with sc2:
-            trend = summary[summary["positive_count"].notna()]
-            if len(trend) > 1:
-                fig, ax = plt.subplots(figsize=(10, 3.5))
-                fig.patch.set_facecolor(PALETTE["paper"])
-                ax.set_facecolor(PALETTE["paper"])
-                totals = trend["positive_count"] + trend["negative_count"] + trend["neutral_count"]
-                pos_pct_t = (trend["positive_count"] / totals * 100).fillna(0)
-                neg_pct_t = (trend["negative_count"] / totals * 100).fillna(0)
-                neu_pct_t = (100 - pos_pct_t - neg_pct_t).clip(lower=0)
-                ax.bar(trend["month"], neg_pct_t, color=SENTIMENT_COLORS["negative"], label="Negative")
-                ax.bar(trend["month"], neu_pct_t, bottom=neg_pct_t, color=SENTIMENT_COLORS["neutral"], label="Neutral")
-                ax.bar(trend["month"], pos_pct_t, bottom=neg_pct_t + neu_pct_t, color=SENTIMENT_COLORS["positive"], label="Positive")
-                ax.set_title("Comment sentiment — all months", fontsize=12, loc="left", color=PALETTE["ink"])
-                ax.set_ylabel("%")
-                ax.tick_params(axis="x", rotation=30)
-                ax.legend(frameon=True, fontsize=7)
-                fig.tight_layout()
-                st.pyplot(fig)
-                plt.close(fig)
     else:
         st.info("No NLP sentiment data yet for this month. Run the pipeline without SKIP_NLP.")
-
-    st.divider()
-
-    # ---- Thematic analysis section ----------------------------------------
-    st.subheader("Thematic analysis")
-    tag_df = load_tag_group_trends()
-    tag_month = tag_df[tag_df["month"] == selected_month] if not tag_df.empty else tag_df
-    if tag_month.empty:
-        st.info("No tag data yet for this month. Run the pipeline without SKIP_NLP.")
-    else:
-        tc1, tc2 = st.columns(2)
-        with tc1:
-            vol = tag_month.groupby("tag_group")["total_reviews"].sum().sort_values(ascending=False)
-            sentiment_by_group = tag_month.groupby("tag_group")["avg_sentiment_score"].mean()
-            colors = [SENTIMENT_COLORS["positive"] if sentiment_by_group.get(g, 0) >= 0
-                      else SENTIMENT_COLORS["negative"] for g in vol.index]
-            fig, ax = plt.subplots(figsize=(10, max(4, len(vol) * 0.4)))
-            fig.patch.set_facecolor(PALETTE["paper"])
-            ax.set_facecolor(PALETTE["paper"])
-            ax.barh(vol.index[::-1], vol.values[::-1], color=colors[::-1])
-            ax.set_title("Tag group mentions — this month", fontsize=12, loc="left", color=PALETTE["ink"])
-            ax.set_xlabel("Volume of comments per theme")
-            ax.grid(axis="x", color=PALETTE["grid"], linewidth=0.5)
-            fig.tight_layout()
-            st.pyplot(fig)
-            plt.close(fig)
-        with tc2:
-            st.pyplot(_diverging_sentiment_bar(tag_month, "tag_group", "avg_sentiment_score",
-                                                "Tag group sentiment — this month"))
-
-    st.divider()
-
-    # ---- Feature & error analysis -----------------------------------------
-    st.subheader("Feature & error analysis")
-    fc1, fc2 = st.columns(2)
-    with fc1:
-        feat_df = load_feature_trends()
-        feat_month = feat_df[feat_df["month"] == selected_month] if not feat_df.empty else feat_df
-        if feat_month.empty:
-            st.info("No feature data yet for this month.")
-        else:
-            agg = feat_month.groupby("feature").agg(
-                total_mentions=("total_mentions", "sum"),
-                negative_mentions=("negative_mentions", "sum"),
-            )
-            agg["negative_pct"] = round(agg["negative_mentions"] / agg["total_mentions"] * 100, 1)
-            top = agg.sort_values("negative_pct", ascending=False).head(10)
-            fig, ax = plt.subplots(figsize=(6, max(3, len(top) * 0.4)))
-            fig.patch.set_facecolor(PALETTE["paper"])
-            ax.set_facecolor(PALETTE["paper"])
-            ax.barh(top.index[::-1], top["negative_pct"][::-1], color=SENTIMENT_COLORS["negative"])
-            ax.set_title("Most negatively mentioned features", fontsize=11, loc="left", color=PALETTE["ink"])
-            ax.set_xlabel("% of mentions that are negative")
-            ax.set_xlim(0, 100)
-            fig.tight_layout()
-            st.pyplot(fig)
-            plt.close(fig)
-    with fc2:
-        err_df = load_error_trends()
-        err_month = err_df[err_df["month"] == selected_month] if not err_df.empty else err_df
-        if err_month.empty:
-            st.info("No error pattern data yet for this month.")
-        else:
-            top_err = err_month.groupby("error_pattern")["count"].sum().sort_values(ascending=False).head(10)
-            fig, ax = plt.subplots(figsize=(6, max(3, len(top_err) * 0.4)))
-            fig.patch.set_facecolor(PALETTE["paper"])
-            ax.set_facecolor(PALETTE["paper"])
-            ax.barh(top_err.index[::-1], top_err.values[::-1], color=PALETTE["neutral"])
-            ax.set_title("Top error patterns", fontsize=11, loc="left", color=PALETTE["ink"])
-            ax.set_xlabel("Most frequently reported issues")
-            fig.tight_layout()
-            st.pyplot(fig)
-            plt.close(fig)
 
 
 # ============================================================================
@@ -917,14 +1012,14 @@ def main():
 
     st.title("🗺️ Planning Portal Feedback Dashboard")
 
-    tab1, tab2 = st.tabs(["Monthly view", "Aggregate view"])
+    tab1, tab2, tab3 = st.tabs(["Monthly view", "Aggregate view", "Feedback comments"])
     with tab1:
         render_monthly_view()
     with tab2:
         render_aggregate_view()
+    with tab3:
+        render_feedback_comments_view()
 
 
 if __name__ == "__main__":
     main()
-
-
