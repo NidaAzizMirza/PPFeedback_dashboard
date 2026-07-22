@@ -86,8 +86,9 @@ def _inject_css():
         .kpi-card {{
             background: {PALETTE["paper"]};
             border: 1px solid {PALETTE["grid"]};
+            border-left: 4px solid {PALETTE["neutral"]};
             border-radius: 10px;
-            padding: 16px 20px;
+            padding: 16px 20px 16px 24px;
             height: 100%;
         }}
         .kpi-label {{
@@ -123,17 +124,6 @@ def _inject_css():
             border-radius: 999px;
             border: 1px solid {PALETTE["grid"]};
             padding: 2px 16px;
-        }}
-        div[data-testid="stMetric"] {{
-            padding: 14px 4px 6px 4px;
-        }}
-        div[data-testid="stMetricValue"] {{
-            font-size: 2.6rem !important;
-            font-weight: 700 !important;
-            color: {PALETTE["ink"]};
-        }}
-        div[data-testid="stMetricLabel"] {{
-            font-size: 1rem !important;
         }}
         </style>
         """,
@@ -683,14 +673,14 @@ def page_overview(months: list[str] | None):
     st.write("")
     col1, col2, col3, col4 = st.columns(4, gap="large")
     with col1:
-        st.metric("Total respondents", f"{total_respondents:,}")
+        _kpi_card("Total responses", f"{total_respondents:,}")
     with col2:
-        st.metric("Left written feedback", f"{total_feedback:,}")
+        feedback_rate = round(total_feedback / total_respondents * 100, 2) if total_respondents else 0
+        _kpi_card("Feedback rate", f"{feedback_rate}%")
     with col3:
-        st.metric("Average rating", f"{avg_rating}" if avg_rating else "—", help="1–5 scale")
+        _kpi_card("Average rating", f"{avg_rating}" if avg_rating else "—")
     with col4:
-        st.metric("NSAT", f"{avg_nsat}%" if avg_nsat is not None else "—",
-                   help="% rating 4-5 minus % rating 1-2")
+        _kpi_card("NSAT", f"{avg_nsat}%" if avg_nsat is not None else "—")
     st.write("")
 
     st.divider()
