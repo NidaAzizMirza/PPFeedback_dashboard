@@ -629,20 +629,33 @@ def _sidebar():
     st.sidebar.caption("DB: `data/metrics.db`")
 
 
-def _aggregate_month_picker(months: list[str], key_prefix: str = "agg") -> list[str] | None:
-    """Month selector used inside any 'Aggregate' sub-tab. key_prefix keeps
-    widget keys unique when this is used in more than one tab at once.
-    Returns None for 'All time' (no filter), or the (possibly empty) list
-    of months selected — an empty list here is a deliberate "show nothing"
-    state, not the same as "no filter"."""
-    mode = st.radio("View", ["All time", "Select months"], index=0, horizontal=True,
-                     key=f"{key_prefix}_mode")
+def _aggregate_month_picker(months: list[str], key_prefix: str = "agg",
+                             title: str | None = None) -> list[str] | None:
+    """Month selector for an 'Aggregate' sub-tab, rendered in the sidebar
+    (not inline in the page) so it's out of the way of the charts.
+    key_prefix keeps widget keys unique when this is used in more than one
+    tab at once. Returns None for 'All time' (no filter), or the (possibly
+    empty) list of months selected — an empty list here is a deliberate
+    "show nothing" state, not the same as "no filter".
+
+    Both 'Feedback ratings > Aggregate' and 'Feedback comments > Aggregate'
+    render on every script rerun regardless of which tab is visually
+    active (Streamlit renders all tab bodies, it just hides the inactive
+    ones), so both pickers end up in the sidebar at once — hence the
+    `title` label so it's clear which section each one filters.
+    """
+    if title:
+        st.sidebar.markdown(f"**{title}**")
+    mode = st.sidebar.radio("View", ["All time", "Select months"], index=0, horizontal=True,
+                             key=f"{key_prefix}_mode")
     if mode == "All time":
+        st.sidebar.divider()
         return None
-    selected = st.multiselect("Select months", options=months, default=months,
-                               key=f"{key_prefix}_months")
+    selected = st.sidebar.multiselect("Select months", options=months, default=months,
+                                       key=f"{key_prefix}_months")
     if not selected:
-        st.warning("No months selected — pick at least one to see data.")
+        st.sidebar.warning("No months selected — pick at least one to see data.")
+    st.sidebar.divider()
     return selected
 
 
@@ -782,8 +795,7 @@ def page_sentiment(months: list[str] | None):
 
 def render_aggregate_view():
     months_all = load_available_months()
-    months = _aggregate_month_picker(months_all, key_prefix="agg")
-    st.divider()
+    months = _aggregate_month_picker(months_all, key_prefix="agg", title="Feedback ratings — months")
     page_overview(months)
     st.divider()
     page_sentiment(months)
@@ -1039,8 +1051,7 @@ def render_feedback_comments_view():
         _render_comment_themes_month(selected)
 
     with sub_agg:
-        agg_months = _aggregate_month_picker(months, key_prefix="comments_agg")
-        st.divider()
+        agg_months = _aggregate_month_picker(months, key_prefix="comments_agg", title="Feedback comments — months")
         page_tag_groups(agg_months)
         st.divider()
         page_features(agg_months)
