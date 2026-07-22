@@ -31,6 +31,7 @@ Edit THIS file if you want to:
 from __future__ import annotations
 
 import sys
+import textwrap
 from pathlib import Path
 
 import matplotlib
@@ -218,6 +219,7 @@ def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
     ax.set_facecolor(PALETTE["paper"])
 
     categories = table.index.tolist()
+    wrapped_categories = [textwrap.fill(str(c), width=18) for c in categories]
     y = np.arange(len(categories))
     lefts = np.zeros(len(categories))
 
@@ -236,7 +238,7 @@ def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
         lefts += vals
 
     ax.set_yticks(y)
-    ax.set_yticklabels(categories, fontsize=9)
+    ax.set_yticklabels(wrapped_categories, fontsize=9)
     ax.set_xlabel("% of reviews" if pct else "Reviews")
     ax.set_title(title, fontsize=12, loc="left", pad=12, color=PALETTE["ink"])
     ax.legend(frameon=True, fontsize=8, bbox_to_anchor=(1.01, 1), loc="upper left")
@@ -255,10 +257,10 @@ def _single_sentiment_bar(pos_pct: float, neg_pct: float, neu_pct: float,
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
     segments = [("negative", neg_pct), ("neutral", neu_pct), ("positive", pos_pct)]
-    y_pos = -0.15
+    y_pos = -0.35
     left = 0
     for name, val in segments:
-        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=1)
+        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=0.3)
         if val > 3:
             ax.text(left + val / 2, y_pos, f"{val:.1f}%", ha="center", va="center",
                      fontsize=10, color=PALETTE["paper"], fontweight="bold")
@@ -384,7 +386,7 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
 
     x = list(range(len(trend)))
 
-    fig, ax1 = plt.subplots(figsize=(10, 5.5))
+    fig, ax1 = plt.subplots(figsize=(10, 4.8))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax1.set_facecolor(PALETTE["paper"])
 
@@ -514,7 +516,7 @@ def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
     totals = data[star_cols].sum(axis=1).replace(0, np.nan)
     pct = data[star_cols].div(totals, axis=0).fillna(0) * 100
 
-    fig, ax = plt.subplots(figsize=(10, 5.5))
+    fig, ax = plt.subplots(figsize=(10, 4.8))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
 
@@ -554,6 +556,10 @@ def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.F
     chart got unreadable once more than 2-3 features were selected;
     a heatmap scales to many features/months at a glance instead.
     """
+    if feat_view.empty:
+        return None
+    feat_view = feat_view.dropna(subset=["feature"])
+    feat_view = feat_view[feat_view["feature"].astype(str).str.strip().str.lower() != "nan"]
     if feat_view.empty:
         return None
 
@@ -754,7 +760,7 @@ def page_sentiment(months: list[str] | None):
         parsed = pd.to_datetime(trend["month"], format="%Y-%m", errors="coerce")
         month_labels = parsed.dt.strftime("%b %Y") if parsed.notna().all() else trend["month"]
 
-        fig, ax = plt.subplots(figsize=(10, 5.5))
+        fig, ax = plt.subplots(figsize=(10, 4.8))
         fig.patch.set_facecolor(PALETTE["paper"])
         ax.set_facecolor(PALETTE["paper"])
         totals = trend["positive_count"] + trend["negative_count"] + trend["neutral_count"]
@@ -814,6 +820,7 @@ def page_tag_groups(months: list[str] | None):
         return
 
     view = filter_by_months(df, months)
+    view = view[~view["tag_group"].astype(str).str.strip().str.casefold().eq("user type")]
     if view.empty:
         st.warning("No data for the selected period.")
         return
@@ -842,6 +849,8 @@ def page_features(months: list[str] | None):
         return
 
     view = filter_by_months(df, months)
+    view = view.dropna(subset=["feature"])
+    view = view[view["feature"].astype(str).str.strip().str.lower() != "nan"]
     if view.empty:
         st.warning("No data for the selected period.")
         return
@@ -941,21 +950,29 @@ def page_browse_reviews(months: list[str] | None):
 
     st.caption(f"{len(filtered):,} reviews match")
     show_cols = [
-        "respondent_id", "month", "rating", "grouping_sentiment",
-        "primary_tag_group", "primary_tag", "feedback_clean",
+        "respondent_id", "month", "rating",
+        "primary_tag_group", "primary_tag", "grouping_sentiment", "feedback_clean",
     ]
     show_cols = [c for c in show_cols if c in filtered.columns]
     display_df = filtered[show_cols].copy()
     if "grouping_sentiment" in display_df.columns:
+        # Icon only (no "Positive"/"Negative" text) sitting right next to the
+        # feedback text — matching the compact inline-icon style of the
+        # SurveyMonkey reference, rather than a verbose text label.
         display_df["grouping_sentiment"] = display_df["grouping_sentiment"].map(
-            lambda v: f"{SENTIMENT_EMOJI.get(v, '')} {str(v).title()}" if pd.notna(v) else v
+            lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""
         )
     display_df = display_df.rename(columns={
         "respondent_id": "Respondent", "month": "Month", "rating": "Rating",
-        "grouping_sentiment": "Sentiment", "primary_tag_group": "Tag group",
+        "grouping_sentiment": "", "primary_tag_group": "Tag group",
         "primary_tag": "Tag", "feedback_clean": "Feedback",
     })
-    st.dataframe(display_df, use_container_width=True, height=600)
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        height=600,
+        column_config={"": st.column_config.TextColumn(width="small")},
+    )
 
 
 def _render_comment_themes_month(selected_month: str):
@@ -963,6 +980,8 @@ def _render_comment_themes_month(selected_month: str):
     the Feedback comments tab's Month by month sub-tab."""
     tag_df = load_tag_group_trends()
     tag_month = tag_df[tag_df["month"] == selected_month] if not tag_df.empty else tag_df
+    if not tag_month.empty:
+        tag_month = tag_month[~tag_month["tag_group"].astype(str).str.strip().str.casefold().eq("user type")]
 
     st.subheader("Thematic analysis")
     if tag_month.empty:
@@ -995,6 +1014,9 @@ def _render_comment_themes_month(selected_month: str):
     with fc1:
         feat_df = load_feature_trends()
         feat_month = feat_df[feat_df["month"] == selected_month] if not feat_df.empty else feat_df
+        if not feat_month.empty:
+            feat_month = feat_month.dropna(subset=["feature"])
+            feat_month = feat_month[feat_month["feature"].astype(str).str.strip().str.lower() != "nan"]
         if feat_month.empty:
             st.info("No feature data yet for this month.")
         else:
@@ -1138,8 +1160,8 @@ def render_monthly_view():
             pos_pct = row["positive_count"] / total * 100
             neg_pct = row["negative_count"] / total * 100
             neu_pct = 100 - pos_pct - neg_pct
-            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct, ""))
-                                             # "Overall comment sentiment — this month"))
+            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct,
+                                             "Overall comment sentiment — this month"))
     else:
         st.info("No NLP sentiment data yet for this month. Run the pipeline without SKIP_NLP.")
 
@@ -1163,7 +1185,7 @@ def main():
     _inject_css()
 
     if not db_exists():
-        st.title("Planning Portal Feedback")
+        st.title("🗺️ Planning Portal Feedback")
         st.warning(
             "No database found yet. Run the pipeline first:\n\n"
             "`python run_pipeline.py`\n\n"
@@ -1173,7 +1195,7 @@ def main():
 
     _sidebar()
 
-    st.title("Planning Portal Feedback Dashboard")
+    st.title("🗺️ Planning Portal Feedback Dashboard")
 
     tab1, tab2 = st.tabs(["Feedback ratings", "Feedback comments"])
     with tab1:
