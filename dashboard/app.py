@@ -258,7 +258,7 @@ def _single_sentiment_bar(pos_pct: float, neg_pct: float, neu_pct: float,
     y_pos = -0.15
     left = 0
     for name, val in segments:
-        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=0.6)
+        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=1)
         if val > 3:
             ax.text(left + val / 2, y_pos, f"{val:.1f}%", ha="center", va="center",
                      fontsize=10, color=PALETTE["paper"], fontweight="bold")
