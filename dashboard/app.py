@@ -722,13 +722,15 @@ def page_sentiment(months: list[str] | None):
     total_neu = int(view["neutral_count"].sum())
     total = total_pos + total_neg + total_neu
 
-    col1, col2, col3 = st.columns(3)
+    st.write("")
+    col1, col2, col3 = st.columns(3, gap="large")
     with col1:
-        st.metric("Positive", f"{round(total_pos/total*100,1)}%" if total else "—")
+        _kpi_card("Positive", f"{round(total_pos/total*100,1)}%" if total else "—")
     with col2:
-        st.metric("Negative", f"{round(total_neg/total*100,1)}%" if total else "—")
+        _kpi_card("Negative", f"{round(total_neg/total*100,1)}%" if total else "—")
     with col3:
-        st.metric("Neutral", f"{round(total_neu/total*100,1)}%" if total else "—")
+        _kpi_card("Neutral", f"{round(total_neu/total*100,1)}%" if total else "—")
+    st.write("")
 
     st.divider()
 
