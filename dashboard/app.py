@@ -124,6 +124,17 @@ def _inject_css():
             border: 1px solid {PALETTE["grid"]};
             padding: 2px 16px;
         }}
+        div[data-testid="stMetric"] {{
+            padding: 14px 4px 6px 4px;
+        }}
+        div[data-testid="stMetricValue"] {{
+            font-size: 2.6rem !important;
+            font-weight: 700 !important;
+            color: {PALETTE["ink"]};
+        }}
+        div[data-testid="stMetricLabel"] {{
+            font-size: 1rem !important;
+        }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -669,7 +680,8 @@ def page_overview(months: list[str] | None):
     ) if view["avg_rating"].notna().any() else None
     avg_nsat = round(view["nsat"].dropna().mean(), 1) if view["nsat"].notna().any() else None
 
-    col1, col2, col3, col4 = st.columns(4)
+    st.write("")
+    col1, col2, col3, col4 = st.columns(4, gap="large")
     with col1:
         st.metric("Total respondents", f"{total_respondents:,}")
     with col2:
@@ -679,6 +691,7 @@ def page_overview(months: list[str] | None):
     with col4:
         st.metric("NSAT", f"{avg_nsat}%" if avg_nsat is not None else "—",
                    help="% rating 4-5 minus % rating 1-2")
+    st.write("")
 
     st.divider()
 
