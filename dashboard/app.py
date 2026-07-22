@@ -383,7 +383,7 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
 
     x = list(range(len(trend)))
 
-    fig, ax1 = plt.subplots(figsize=(11, 5.5))
+    fig, ax1 = plt.subplots(figsize=(10, 5.5))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax1.set_facecolor(PALETTE["paper"])
 
@@ -460,19 +460,18 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     # ── X-axis & layout ───────────────────────────────────────────────────
     ax1.set_xticks(x)
     ax1.set_xticklabels(month_labels, rotation=0, ha="center", fontsize=10)
-    ax1.set_xlabel("Month", fontsize=11)
-    ax1.grid(axis="y", color=PALETTE["grid"], linestyle="--", linewidth=0.6, alpha=0.6)
+    ax1.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
     ax1.set_axisbelow(True)
     for spine in ax1.spines.values():
         spine.set_color(PALETTE["grid"])
 
-    # Combined legend, sitting INSIDE the axes (upper-left) so it can't
-    # collide with the title above it.
+    # Legend outside the axes, top-right — matching Rating distribution
+    # and Sentiment split over time.
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     lines3, labels3 = ax_count.get_legend_handles_labels()
     ax1.legend(lines1 + lines2 + lines3, labels1 + labels2 + labels3,
-               loc="upper left", framealpha=0.9, fontsize=9)
+               loc="upper left", bbox_to_anchor=(1.05, 1), fontsize=9, frameon=True)
 
     fig.tight_layout()
     return fig
