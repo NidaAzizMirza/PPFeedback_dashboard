@@ -60,21 +60,10 @@ matplotlib.use("Agg")
 
 # Emoji used in place of the raw positive/negative/neutral text labels
 # (Browse Reviews) — matches the SurveyMonkey-style face icons.
-# SENTIMENT_EMOJI = {
-#     "positive": "🙂",
-#     "neutral": "😐",
-#     "negative": "🙁",
-# }
 SENTIMENT_EMOJI = {
-    "positive": '<span style="color:#2E8B57;">●</span> 🙂',
-    "neutral": '<span style="color:#D9D9D9;">●</span> 😐',
-    "negative": '<span style="color:#C0392B;">●</span> 🙁',
-}
-
-SENTIMENT_COLORS = {
-    "positive": "#2E8B57",
-    "neutral": "#D9D9D9",
-    "negative": "#C0392B",
+    "positive": "🙂",
+    "neutral": "😐",
+    "negative": "🙁",
 }
 
 
@@ -87,31 +76,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-def _legend_outside_top_right(ax, fontsize=9, ncol=1, handles=None, labels=None):
-    """
-    Place the legend outside the plot, aligned with the top-right,
-    matching the 'Rating distribution across months' chart.
-    """
-    if handles is None or labels is None:
-        ax.legend(
-            loc="upper left",
-            bbox_to_anchor=(1.01, 1),
-            frameon=True,
-            fontsize=fontsize,
-            borderaxespad=0,
-            ncol=ncol,
-        )
-    else:
-        ax.legend(
-            handles,
-            labels,
-            loc="upper left",
-            bbox_to_anchor=(1.01, 1),
-            frameon=True,
-            fontsize=fontsize,
-            borderaxespad=0,
-            ncol=ncol,
-        )
+
 
 def _inject_css():
     """Card + pill styling to match the earlier GitHub Pages design."""
@@ -273,7 +238,7 @@ def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
     ax.set_yticklabels(categories, fontsize=9)
     ax.set_xlabel("% of reviews" if pct else "Reviews")
     ax.set_title(title, fontsize=12, loc="left", pad=12, color=PALETTE["ink"])
-    ax.legend(frameon=True, fontsize=8, loc="upper left")
+    ax.legend(frameon=True, fontsize=8, bbox_to_anchor=(1.01, 1), loc="upper left")
     ax.set_xlim(0, lefts.max() * 1.05 if lefts.max() > 0 else 1)
     for spine in ax.spines.values():
         spine.set_color(PALETTE["grid"])
@@ -289,10 +254,10 @@ def _single_sentiment_bar(pos_pct: float, neg_pct: float, neu_pct: float,
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
     segments = [("negative", neg_pct), ("neutral", neu_pct), ("positive", pos_pct)]
-    y_pos = -0.15
+    y_pos = -0.35
     left = 0
     for name, val in segments:
-        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=0.6)
+        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=0.3)
         if val > 3:
             ax.text(left + val / 2, y_pos, f"{val:.1f}%", ha="center", va="center",
                      fontsize=10, color=PALETTE["paper"], fontweight="bold")
@@ -489,31 +454,25 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
         if pd.notna(v):
             ax2.annotate(f"{v:.1f}%", (xi, v), textcoords="offset points",
                          xytext=(0, -16), ha="center", fontsize=9, color=color_nsat, fontweight="bold")
-    # for spine_name in ("top",):
-    #     ax2.spines[spine_name].set_visible(False)
+    for spine_name in ("top",):
+        ax2.spines[spine_name].set_visible(False)
 
     # ── X-axis & layout ───────────────────────────────────────────────────
     ax1.set_xticks(x)
     ax1.set_xticklabels(month_labels, rotation=0, ha="center", fontsize=10)
-    # ax1.set_xlabel("Month", fontsize=11)
+    ax1.set_xlabel("Month", fontsize=11)
     ax1.grid(axis="y", color=PALETTE["grid"], linestyle="--", linewidth=0.6, alpha=0.6)
     ax1.set_axisbelow(True)
-    # for spine in ax1.spines.values():
-    #     spine.set_color(PALETTE["grid"])
+    for spine in ax1.spines.values():
+        spine.set_color(PALETTE["grid"])
 
     # Combined legend, sitting INSIDE the axes (upper-left) so it can't
     # collide with the title above it.
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     lines3, labels3 = ax_count.get_legend_handles_labels()
-    # ax1.legend(lines1 + lines2 + lines3, labels1 + labels2 + labels3,
-    #            loc="upper left", framealpha=0.9, fontsize=9)
-    _legend_outside_top_right(
-        ax1,
-        fontsize=9,
-        handles=lines1 + lines2 + lines3,
-        labels=labels1 + labels2 + labels3,
-    )
+    ax1.legend(lines1 + lines2 + lines3, labels1 + labels2 + labels3,
+               loc="upper left", framealpha=0.9, fontsize=9)
 
     fig.tight_layout()
     return fig
@@ -574,13 +533,7 @@ def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
     # Legend in 5★-on-top reading order.
     order = ["5 star", "4 star", "3 star", "2 star", "1 star"]
     ordered = [handles[labels.index(l)] for l in order]
-    # ax.legend(ordered, order, loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
-    _legend_outside_top_right(
-        ax,
-        fontsize=9,
-        handles=ordered,
-        labels=order,
-    )
+    ax.legend(ordered, order, loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
     ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
     for spine in ax.spines.values():
         spine.set_color(PALETTE["grid"])
@@ -783,36 +736,9 @@ def page_sentiment(months: list[str] | None):
         neg_pct = (trend["negative_count"] / totals * 100).fillna(0)
         neu_pct = (100 - pos_pct - neg_pct).clip(lower=0)
 
-        # ax.bar(trend["month"], neg_pct, color=SENTIMENT_COLORS["negative"], label="Negative")
-        # ax.bar(trend["month"], neu_pct, bottom=neg_pct, color=SENTIMENT_COLORS["neutral"], label="Neutral")
-        # ax.bar(trend["month"], pos_pct, bottom=neg_pct + neu_pct, color=SENTIMENT_COLORS["positive"], label="Positive")
-
-        # Same colour logic as rating distribution:
-        # Negative (red) → Neutral (grey) → Positive (green)
-        colors = {
-            "negative": PALETTE["negative"],
-            "neutral": PALETTE["neutral"],
-            "positive": PALETTE["positive"],
-        }
-
-        x = np.arange(len(trend))
-
-        bottom = np.zeros(len(trend))
-
-        for name, values in [
-            ("negative", neg_pct),
-            ("neutral", neu_pct),
-            ("positive", pos_pct),
-        ]:
-            ax.bar(
-                x,
-                values,
-                bottom=bottom,
-                color=colors[name],
-                width=0.6,
-                label=name.title()
-            )
-            bottom += values
+        ax.bar(trend["month"], neg_pct, color=SENTIMENT_COLORS["negative"], label="Negative")
+        ax.bar(trend["month"], neu_pct, bottom=neg_pct, color=SENTIMENT_COLORS["neutral"], label="Neutral")
+        ax.bar(trend["month"], pos_pct, bottom=neg_pct + neu_pct, color=SENTIMENT_COLORS["positive"], label="Positive")
 
         # Percentage labels inside each segment (matching the count labels
         # on the Rating distribution chart).
@@ -825,26 +751,10 @@ def page_sentiment(months: list[str] | None):
                             fontsize=9, color=PALETTE["paper"], fontweight="bold")
 
         ax.set_ylabel("% of reviews")
-        # ax.legend(frameon=True, fontsize=8)
-        # _legend_outside_top_right(ax, fontsize=8)
-        handles, labels = ax.get_legend_handles_labels()
-
-        order = ["Positive", "Neutral", "Negative"]
-        ordered = [handles[labels.index(x)] for x in order]
-
-        _legend_outside_top_right(
-            ax,
-            fontsize=8,
-            handles=ordered,
-            labels=order,
-        )
-        # ax.tick_params(axis="x", rotation=0)
-        ax.set_xticks(x)
-        ax.set_xticklabels(trend["month"], rotation=0, ha="center")
+        ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
+        ax.tick_params(axis="x", rotation=0)
         ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
-        # fig.tight_layout()
-        # fig.tight_layout(rect=[0, 0, 0.82, 1])
-        fig.tight_layout(rect=[0, 0, 0.85, 1])
+        fig.tight_layout()
         st.pyplot(fig)
         plt.close(fig)
     else:
@@ -986,10 +896,8 @@ def page_browse_reviews(months: list[str] | None):
         sent_options = ["All"] + sent_values
         sent_filter = st.selectbox(
             "Sentiment", sent_options,
-            # format_func=lambda v: v if v == "All" else f"{SENTIMENT_EMOJI.get(v, '')} {v.title()}",
             format_func=lambda v: v if v == "All" else f"{SENTIMENT_EMOJI.get(v, '')} {v.title()}",
         )
-
     with col3:
         search = st.text_input("Search feedback text")
 
@@ -1012,19 +920,13 @@ def page_browse_reviews(months: list[str] | None):
         display_df["grouping_sentiment"] = display_df["grouping_sentiment"].map(
             lambda v: f"{SENTIMENT_EMOJI.get(v, '')} {str(v).title()}" if pd.notna(v) else v
         )
-        # display_df["grouping_sentiment"] = display_df["grouping_sentiment"].map(
-        #     lambda v: f"{SENTIMENT_EMOJI.get(v, '')} {str(v).title()}" if pd.notna(v) else v
-        # )
     display_df = display_df.rename(columns={
         "respondent_id": "Respondent", "month": "Month", "rating": "Rating",
         "grouping_sentiment": "Sentiment", "primary_tag_group": "Tag group",
         "primary_tag": "Tag", "feedback_clean": "Feedback",
     })
-    # st.dataframe(display_df, use_container_width=True, height=600)
-    st.write(
-        display_df.to_html(escape=False, index=False),
-        unsafe_allow_html=True
-    )
+    st.dataframe(display_df, use_container_width=True, height=600)
+
 
 def _render_comment_themes_month(selected_month: str):
     """Thematic analysis + Feature & error analysis for one month — used by
@@ -1106,7 +1008,7 @@ def render_feedback_comments_view():
         st.info("No data yet.")
         return
 
-    sub_month, sub_agg = st.tabs(["Month by month", "Aggregate"])
+    sub_agg, sub_month = st.tabs(["Aggregate", "Month by month"])
 
     with sub_month:
         default_month = st.session_state.get("selected_month", months[-1])
@@ -1207,8 +1109,8 @@ def render_monthly_view():
             pos_pct = row["positive_count"] / total * 100
             neg_pct = row["negative_count"] / total * 100
             neu_pct = 100 - pos_pct - neg_pct
-            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct, ""))
-                                             # "Overall comment sentiment — this month"))
+            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct,
+                                             "Overall comment sentiment — this month"))
     else:
         st.info("No NLP sentiment data yet for this month. Run the pipeline without SKIP_NLP.")
 
@@ -1221,7 +1123,7 @@ def render_feedback_ratings_view():
     """Ratings/NSAT/volume side of the dashboard — Monthly view + Aggregate
     view merged under one top-level tab, split the same way as Feedback
     comments (Month by month / Aggregate), for a consistent structure."""
-    sub_month, sub_agg = st.tabs(["Month by month", "Aggregate"])
+    sub_agg, sub_month = st.tabs(["Aggregate", "Month by month"])
     with sub_month:
         render_monthly_view()
     with sub_agg:
