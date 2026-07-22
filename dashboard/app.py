@@ -1138,8 +1138,8 @@ def render_monthly_view():
             pos_pct = row["positive_count"] / total * 100
             neg_pct = row["negative_count"] / total * 100
             neu_pct = 100 - pos_pct - neg_pct
-            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct,
-                                             "Overall comment sentiment — this month"))
+            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct, ""))
+                                             # "Overall comment sentiment — this month"))
     else:
         st.info("No NLP sentiment data yet for this month. Run the pipeline without SKIP_NLP.")
 
