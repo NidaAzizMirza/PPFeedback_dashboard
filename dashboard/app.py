@@ -389,7 +389,8 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
 
     # ── Background: response bars + comment line on a hidden count axis ──
     ax_count = ax1.twinx()
-    ax_count.spines["right"].set_visible(False)
+    for spine in ax_count.spines.values():
+        spine.set_visible(False)
     ax_count.set_yticks([])
 
     responses = trend["total_respondents"].astype(float)
@@ -426,6 +427,8 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     # ── NSAT % (right axis, its own natural scale) ───────────────────────
     ax2 = ax1.twinx()
     ax2.spines["right"].set_position(("axes", 1.0))
+    ax2.spines["right"].set_color(PALETTE["ink"])
+    ax2.spines["right"].set_linewidth(1.0)
     ax2.set_facecolor("none")
     ax2.plot(x, trend["nsat"], marker="s", linewidth=2.5, markersize=7, linestyle="--",
              color=color_nsat, label="NSAT %", zorder=4)
@@ -454,7 +457,7 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
         if pd.notna(v):
             ax2.annotate(f"{v:.1f}%", (xi, v), textcoords="offset points",
                          xytext=(0, -16), ha="center", fontsize=9, color=color_nsat, fontweight="bold")
-    for spine_name in ("top",):
+    for spine_name in ("top", "left", "bottom"):
         ax2.spines[spine_name].set_visible(False)
 
     # ── X-axis & layout ───────────────────────────────────────────────────
@@ -462,8 +465,10 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     ax1.set_xticklabels(month_labels, rotation=0, ha="center", fontsize=10)
     ax1.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
     ax1.set_axisbelow(True)
-    for spine in ax1.spines.values():
-        spine.set_color(PALETTE["grid"])
+    ax1.spines["right"].set_visible(False)
+    for side in ("top", "left", "bottom"):
+        ax1.spines[side].set_color(PALETTE["ink"])
+        ax1.spines[side].set_linewidth(1.0)
 
     # Legend outside the axes, top-right — matching Rating distribution
     # and Sentiment split over time.
@@ -535,7 +540,8 @@ def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
     ax.legend(ordered, order, loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
     ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
     for spine in ax.spines.values():
-        spine.set_color(PALETTE["grid"])
+        spine.set_color(PALETTE["ink"])
+        spine.set_linewidth(1.0)
     fig.tight_layout()
     return fig
 
@@ -760,7 +766,8 @@ def page_sentiment(months: list[str] | None):
         ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
         ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
         for spine in ax.spines.values():
-            spine.set_color(PALETTE["grid"])
+            spine.set_color(PALETTE["ink"])
+            spine.set_linewidth(1.0)
         fig.tight_layout()
         st.pyplot(fig)
         plt.close(fig)
