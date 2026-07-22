@@ -86,21 +86,21 @@ def _inject_css():
         .kpi-card {{
             background: {PALETTE["paper"]};
             border: 1px solid {PALETTE["grid"]};
-            border-left: 4px solid {PALETTE["neutral"]};
+            border-left: 5px solid {PALETTE["neutral"]};
             border-radius: 10px;
-            padding: 16px 20px 16px 24px;
+            padding: 22px 24px 22px 28px;
             height: 100%;
         }}
         .kpi-label {{
-            font-size: 0.72rem;
+            font-size: 0.85rem;
             font-weight: 600;
             letter-spacing: 0.04em;
             text-transform: uppercase;
             color: {PALETTE["muted"]};
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }}
         .kpi-value {{
-            font-size: 2.0rem;
+            font-size: 2.6rem;
             font-weight: 700;
             color: {PALETTE["ink"]};
             line-height: 1.1;
@@ -683,7 +683,6 @@ def page_overview(months: list[str] | None):
     ) if view["avg_rating"].notna().any() else None
     avg_nsat = round(view["nsat"].dropna().mean(), 1) if view["nsat"].notna().any() else None
 
-    st.write("")
     col1, col2, col3, col4 = st.columns(4, gap="large")
     with col1:
         _kpi_card("Total responses", f"{total_respondents:,}")
