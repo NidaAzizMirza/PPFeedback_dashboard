@@ -728,7 +728,11 @@ def page_sentiment(months: list[str] | None):
     trend = trend[trend["positive_count"].notna()]
     if len(trend) > 1:
         st.subheader("Sentiment split over time")
-        fig, ax = plt.subplots(figsize=(10, 5))
+
+        parsed = pd.to_datetime(trend["month"], format="%Y-%m", errors="coerce")
+        month_labels = parsed.dt.strftime("%b %Y") if parsed.notna().all() else trend["month"]
+
+        fig, ax = plt.subplots(figsize=(10, 5.5))
         fig.patch.set_facecolor(PALETTE["paper"])
         ax.set_facecolor(PALETTE["paper"])
         totals = trend["positive_count"] + trend["negative_count"] + trend["neutral_count"]
@@ -736,13 +740,13 @@ def page_sentiment(months: list[str] | None):
         neg_pct = (trend["negative_count"] / totals * 100).fillna(0)
         neu_pct = (100 - pos_pct - neg_pct).clip(lower=0)
 
-        ax.bar(trend["month"], neg_pct, color=SENTIMENT_COLORS["negative"], label="Negative")
-        ax.bar(trend["month"], neu_pct, bottom=neg_pct, color=SENTIMENT_COLORS["neutral"], label="Neutral")
-        ax.bar(trend["month"], pos_pct, bottom=neg_pct + neu_pct, color=SENTIMENT_COLORS["positive"], label="Positive")
+        x = np.arange(len(trend))
+        ax.bar(x, neg_pct, color=SENTIMENT_COLORS["negative"], width=0.6, label="Negative")
+        ax.bar(x, neu_pct, bottom=neg_pct, color=SENTIMENT_COLORS["neutral"], width=0.6, label="Neutral")
+        ax.bar(x, pos_pct, bottom=neg_pct + neu_pct, color=SENTIMENT_COLORS["positive"], width=0.6, label="Positive")
 
         # Percentage labels inside each segment (matching the count labels
         # on the Rating distribution chart).
-        x_pos = np.arange(len(trend))
         bottoms = {"neg": np.zeros(len(trend)), "neu": neg_pct.values, "pos": (neg_pct + neu_pct).values}
         for key, vals in zip(["neg", "neu", "pos"], [neg_pct, neu_pct, pos_pct]):
             for xi, (b, v) in enumerate(zip(bottoms[key], vals.values)):
@@ -750,10 +754,14 @@ def page_sentiment(months: list[str] | None):
                     ax.text(xi, b + v / 2, f"{v:.1f}%", ha="center", va="center",
                             fontsize=9, color=PALETTE["paper"], fontweight="bold")
 
+        ax.set_xticks(x)
+        ax.set_xticklabels(month_labels, rotation=0, ha="center")
         ax.set_ylabel("% of reviews")
+        ax.set_ylim(0, 100)
         ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=9, frameon=True)
-        ax.tick_params(axis="x", rotation=0)
         ax.grid(axis="y", color=PALETTE["grid"], linewidth=0.5)
+        for spine in ax.spines.values():
+            spine.set_color(PALETTE["grid"])
         fig.tight_layout()
         st.pyplot(fig)
         plt.close(fig)
