@@ -1163,7 +1163,7 @@ def main():
     _inject_css()
 
     if not db_exists():
-        st.title(" Planning Portal Feedback")
+        st.title("Planning Portal Feedback")
         st.warning(
             "No database found yet. Run the pipeline first:\n\n"
             "`python run_pipeline.py`\n\n"
@@ -1173,7 +1173,7 @@ def main():
 
     _sidebar()
 
-    st.title("🗺️ Planning Portal Feedback Dashboard")
+    st.title("Planning Portal Feedback Dashboard")
 
     tab1, tab2 = st.tabs(["Feedback ratings", "Feedback comments"])
     with tab1:
