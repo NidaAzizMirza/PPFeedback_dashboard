@@ -228,7 +228,7 @@ def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
             continue
         vals = table[col].values.astype(float)
         color = SENTIMENT_COLORS[col]
-        bars = ax.barh(y, vals, left=lefts, label=col.title(), color=color, height=1)
+        bars = ax.barh(y, vals, left=lefts, label=col.title(), color=color, height=0.6)
         for rect, v in zip(bars, vals):
             if v > (2 if pct else 0.5):
                 label = f"{v:.0f}%" if pct else str(int(v))
@@ -260,7 +260,7 @@ def _single_sentiment_bar(pos_pct: float, neg_pct: float, neu_pct: float,
     y_pos = -0.35
     left = 0
     for name, val in segments:
-        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=0.3)
+        ax.barh([y_pos], [val], left=left, color=SENTIMENT_COLORS[name], height=1)
         if val > 3:
             ax.text(left + val / 2, y_pos, f"{val:.1f}%", ha="center", va="center",
                      fontsize=10, color=PALETTE["paper"], fontweight="bold")
