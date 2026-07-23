@@ -228,7 +228,7 @@ def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
             continue
         vals = table[col].values.astype(float)
         color = SENTIMENT_COLORS[col]
-        bars = ax.barh(y, vals, left=lefts, label=col.title(), color=color, height=0.6)
+        bars = ax.barh(y, vals, left=lefts, label=col.title(), color=color, height=1)
         for rect, v in zip(bars, vals):
             if v > (2 if pct else 0.5):
                 label = f"{v:.0f}%" if pct else str(int(v))
@@ -617,7 +617,7 @@ def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.F
 # ============================================================================
 
 def _sidebar():
-    st.sidebar.title("🗺️ Planning Portal")
+    st.sidebar.title("Planning Portal")
     st.sidebar.caption("Feedback Pipeline Dashboard")
     st.sidebar.divider()
 
@@ -1160,8 +1160,8 @@ def render_monthly_view():
             pos_pct = row["positive_count"] / total * 100
             neg_pct = row["negative_count"] / total * 100
             neu_pct = 100 - pos_pct - neg_pct
-            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct,
-                                             "Overall comment sentiment — this month"))
+            st.pyplot(_single_sentiment_bar(pos_pct, neg_pct, neu_pct,""))
+                                             # "Overall comment sentiment — this month"))
     else:
         st.info("No NLP sentiment data yet for this month. Run the pipeline without SKIP_NLP.")
 
@@ -1185,7 +1185,7 @@ def main():
     _inject_css()
 
     if not db_exists():
-        st.title("🗺️ Planning Portal Feedback")
+        st.title("Planning Portal Feedback")
         st.warning(
             "No database found yet. Run the pipeline first:\n\n"
             "`python run_pipeline.py`\n\n"
