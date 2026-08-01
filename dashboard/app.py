@@ -40,7 +40,6 @@ from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import pandas as pd
 import streamlit as st
-from store import log_visit, load_visitor_summary, load_visits_by_day
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -48,6 +47,9 @@ sys.path.insert(0, str(ROOT))
 from dashboard_config import PALETTE, SERIES_COLORS, SENTIMENT_COLORS
 from store import (
     db_exists,
+    log_visit,
+    load_visitor_summary,
+    load_visits_by_day,
     load_available_months,
     load_latest_run_date,
     load_monthly_summary,
