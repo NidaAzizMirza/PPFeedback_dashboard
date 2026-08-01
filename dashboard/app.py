@@ -1,6 +1,6 @@
 """
 ============================================================================
- DASHBOARD/APP.PY — Building Control Portal Feedback Dashboard (Streamlit)
+ DASHBOARD/APP.PY — Planning Portal Feedback Dashboard (Streamlit)
 ============================================================================
 Launch with:
     streamlit run dashboard/app.py
@@ -75,7 +75,7 @@ SENTIMENT_EMOJI = {
 # SECTION 1 — PAGE CONFIG + CSS
 # ============================================================================
 st.set_page_config(
-    page_title="Building Control Portal Feedback",
+    page_title="Planning Portal Feedback",
     # page_icon="🗺️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -620,7 +620,7 @@ def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.F
 # ============================================================================
 
 def _sidebar():
-    st.sidebar.title("Building Control Portal")
+    st.sidebar.title("Planning Control Portal")
     st.sidebar.caption("Feedback Pipeline Dashboard")
     st.sidebar.divider()
 
@@ -1258,7 +1258,7 @@ def main():
     _render_admin_panel()
 
     if not db_exists():
-        st.title("Building Control Portal Feedback")
+        st.title("Planning Portal Feedback")
         st.warning(
             "No database found yet. Run the pipeline first:\n\n"
             "`python run_pipeline.py`\n\n"
@@ -1268,7 +1268,7 @@ def main():
 
     _sidebar()
 
-    st.title("Building Control Portal Feedback Dashboard")
+    st.title("Planning Portal Feedback Dashboard")
 
     tab1, tab2 = st.tabs(["Feedback ratings", "Feedback comments"])
     with tab1:
