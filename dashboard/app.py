@@ -1,6 +1,6 @@
 """
 ============================================================================
- DASHBOARD/APP.PY — Planning Portal Feedback Dashboard (Streamlit)
+ DASHBOARD/APP.PY — Building Control Portal Feedback Dashboard (Streamlit)
 ============================================================================
 Launch with:
     streamlit run dashboard/app.py
@@ -40,6 +40,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import pandas as pd
 import streamlit as st
+from store import log_visit, load_visitor_summary, load_visits_by_day
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -72,8 +73,8 @@ SENTIMENT_EMOJI = {
 # SECTION 1 — PAGE CONFIG + CSS
 # ============================================================================
 st.set_page_config(
-    page_title="Planning Portal Feedback",
-    page_icon="🗺️",
+    page_title="Building Control Portal Feedback",
+    # page_icon="🗺️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -617,7 +618,7 @@ def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.F
 # ============================================================================
 
 def _sidebar():
-    st.sidebar.title("Planning Portal")
+    st.sidebar.title("Building Control Portal")
     st.sidebar.caption("Feedback Pipeline Dashboard")
     st.sidebar.divider()
 
@@ -1181,11 +1182,81 @@ def render_feedback_ratings_view():
         render_aggregate_view()
 
 
+def _log_visit_once():
+    """Logs exactly one visit per browser session, not on every rerun
+    (Streamlit reruns the whole script on every click/interaction)."""
+    if "visit_logged" not in st.session_state:
+        log_visit()
+        st.session_state.visit_logged = True
+
+
+def _render_admin_panel():
+    """
+    Only visible to you — not shown to regular visitors. Access by
+    appending ?admin=<your_secret> to the dashboard URL. Requires
+    setting admin_key in .streamlit/secrets.toml (locally) or the
+    Streamlit Cloud app's Settings -> Secrets:
+        admin_key = "choose-something-only-you-know"
+    """
+    admin_param = st.query_params.get("admin")
+    expected = st.secrets.get("admin_key")
+    if not expected or admin_param != expected:
+        return  # silently do nothing for everyone else
+
+    with st.sidebar.expander("👁️ Visitor log (admin only)"):
+        summary = load_visitor_summary()
+        st.metric("Total visits", summary["total"])
+        c1, c2 = st.columns(2)
+        c1.metric("Last 7 days", summary["last_7_days"])
+        c2.metric("Last 30 days", summary["last_30_days"])
+        if summary["last_visit"] is not None:
+            st.caption(f"Last visit: {summary['last_visit'].strftime('%Y-%m-%d %H:%M UTC')}")
+
+        trend = load_visits_by_day()
+        if not trend.empty:
+            st.bar_chart(trend.set_index("date")["visits"])
+
+
+def _check_password() -> bool:
+    """
+    Gates the entire dashboard behind a single shared password. Returns
+    True once the correct password has been entered this session (or
+    if no password is configured at all — see note below).
+    """
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+
+    if st.session_state.authenticated:
+        return True
+
+    expected = st.secrets.get("dashboard_password")
+    if not expected:
+        # No password configured — fail open rather than lock everyone
+        # out by accident. Remove this branch once you've confirmed the
+        # secret is actually set, if you want it to fail CLOSED instead.
+        return True
+
+    st.title("🗺️ Planning Portal Feedback")
+    pwd = st.text_input("Password", type="password")
+    if st.button("Enter"):
+        if pwd == expected:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Incorrect password.")
+    return False
+
+
 def main():
+    if not _check_password():
+        return  # stops here until the correct password is entered
+
     _inject_css()
+    _log_visit_once()
+    _render_admin_panel()
 
     if not db_exists():
-        st.title("Planning Portal Feedback")
+        st.title("Building Control Portal Feedback")
         st.warning(
             "No database found yet. Run the pipeline first:\n\n"
             "`python run_pipeline.py`\n\n"
@@ -1195,7 +1266,7 @@ def main():
 
     _sidebar()
 
-    st.title("🗺️ Planning Portal Feedback Dashboard")
+    st.title("Building Control Portal Feedback Dashboard")
 
     tab1, tab2 = st.tabs(["Feedback ratings", "Feedback comments"])
     with tab1:

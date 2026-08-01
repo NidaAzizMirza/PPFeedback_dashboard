@@ -6,12 +6,71 @@
 
 import os
 import sqlite3
+from datetime import datetime, timezone
 
 import pandas as pd
 
 DB_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "data", "metrics.db"
 )
+
+# ── Add to store.py ─────────────────────────────────────────────────────
+
+def _ensure_visitor_log_table(conn):
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS visitor_log (
+            visit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            visit_timestamp TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+
+
+def log_visit():
+    """
+    Records one visit, timestamped in UTC. Called once per browser
+    session (see app.py) — never on every rerun/interaction within
+    that session.
+    """
+    conn = _connect()
+    if conn is None:
+        return
+    try:
+        _ensure_visitor_log_table(conn)
+        conn.execute(
+            "INSERT INTO visitor_log (visit_timestamp) VALUES (?)",
+            (datetime.now(timezone.utc).isoformat(),)
+        )
+        conn.commit()
+    except Exception:
+        pass  # never let logging break the dashboard itself
+    finally:
+        conn.close()
+
+
+def load_visitor_summary() -> dict:
+    """Total visits, visits in the last 7/30 days, and the most recent visit."""
+    df = _read_sql("SELECT visit_timestamp FROM visitor_log ORDER BY visit_timestamp DESC")
+    if df.empty:
+        return {"total": 0, "last_7_days": 0, "last_30_days": 0, "last_visit": None}
+
+    df["visit_timestamp"] = pd.to_datetime(df["visit_timestamp"], utc=True)
+    now = pd.Timestamp.now(tz="UTC")
+    return {
+        "total": len(df),
+        "last_7_days": int((df["visit_timestamp"] >= now - pd.Timedelta(days=7)).sum()),
+        "last_30_days": int((df["visit_timestamp"] >= now - pd.Timedelta(days=30)).sum()),
+        "last_visit": df["visit_timestamp"].iloc[0],
+    }
+
+
+def load_visits_by_day() -> pd.DataFrame:
+    """One row per day with a visit, for a simple trend chart."""
+    df = _read_sql("SELECT visit_timestamp FROM visitor_log")
+    if df.empty:
+        return pd.DataFrame(columns=["date", "visits"])
+    df["date"] = pd.to_datetime(df["visit_timestamp"], utc=True).dt.date
+    return df.groupby("date").size().reset_index(name="visits").sort_values("date")
 
 
 def _connect():

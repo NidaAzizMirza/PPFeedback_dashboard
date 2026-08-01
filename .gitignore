@@ -53,3 +53,4 @@ logs/
 
 # One-off local utility scripts — not part of the pipeline itself
 fix_corrupted_ids.py
+.streamlit/
