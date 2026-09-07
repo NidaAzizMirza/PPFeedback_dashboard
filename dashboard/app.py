@@ -385,7 +385,9 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     # Nice "Nov 2025" x-labels when the month column parses as YYYY-MM;
     # falls back to the raw string (e.g. "2025-11") otherwise.
     parsed = pd.to_datetime(trend["month"], format="%Y-%m", errors="coerce")
-    month_labels = parsed.dt.strftime("%b %Y") if parsed.notna().all() else trend["month"]
+    month_labels = parsed.dt.strftime("%b %y") if parsed.notna().all() else trend["month"]
+
+
 
     x = list(range(len(trend)))
 
@@ -504,7 +506,7 @@ def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
         return None
 
     parsed = pd.to_datetime(data["month"], format="%Y-%m", errors="coerce")
-    month_labels = parsed.dt.strftime("%b %Y") if parsed.notna().all() else data["month"]
+    month_labels = parsed.dt.strftime("%b %y") if parsed.notna().all() else data["month"]
 
     colors = {
         "rating_5": PALETTE["positive"],
@@ -761,7 +763,7 @@ def page_sentiment(months: list[str] | None):
         st.subheader("Sentiment split over time")
 
         parsed = pd.to_datetime(trend["month"], format="%Y-%m", errors="coerce")
-        month_labels = parsed.dt.strftime("%b %Y") if parsed.notna().all() else trend["month"]
+        month_labels = parsed.dt.strftime("%b %y") if parsed.notna().all() else trend["month"]
 
         fig, ax = plt.subplots(figsize=(10, 4.8))
         fig.patch.set_facecolor(PALETTE["paper"])
