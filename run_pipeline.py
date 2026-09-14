@@ -9,6 +9,7 @@ import shutil
 import warnings
 import logging
 import traceback
+import json
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -445,6 +446,12 @@ KEYWORD_BOOST_STRENGTH = {
 }
 
 HARD_FALLBACK = {
+    "Fees too high": (
+        ["fee", "fees", "expensive", "too high", "cost", "overcharge",
+         "fee calculator", "planning fee", "service charge", "fees are",
+         "cost of", "how much", "pricing"],
+        "Fees, charges and quotes"
+    ),
     "Crash/ data loss/ error message": (
         ["crash", "crashed", "crashing", "lost my work", "data lost",
          "error message", "session expired", "timed out", "timeout",
@@ -647,6 +654,10 @@ def step_classify(df):
 
     # Load tag lookup
     tags_ref = pd.read_csv(cfg.TAGS_FILE)[["Title", "Group"]].copy()
+    tags_ref["Group"] = tags_ref["Group"].str.strip()  # tags.csv has "General UX "
+    # with a trailing space for all 14 of its tags — a data-entry issue in the
+    # source file, not here, but stripping on load stops it silently splitting
+    # into two different tag_group values downstream.
     tags_ref.columns = ["tag", "tag_group"]
     tags_ref["tag"] = tags_ref["tag"].str.strip()
     tag_to_group = dict(zip(tags_ref["tag"], tags_ref["tag_group"]))
@@ -728,52 +739,72 @@ def step_absa(df):
     _absa_error_count = [0]   # mutable counter closed over below
     _absa_seen_labels = set()
 
-    def get_absa_sentiment(text, aspect):
-        try:
-            result = absa_pipe(
-                f"{text} [SEP] {aspect}",
-                truncation=True, max_length=512
-            )
-            raw_label = result[0]["label"]
-            _absa_seen_labels.add(raw_label)
-            return raw_label.lower(), round(result[0]["score"], 3)
-        except Exception as e:
-            _absa_error_count[0] += 1
-            if _absa_error_count[0] <= 5:
-                log.error(f"ABSA call failed (error #{_absa_error_count[0]}): {e}")
-            return "neutral", 0.0
-
-    def run_absa(text, tag_group):
+    def run_absa_for_group(text, tag_group):
+        """One group's aspects, scored. Unchanged logic, just factored out
+        so it can be called once per topic in the row instead of once
+        for primary_tag_group only."""
         results = {}
-        sentiment, score = get_absa_sentiment(text, "overall experience")
-        results["overall experience"] = {"sentiment": sentiment, "confidence": score}
         for aspect in ABSA_ASPECTS.get(tag_group, [])[:cfg.ABSA_MAX_ASPECTS]:
             sentiment, score = get_absa_sentiment(text, aspect)
             if score >= 0.6:
                 results[aspect] = {"sentiment": sentiment, "confidence": score}
         return results
 
-    def summarise_absa(d):
-        aspects, sentiments, overall = [], [], ""
-        for aspect, data in d.items():
-            if aspect == "overall experience":
-                overall = data["sentiment"]
-                continue
-            aspects.append(aspect)
-            sentiments.append(f"{aspect}: {data['sentiment']} ({data['confidence']})")
-        return ", ".join(aspects), ", ".join(sentiments), overall
+    def run_absa_per_topic(text, primary_group, secondary_groups_str):
+        """
+        Runs ABSA against every distinct topic group the row actually
+        touches (primary + secondary), not just the primary one — this is
+        what lets a single comment carry independent sentiment per topic
+        (e.g. "document upload great, payment confusing").
+        """
+        groups = [primary_group] if primary_group else []
+        if secondary_groups_str:
+            groups += [g.strip() for g in secondary_groups_str.split(",") if g.strip()]
+        groups = list(dict.fromkeys(groups))  # de-dupe, keep order
 
-    def get_grouping_sentiment(row):
-        aspects = str(row.get("absa_aspect_sentiments", ""))
-        overall = str(row.get("absa_overall_sentiment", ""))
-        if aspects and aspects not in ["nan", ""]:
-            neg = aspects.count("negative")
-            pos = aspects.count("positive")
-            neu = aspects.count("neutral")
-            if neg > pos and neg > neu: return "negative"
-            if pos > neg and pos > neu: return "positive"
-            return "neutral"
-        return overall if overall not in ["nan", ""] else "neutral"
+        overall_sentiment, overall_score = get_absa_sentiment(text, "overall experience")
+
+        pairs = []
+        all_aspects, all_aspect_strs = [], []
+        for group in groups:
+            group_results = run_absa_for_group(text, group)
+            if group_results:
+                # highest-confidence aspect for this topic decides its sentiment
+                best_aspect, best = max(group_results.items(), key=lambda kv: kv[1]["confidence"])
+                pairs.append({
+                    "topic": group,
+                    "sentiment": best["sentiment"],
+                    "confidence": best["confidence"],
+                    "source": "absa_aspect",
+                })
+                for a, d in group_results.items():
+                    all_aspects.append(a)
+                    all_aspect_strs.append(f"{a}: {d['sentiment']} ({d['confidence']})")
+            else:
+                # No aspect for this specific topic cleared the confidence
+                # bar — fall back to the row's overall sentiment rather than
+                # leaving it unresolved. Lower-confidence than a real aspect
+                # hit, flagged as such.
+                pairs.append({
+                    "topic": group,
+                    "sentiment": overall_sentiment,
+                    "confidence": overall_score,
+                    "source": "absa_overall_fallback",
+                })
+
+        return pairs, ", ".join(all_aspects), ", ".join(all_aspect_strs), overall_sentiment
+
+    def get_grouping_sentiment(topic_pairs, overall_sentiment):
+        """Row-level summary kept for backward compatibility with anything
+        still reading grouping_sentiment — majority vote across topic pairs,
+        falling back to the overall-experience sentiment for single/no-topic
+        rows."""
+        if not topic_pairs:
+            return overall_sentiment or "neutral"
+        counts = {"positive": 0, "negative": 0, "neutral": 0}
+        for p in topic_pairs:
+            counts[p["sentiment"]] = counts.get(p["sentiment"], 0) + 1
+        return max(counts, key=counts.get)
 
     # ── Diagnostic — word count distribution ──────────────────────────────
     word_counts = df[cfg.COL_FEEDBACK_CLEAN].str.split().str.len()
@@ -802,25 +833,33 @@ def step_absa(df):
     # ── Guard: skip ABSA if nothing to process ────────────────────────────
     if total == 0:
         log.warning("No reviews meet minimum word count for ABSA — skipping")
+        df["topic_sentiment_pairs"]  = [[] for _ in range(len(df))]
         df["absa_aspects"]           = ""
         df["absa_aspect_sentiments"] = ""
-        df["absa_overall_sentiment"] = ""
+        df["overall_experience_sentiment"] = ""
         df["grouping_sentiment"]     = "neutral"
         return df
 
-    # ── Run ABSA ───────────────────────────────────────────────────────────
-    absa_results = []
+    # ── Run ABSA (per topic the row actually touches) ──────────────────────
+    pairs_l, aspects_l, aspect_strs_l, overall_l = [], [], [], []
     for i, (_, row) in enumerate(df_absa.iterrows()):
         if i % 100 == 0:
             log.info(f"  ABSA progress: {i}/{total}")
-        absa_results.append(
-            run_absa(row[text_col], row["primary_tag_group"])
+        pairs, aspects_str, aspect_strs, overall = run_absa_per_topic(
+            row[text_col], row["primary_tag_group"], row.get("secondary_tag_groups", "")
         )
+        pairs_l.append(pairs)
+        aspects_l.append(aspects_str)
+        aspect_strs_l.append(aspect_strs)
+        overall_l.append(overall)
 
-    df_absa["absa_results"] = absa_results
+    df_absa["topic_sentiment_pairs"]  = pairs_l
+    df_absa["absa_aspects"]           = aspects_l           # kept for backward compat / audit
+    df_absa["absa_aspect_sentiments"] = aspect_strs_l        # kept for backward compat / audit
+    df_absa["overall_experience_sentiment"] = overall_l
 
     log.info(f"ABSA raw labels seen: {_absa_seen_labels}")
-    log.info(f"ABSA call failures: {_absa_error_count[0]} / {total * (1 + cfg.ABSA_MAX_ASPECTS)} approx calls")
+    log.info(f"ABSA call failures: {_absa_error_count[0]}")
     seen_lower = {label.lower() for label in _absa_seen_labels}
     if _absa_seen_labels and not seen_lower & {"positive", "negative", "neutral"}:
         log.error(
@@ -828,26 +867,15 @@ def step_absa(df):
             f"— got {_absa_seen_labels}. Sentiment counts will be wrong until this is fixed."
         )
 
-    # ── Safe column assignment ─────────────────────────────────────────────
-    absa_expanded = df_absa["absa_results"].apply(
-        lambda x: pd.Series(summarise_absa(x))
+    df_absa["grouping_sentiment"] = df_absa.apply(
+        lambda r: get_grouping_sentiment(r["topic_sentiment_pairs"], r["overall_experience_sentiment"]),
+        axis=1,
     )
-    absa_expanded.columns = [
-        "absa_aspects", "absa_aspect_sentiments", "absa_overall_sentiment"
-    ]
-    df_absa = pd.concat([df_absa.reset_index(drop=True),
-                         absa_expanded.reset_index(drop=True)], axis=1)
-
-    df_absa["grouping_sentiment"] = df_absa.apply(get_grouping_sentiment, axis=1)
-
-    # ── Merge back to full df ──────────────────────────────────────────────
-    merge_cols = [text_col, "absa_aspects", "absa_aspect_sentiments",
-                  "absa_overall_sentiment", "grouping_sentiment"]
 
     # ── Merge back to full df ──────────────────────────────────────────────
     df = df.merge(
-        df_absa[[cfg.COL_RESPONDENT_ID, "absa_aspects", "absa_aspect_sentiments",
-                 "absa_overall_sentiment", "grouping_sentiment"]],
+        df_absa[[cfg.COL_RESPONDENT_ID, "topic_sentiment_pairs", "absa_aspects",
+                 "absa_aspect_sentiments", "overall_experience_sentiment", "grouping_sentiment"]],
         on=cfg.COL_RESPONDENT_ID,
         how="left"
     )
@@ -857,16 +885,19 @@ def step_absa(df):
         df = df.drop(columns=[text_col])
 
     df["grouping_sentiment"] = df["grouping_sentiment"].fillna("neutral")
+    df["topic_sentiment_pairs"] = df["topic_sentiment_pairs"].apply(
+        lambda v: v if isinstance(v, list) else []
+    )
 
     # Drop duplicate Feedback columns from ABSA merge
     if "Feedback_y" in df.columns:
         df = df.drop(columns=["Feedback_y"])
     if "Feedback_x" in df.columns:
         df = df.rename(columns={"Feedback_x": "Feedback"})
-    print(f"printing this {df}")
     log.info("ABSA complete ✓")
     log.info(f"Sentiment distribution: "
              f"{df['grouping_sentiment'].value_counts().to_dict()}")
+    log.info(f"Avg topics per row: {df['topic_sentiment_pairs'].apply(len).mean():.2f}")
     return df
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -953,8 +984,23 @@ def step_entities(df):
     def extract_fees(text):
         return list(set(re.findall(r'£[\d,]+(?:\.\d{2})?', text)))
 
+    USER_TYPE_KEYWORDS = [
+        "first time", "first-time", "new user", "never used",
+        "never used this before", "novice", "beginner", "not a professional",
+        "not an expert", "layman", "lay person", "one-time", "one off",
+    ]
+
+    def extract_user_type(text):
+        # Same negation-aware matching as match_keywords — "not a first
+        # time user" shouldn't tag as beginner. Only one value currently
+        # (beginner_or_one_time); extend this dict if more user-type
+        # categories are added later (e.g. "frequent user").
+        if match_keywords(text, USER_TYPE_KEYWORDS):
+            return "beginner_or_one_time"
+        return None
+
     total = len(df)
-    councils_l, features_l, errors_l, fees_l = [], [], [], []
+    councils_l, features_l, errors_l, fees_l, user_type_l = [], [], [], [], []
 
     for i, (_, row) in enumerate(df.iterrows()):
         if i % 500 == 0:
@@ -964,13 +1010,16 @@ def step_entities(df):
         features_l.append(", ".join(extract_features(t)))
         errors_l.append(", ".join(extract_errors(t)))
         fees_l.append(", ".join(extract_fees(t)))
+        user_type_l.append(extract_user_type(t))
 
     df["entities_councils"]  = councils_l
     df["entities_features"]  = features_l
     df["entities_errors"]    = errors_l
     df["entities_fees"]      = fees_l
+    df["user_type"]          = user_type_l
 
     log.info("Entity extraction complete ✓")
+    log.info(f"user_type coverage: {df['user_type'].notna().sum()} / {total} rows")
     return df
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -1011,6 +1060,16 @@ def step_save(df):
     log.info("=" * 60)
     log.info("STEP 6 — Save outputs")
     log.info("=" * 60)
+
+    # Excel can't store a list-of-dicts cell value — JSON-serialize
+    # topic_sentiment_pairs before any to_excel() call below. Do this once,
+    # up front, on the actual df (not a copy) so every write from here on
+    # (master.xlsx, per-run output files) sees a consistent string, not a
+    # mix of live lists and strings from a re-read master file.
+    if "topic_sentiment_pairs" in df.columns:
+        df["topic_sentiment_pairs"] = df["topic_sentiment_pairs"].apply(
+            lambda v: json.dumps(v) if isinstance(v, list) else (v if pd.notna(v) else "[]")
+        )
 
     # ── Update master file ─────────────────────────────────────────────────
     if os.path.exists(cfg.MASTER_FILE):
@@ -1181,9 +1240,10 @@ def _stub_nlp_columns(df):
     df["prediction_method"]    = "skipped"
 
     # Would normally come from step_absa()
+    df["topic_sentiment_pairs"]  = [[] for _ in range(len(df))]
     df["absa_aspects"]           = ""
     df["absa_aspect_sentiments"] = ""
-    df["absa_overall_sentiment"] = "neutral"
+    df["overall_experience_sentiment"] = "neutral"
     df["grouping_sentiment"]     = "neutral"
 
     # Would normally come from step_entities()
@@ -1191,6 +1251,7 @@ def _stub_nlp_columns(df):
     df["entities_features"] = ""
     df["entities_errors"]   = ""
     df["entities_fees"]     = ""
+    df["user_type"]         = None
 
     return df
 

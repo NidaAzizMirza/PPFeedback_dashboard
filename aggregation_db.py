@@ -5,6 +5,7 @@
 
 import os
 import sqlite3
+import json
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -52,6 +53,26 @@ CREATE TABLE IF NOT EXISTS tag_group_monthly (
     PRIMARY KEY (run_date, tag_group)
 );
 
+-- New, additive: one row per (month, topic) exploded from
+-- topic_sentiment_pairs, so a comment mentioning 2 topics contributes to
+-- 2 rows here instead of 1 (old tag_group_monthly above is left untouched
+-- and still populated from primary_tag_group/grouping_sentiment — nothing
+-- reading it breaks). This is the aggregate the redesigned dashboard should
+-- move to reading; tag_group_monthly stays only for backward compatibility
+-- until app.py is updated.
+CREATE TABLE IF NOT EXISTS topic_monthly (
+    run_date            TEXT,
+    month               TEXT,
+    topic               TEXT,
+    total_mentions      INTEGER,
+    positive_count      INTEGER,
+    negative_count      INTEGER,
+    neutral_count       INTEGER,
+    mixed_count          INTEGER,
+    avg_sentiment_score REAL,
+    PRIMARY KEY (run_date, topic)
+);
+
 CREATE TABLE IF NOT EXISTS feature_monthly (
     run_date            TEXT,
     month               TEXT,
@@ -86,7 +107,10 @@ CREATE TABLE IF NOT EXISTS review_detail (
     entities_features   TEXT,
     entities_errors     TEXT,
     entities_fees       TEXT,
-    rating              REAL,
+    rating               REAL,
+    topic_sentiment_pairs        TEXT,
+    user_type                     TEXT,
+    overall_experience_sentiment  TEXT,
     PRIMARY KEY (respondent_id)
 );
 """
@@ -123,6 +147,24 @@ def count_entity_col(series):
                 if item:
                     counts[item] += 1
     return counts
+
+def _normalize_topic_pairs(value):
+    """
+    topic_sentiment_pairs arrives as a live Python list when called directly
+    after step_absa, but as a JSON string when it's come via master.xlsx
+    (Excel can't store a list-of-dicts cell, so step_save JSON-serializes it
+    on write — see run_pipeline.py). Handle both so this works regardless of
+    which path called write_monthly_metrics.
+    """
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            parsed = json.loads(value)
+            return parsed if isinstance(parsed, list) else []
+        except (json.JSONDecodeError, TypeError):
+            return []
+    return []
 
 # ══════════════════════════════════════════════════════════════════════════
 # WRITE RAW METRICS (from full export before preprocessing)
@@ -331,6 +373,29 @@ def write_monthly_metrics(df, run_date=None):
     if "nsat" not in cols:
         conn.execute("ALTER TABLE monthly_summary ADD COLUMN nsat REAL")
 
+    # Migration safety: add the new topic/sentiment columns if this DB
+    # pre-dates the redesign (existing metrics.db from before this change).
+    # Assumes review_detail already exists via initialise_db(), same as the
+    # nsat pattern above.
+    rd_cols = [r[1] for r in conn.execute("PRAGMA table_info(review_detail)").fetchall()]
+    for new_col in ("topic_sentiment_pairs", "user_type", "overall_experience_sentiment"):
+        if new_col not in rd_cols:
+            conn.execute(f"ALTER TABLE review_detail ADD COLUMN {new_col} TEXT")
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS topic_monthly (
+            run_date            TEXT,
+            month               TEXT,
+            topic               TEXT,
+            total_mentions      INTEGER,
+            positive_count      INTEGER,
+            negative_count      INTEGER,
+            neutral_count       INTEGER,
+            mixed_count         INTEGER,
+            avg_sentiment_score REAL,
+            PRIMARY KEY (run_date, topic)
+        )
+    """)
+
     # ── 1. Update monthly_summary with NLP sentiment ──────────────────────
     total = len(df)
     pos   = int((df["grouping_sentiment"] == "positive").sum())
@@ -427,14 +492,16 @@ def write_monthly_metrics(df, run_date=None):
         respondent_id = str(row.get(cfg.COL_RESPONDENT_ID, ""))
         if not respondent_id or respondent_id == "nan":
             continue
+        topic_pairs = _normalize_topic_pairs(row.get("topic_sentiment_pairs", []))
         conn.execute("""
             INSERT OR REPLACE INTO review_detail
             (respondent_id, run_date, month, feedback_clean,
              primary_tag, primary_tag_group, secondary_tags,
              svm_confidence, prediction_method, grouping_sentiment,
              absa_aspects, entities_features, entities_errors,
-             entities_fees, rating)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             entities_fees, rating,
+             topic_sentiment_pairs, user_type, overall_experience_sentiment)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             respondent_id, run_date, month,
             str(row.get("Feedback_clean", "")),
@@ -448,7 +515,45 @@ def write_monthly_metrics(df, run_date=None):
             str(row.get("entities_features", "")),
             str(row.get("entities_errors", "")),
             str(row.get("entities_fees", "")),
-            float(row.get("Rating")) if pd.notna(row.get("Rating")) else None
+            float(row.get("Rating")) if pd.notna(row.get("Rating")) else None,
+            json.dumps(topic_pairs),
+            row.get("user_type") if pd.notna(row.get("user_type")) else None,
+            row.get("overall_experience_sentiment") if pd.notna(row.get("overall_experience_sentiment")) else None,
+        ))
+
+    # ── 6. Topic monthly (exploded topic_sentiment_pairs) ──────────────────
+    # Additive alongside tag_group_monthly above — a comment mentioning 2
+    # topics contributes to 2 rows here, unlike tag_group_monthly which only
+    # ever sees primary_tag_group (1 row per comment, regardless of how many
+    # topics it actually touches).
+    topic_stats = defaultdict(lambda: {"pos": 0, "neg": 0, "neu": 0, "mixed": 0})
+    for _, row in df.iterrows():
+        pairs = _normalize_topic_pairs(row.get("topic_sentiment_pairs", []))
+        for p in pairs:
+            topic = p.get("topic")
+            sentiment = p.get("sentiment")
+            if not topic:
+                continue
+            if sentiment == "positive":  topic_stats[topic]["pos"] += 1
+            elif sentiment == "negative": topic_stats[topic]["neg"] += 1
+            elif sentiment == "mixed":    topic_stats[topic]["mixed"] += 1
+            else:                         topic_stats[topic]["neu"] += 1
+
+    for topic, counts in topic_stats.items():
+        total_t = counts["pos"] + counts["neg"] + counts["neu"] + counts["mixed"]
+        if total_t == 0:
+            continue
+        score = round((counts["pos"] - counts["neg"]) / total_t, 3)
+        conn.execute("""
+            INSERT OR REPLACE INTO topic_monthly
+            (run_date, month, topic, total_mentions,
+             positive_count, negative_count, neutral_count, mixed_count,
+             avg_sentiment_score)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            run_date, month, topic, total_t,
+            counts["pos"], counts["neg"], counts["neu"], counts["mixed"],
+            score
         ))
 
     conn.commit()
@@ -571,6 +676,17 @@ def get_tag_group_trends():
     conn.close()
     return df
 
+def get_topic_trends():
+    """Exploded per-topic sentiment trends — the redesigned equivalent of
+    get_tag_group_trends(), sourced from topic_sentiment_pairs instead of
+    the single primary_tag_group."""
+    conn = get_connection()
+    df = pd.read_sql(
+        "SELECT * FROM topic_monthly ORDER BY run_date, topic", conn
+    )
+    conn.close()
+    return df
+
 def get_feature_trends():
     conn = get_connection()
     df = pd.read_sql(
@@ -606,6 +722,9 @@ def export_for_powerbi():
         pd.read_sql(
             "SELECT * FROM tag_group_monthly ORDER BY run_date", conn
         ).to_excel(writer, sheet_name="Tag Group Monthly", index=False)
+        pd.read_sql(
+            "SELECT * FROM topic_monthly ORDER BY run_date", conn
+        ).to_excel(writer, sheet_name="Topic Monthly", index=False)
         pd.read_sql(
             "SELECT * FROM feature_monthly ORDER BY run_date", conn
         ).to_excel(writer, sheet_name="Feature Monthly", index=False)
