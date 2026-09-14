@@ -31,6 +31,7 @@ Edit THIS file if you want to:
 from __future__ import annotations
 
 import sys
+import json
 import textwrap
 from pathlib import Path
 
@@ -68,6 +69,7 @@ SENTIMENT_EMOJI = {
     "positive": "🙂",
     "neutral": "😐",
     "negative": "🙁",
+    "mixed": "😕",
 }
 
 
@@ -923,6 +925,19 @@ def page_errors(months: list[str] | None):
     plt.close(fig)
 
 
+def _parse_topic_pairs(cell):
+    """review_detail.topic_sentiment_pairs is stored as a JSON string.
+    Empty/NULL/old rows (pipeline not yet re-run since this schema
+    change) fall back to an empty list rather than erroring."""
+    if not cell or (isinstance(cell, float) and pd.isna(cell)):
+        return []
+    try:
+        parsed = json.loads(cell)
+        return parsed if isinstance(parsed, list) else []
+    except (json.JSONDecodeError, TypeError):
+        return []
+
+
 def page_browse_reviews(months: list[str] | None):
     st.header("🔎 Browse Reviews")
 
@@ -931,47 +946,66 @@ def page_browse_reviews(months: list[str] | None):
         st.info("No tagged reviews yet. Run the pipeline without SKIP_NLP.")
         return
 
-    col1, col2, col3 = st.columns(3)
+    df = df.copy()
+    df["_topic_pairs"] = df.get("topic_sentiment_pairs", pd.Series([None] * len(df))).apply(_parse_topic_pairs)
+    df["_topics"] = df["_topic_pairs"].apply(lambda pairs: [p.get("topic") for p in pairs if p.get("topic")])
+
+    has_new_schema = df["_topic_pairs"].apply(len).sum() > 0 or "overall_experience_sentiment" in df.columns
+    if not has_new_schema:
+        st.warning(
+            "These reviews haven't been through the redesigned topic/sentiment "
+            "pipeline yet — showing the old tag-group view until the pipeline "
+            "is re-run."
+        )
+
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        tag_options = ["All"] + sorted(df["primary_tag_group"].dropna().unique().tolist())
-        tag_filter = st.selectbox("Tag group", tag_options)
+        all_topics = sorted({t for topics in df["_topics"] for t in topics})
+        topic_options = ["All"] + all_topics
+        topic_filter = st.selectbox("Topic", topic_options)
     with col2:
-        sent_values = sorted(df["grouping_sentiment"].dropna().unique().tolist())
+        sent_col = "overall_experience_sentiment" if "overall_experience_sentiment" in df.columns else "grouping_sentiment"
+        sent_values = sorted(df[sent_col].dropna().unique().tolist())
         sent_options = ["All"] + sent_values
         sent_filter = st.selectbox(
-            "Sentiment", sent_options,
+            "Overall sentiment", sent_options,
             format_func=lambda v: v if v == "All" else f"{SENTIMENT_EMOJI.get(v, '')} {v.title()}",
         )
     with col3:
+        user_type_options = ["All", "Beginner/one-time"]
+        user_type_filter = st.selectbox("User type", user_type_options)
+    with col4:
         search = st.text_input("Search feedback text")
 
     filtered = df.copy()
-    if tag_filter != "All":
-        filtered = filtered[filtered["primary_tag_group"] == tag_filter]
+    if topic_filter != "All":
+        filtered = filtered[filtered["_topics"].apply(lambda ts: topic_filter in ts)]
     if sent_filter != "All":
-        filtered = filtered[filtered["grouping_sentiment"] == sent_filter]
+        filtered = filtered[filtered[sent_col] == sent_filter]
+    if user_type_filter == "Beginner/one-time":
+        filtered = filtered[filtered.get("user_type", pd.Series(dtype=object)) == "beginner_or_one_time"]
     if search:
         filtered = filtered[filtered["feedback_clean"].str.contains(search, case=False, na=False)]
 
     st.caption(f"{len(filtered):,} reviews match")
-    show_cols = [
-        "respondent_id", "month", "rating",
-        "primary_tag_group", "primary_tag", "grouping_sentiment", "feedback_clean",
-    ]
-    show_cols = [c for c in show_cols if c in filtered.columns]
-    display_df = filtered[show_cols].copy()
-    if "grouping_sentiment" in display_df.columns:
-        # Icon only (no "Positive"/"Negative" text) sitting right next to the
-        # feedback text — matching the compact inline-icon style of the
-        # SurveyMonkey reference, rather than a verbose text label.
-        display_df["grouping_sentiment"] = display_df["grouping_sentiment"].map(
-            lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""
+
+    def _format_topics(pairs):
+        if not pairs:
+            return ""
+        return ", ".join(
+            f"{p.get('topic', '')} {SENTIMENT_EMOJI.get(p.get('sentiment'), '')}".strip()
+            for p in pairs
         )
-    display_df = display_df.rename(columns={
-        "respondent_id": "Respondent", "month": "Month", "rating": "Rating",
-        "grouping_sentiment": "", "primary_tag_group": "Tag group",
-        "primary_tag": "Tag", "feedback_clean": "Feedback",
+
+    display_df = pd.DataFrame({
+        "Respondent": filtered.get("respondent_id"),
+        "Month": filtered.get("month"),
+        "Rating": filtered.get("rating"),
+        "Topics": filtered["_topic_pairs"].apply(_format_topics),
+        "": filtered[sent_col].map(lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""),
+        "Feedback": filtered.get("feedback_clean"),
     })
+
     st.dataframe(
         display_df,
         use_container_width=True,
