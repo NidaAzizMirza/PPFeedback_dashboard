@@ -739,6 +739,21 @@ def step_absa(df):
     _absa_error_count = [0]   # mutable counter closed over below
     _absa_seen_labels = set()
 
+    def get_absa_sentiment(text, aspect):
+        try:
+            result = absa_pipe(
+                f"{text} [SEP] {aspect}",
+                truncation=True, max_length=512
+            )
+            raw_label = result[0]["label"]
+            _absa_seen_labels.add(raw_label)
+            return raw_label.lower(), round(result[0]["score"], 3)
+        except Exception as e:
+            _absa_error_count[0] += 1
+            if _absa_error_count[0] <= 5:
+                log.error(f"ABSA call failed (error #{_absa_error_count[0]}): {e}")
+            return "neutral", 0.0
+
     def run_absa_for_group(text, tag_group):
         """One group's aspects, scored. Unchanged logic, just factored out
         so it can be called once per topic in the row instead of once
