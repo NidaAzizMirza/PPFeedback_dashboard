@@ -54,23 +54,35 @@ from store import (
     load_available_months,
     load_latest_run_date,
     load_monthly_summary,
-    load_tag_group_trends,
-    load_feature_trends,
+    load_topic_trends,       # NEW — replaces load_tag_group_trends (see store.py)
     load_error_trends,
     load_review_detail,
     filter_by_months,
 )
+# load_tag_group_trends and load_feature_trends are no longer used here:
+# load_topic_trends() supersedes both — topics already fold the old
+# tag_group *and* the near-duplicate ABSA aspects ("document upload" /
+# "file upload" / "uploading documents") into one number per topic.
 
 matplotlib.use("Agg")
 
-# Emoji used in place of the raw positive/negative/neutral text labels
-# (Browse Reviews) — matches the SurveyMonkey-style face icons.
+# Colour-coded circle, not a face — a Unicode face emoji's colour can't be
+# changed by us (it's a fixed platform glyph), so a coloured shape is the
+# only reliable way to get green/yellow/red exactly as requested.
 SENTIMENT_EMOJI = {
-    "positive": "🙂",
-    "neutral": "😐",
-    "negative": "🙁",
-    "mixed": "😕",
+    "positive": "🟢",
+    "neutral": "🟡",
+    "negative": "🔴",
+    "mixed": "🟠",
 }
+
+# "Overall Positive Experience" / "Negative experience" are sentiment
+# wearing a topic's name, not real subjects — they should never appear
+# alongside real topics (Fees, Document upload, etc.) in a topic list,
+# filter, ranking, or chart. Overall feeling has its own field
+# (overall_experience_sentiment) and its own column/filter everywhere
+# below; this constant is what keeps the two separated consistently.
+SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience"}
 
 
 # ============================================================================
@@ -556,36 +568,35 @@ def _rating_distribution_stacked(view: pd.DataFrame) -> plt.Figure:
     return fig
 
 
-def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.Figure | None:
+def _topic_negative_heatmap(topic_view: pd.DataFrame, top_n: int = 12) -> plt.Figure | None:
     """
-    Feature x month heatmap, cell color = % negative mentions.
-    Replaces the "features to compare" line chart (change #5) — the line
-    chart got unreadable once more than 2-3 features were selected;
-    a heatmap scales to many features/months at a glance instead.
+    Topic x month heatmap, cell color = % negative mentions.
+    Replaces the old _feature_negative_heatmap (aspect-level, with the
+    synonym-duplication problem) — same chart, topic_monthly as the
+    source instead of the raw feature table.
     """
-    if feat_view.empty:
+    if topic_view.empty:
         return None
-    feat_view = feat_view.dropna(subset=["feature"])
-    feat_view = feat_view[feat_view["feature"].astype(str).str.strip().str.lower() != "nan"]
-    if feat_view.empty:
+    topic_view = topic_view.dropna(subset=["topic"])
+    if topic_view.empty:
         return None
 
-    grouped = feat_view.groupby(["month", "feature"]).agg(
+    grouped = topic_view.groupby(["month", "topic"]).agg(
         total_mentions=("total_mentions", "sum"),
-        negative_mentions=("negative_mentions", "sum"),
+        negative_mentions=("negative_count", "sum"),
     ).reset_index()
     grouped["negative_pct"] = (grouped["negative_mentions"] / grouped["total_mentions"] * 100).round(1)
 
-    top_features = (
-        grouped.groupby("feature")["total_mentions"].sum()
+    top_topics = (
+        grouped.groupby("topic")["total_mentions"].sum()
         .sort_values(ascending=False).head(top_n).index.tolist()
     )
-    grouped = grouped[grouped["feature"].isin(top_features)]
+    grouped = grouped[grouped["topic"].isin(top_topics)]
     if grouped.empty:
         return None
 
-    pivot = grouped.pivot_table(index="feature", columns="month", values="negative_pct")
-    pivot = pivot.loc[top_features]  # keep ranked order, most-mentioned feature on top
+    pivot = grouped.pivot_table(index="topic", columns="month", values="negative_pct")
+    pivot = pivot.loc[top_topics]  # keep ranked order, most-mentioned topic on top
 
     cmap = LinearSegmentedColormap.from_list(
         "neg_pct", [PALETTE["positive"], PALETTE["paper"], PALETTE["negative"]]
@@ -609,7 +620,7 @@ def _feature_negative_heatmap(feat_view: pd.DataFrame, top_n: int = 12) -> plt.F
                 ax.text(j, i, f"{v:.0f}%", ha="center", va="center",
                          fontsize=8, color=text_color)
 
-    ax.set_title("Feature comparison across months — % negative mentions",
+    ax.set_title("Topic comparison across months — % negative mentions",
                   fontsize=12, loc="left", pad=10, color=PALETTE["ink"])
     cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
     cbar.set_label("% negative", fontsize=8)
@@ -818,79 +829,74 @@ def render_aggregate_view():
 # / errors / browse reviews; everything derived from free-text comments)
 # ============================================================================
 
-def page_tag_groups(months: list[str] | None):
-    st.header("🏷️ Tag Groups")
+def page_topics(months: list[str] | None):
+    """Replaces the old page_tag_groups. Reads topic_monthly (via
+    load_topic_trends) instead of tag_group_monthly — no more excluding
+    "User type" as a fake tag_group, because user_type is now its own
+    field and never lands here in the first place. Also carries the
+    "most negatively-mentioned" ranking that used to live on the old
+    Features page — the old aspect-level features had a synonym-
+    duplication problem (document upload / file upload / uploading
+    documents counted as three different things); topics don't."""
+    st.header("🏷️ Topics")
 
-    df = load_tag_group_trends()
+    df = load_topic_trends()
     if df.empty:
-        st.info("No tag data yet. Run the pipeline without SKIP_NLP.")
+        st.info("No topic data yet. Run the pipeline without SKIP_NLP.")
         return
 
     view = filter_by_months(df, months)
-    view = view[~view["tag_group"].astype(str).str.strip().str.casefold().eq("user type")]
+    overall_view = view[view["topic"].isin(SENTIMENT_ONLY_GROUPS)]  # kept separate, shown below
+    view = view[~view["topic"].isin(SENTIMENT_ONLY_GROUPS)]
     if view.empty:
         st.warning("No data for the selected period.")
         return
 
-    st.subheader("Volume + sentiment by tag group")
-    st.pyplot(_sentiment_stacked_bar(view, "tag_group", "", pct=True))
+    if not overall_view.empty:
+        pos = int(overall_view.loc[overall_view["topic"] == "Overall Positive Experience", "total_mentions"].sum())
+        neg = int(overall_view.loc[overall_view["topic"] == "Negative experience", "total_mentions"].sum())
+        total_ov = pos + neg
+        if total_ov:
+            st.metric(
+                "Overall experience (separate from topics below)",
+                f"{SENTIMENT_EMOJI['positive']} {pos / total_ov:.0%} positive",
+                delta=f"{SENTIMENT_EMOJI['negative']} {neg / total_ov:.0%} negative",
+                delta_color="off",
+            )
+        st.divider()
+
+    st.subheader("Volume + sentiment by topic")
+    st.pyplot(_sentiment_stacked_bar(view, "topic", "", pct=True))
 
     st.divider()
-    st.subheader("Raw counts")
-    display = view.groupby("tag_group").agg(
-        total_reviews=("total_reviews", "sum"),
+    agg = view.groupby("topic").agg(
+        total_mentions=("total_mentions", "sum"),
         positive=("positive_count", "sum"),
         negative=("negative_count", "sum"),
         neutral=("neutral_count", "sum"),
         avg_sentiment_score=("avg_sentiment_score", "mean"),
-    ).sort_values("total_reviews", ascending=False).reset_index()
-    st.dataframe(display, use_container_width=True)
+    )
+    agg["negative_pct"] = round(agg["negative"] / agg["total_mentions"] * 100, 1)
+    agg = agg.sort_values("total_mentions", ascending=False).reset_index()
 
-
-def page_features(months: list[str] | None):
-    st.header("🧩 Features")
-
-    df = load_feature_trends()
-    if df.empty:
-        st.info("No feature data yet. Run the pipeline without SKIP_NLP.")
-        return
-
-    view = filter_by_months(df, months)
-    view = view.dropna(subset=["feature"])
-    view = view[view["feature"].astype(str).str.strip().str.lower() != "nan"]
-    if view.empty:
-        st.warning("No data for the selected period.")
-        return
-
-    agg = view.groupby("feature").agg(
-        total_mentions=("total_mentions", "sum"),
-        negative_mentions=("negative_mentions", "sum"),
-        positive_mentions=("positive_mentions", "sum"),
-    ).reset_index()
-    agg["negative_pct"] = round(agg["negative_mentions"] / agg["total_mentions"] * 100, 1)
-    agg = agg.sort_values("negative_pct", ascending=False)
-
-    st.subheader("Most negatively-mentioned features")
-    top = agg.head(15).set_index("feature")
+    st.subheader("Most negatively-mentioned topics")
+    top = agg.sort_values("negative_pct", ascending=False).head(15).set_index("topic")
     fig, ax = plt.subplots(figsize=(10, max(4, len(top) * 0.4)))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
     ax.barh(top.index[::-1], top["negative_pct"][::-1], color=SENTIMENT_COLORS["negative"])
     ax.set_xlabel("% negative mentions")
+    ax.set_xlim(0, 100)
     ax.grid(axis="x", color=PALETTE["grid"], linewidth=0.5)
     fig.tight_layout()
     st.pyplot(fig)
     plt.close(fig)
 
+    # ---- Topic comparison across months (heatmap — replaces the old
+    #      per-feature comparison heatmap on the same "negative %" basis) --
     st.divider()
-    st.subheader("All features")
-    st.dataframe(agg, use_container_width=True)
-
-    # ---- Feature comparison across months (heatmap — was the "features
-    #      to compare" line chart, replaced per change #5) ----------------
-    st.divider()
-    st.subheader("Feature comparison across months")
-    heatmap_fig = _feature_negative_heatmap(view)
+    st.subheader("Topic comparison across months")
+    heatmap_fig = _topic_negative_heatmap(view)
     if heatmap_fig is None:
         st.info("Not enough data across months to build the comparison heatmap yet.")
     else:
@@ -947,10 +953,22 @@ def page_browse_reviews(months: list[str] | None):
         return
 
     df = df.copy()
-    df["_topic_pairs"] = df.get("topic_sentiment_pairs", pd.Series([None] * len(df))).apply(_parse_topic_pairs)
+    raw_pairs = df.get("topic_sentiment_pairs", pd.Series([None] * len(df))).apply(_parse_topic_pairs)
+    # "Overall Positive Experience"/"Negative experience" are sentiment
+    # wearing a topic's name, not a real subject — kept out of the Topics
+    # list/filter/chips, but the actual tag text is shown in its own
+    # "Experience" column below rather than dropped.
+    df["_experience_tag"] = raw_pairs.apply(
+        lambda pairs: next((p.get("topic") for p in pairs if p.get("topic") in SENTIMENT_ONLY_GROUPS), None))
+    df["_topic_pairs"] = raw_pairs.apply(lambda pairs: [p for p in pairs if p.get("topic") not in SENTIMENT_ONLY_GROUPS])
     df["_topics"] = df["_topic_pairs"].apply(lambda pairs: [p.get("topic") for p in pairs if p.get("topic")])
 
-    has_new_schema = df["_topic_pairs"].apply(len).sum() > 0 or "overall_experience_sentiment" in df.columns
+    has_topic_data = df["_topic_pairs"].apply(len).sum() > 0
+    has_sentiment_data = (
+        "overall_experience_sentiment" in df.columns
+        and df["overall_experience_sentiment"].notna().any()
+    )
+    has_new_schema = has_topic_data or has_sentiment_data
     if not has_new_schema:
         st.warning(
             "These reviews haven't been through the redesigned topic/sentiment "
@@ -958,11 +976,14 @@ def page_browse_reviews(months: list[str] | None):
             "is re-run."
         )
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns([2, 1, 1])
     with col1:
         all_topics = sorted({t for topics in df["_topics"] for t in topics})
-        topic_options = ["All"] + all_topics
-        topic_filter = st.selectbox("Topic", topic_options)
+        topic_filter = st.multiselect(
+            "Topics", all_topics,
+            help="Leave empty to show all topics. Select several to match a review "
+                 "naming ANY of them.",
+        )
     with col2:
         sent_col = "overall_experience_sentiment" if "overall_experience_sentiment" in df.columns else "grouping_sentiment"
         sent_values = sorted(df[sent_col].dropna().unique().tolist())
@@ -972,96 +993,133 @@ def page_browse_reviews(months: list[str] | None):
             format_func=lambda v: v if v == "All" else f"{SENTIMENT_EMOJI.get(v, '')} {v.title()}",
         )
     with col3:
-        user_type_options = ["All", "Beginner/one-time"]
-        user_type_filter = st.selectbox("User type", user_type_options)
-    with col4:
         search = st.text_input("Search feedback text")
 
     filtered = df.copy()
-    if topic_filter != "All":
-        filtered = filtered[filtered["_topics"].apply(lambda ts: topic_filter in ts)]
+    if topic_filter:
+        selected = set(topic_filter)
+        filtered = filtered[filtered["_topics"].apply(lambda ts: bool(selected.intersection(ts)))]
     if sent_filter != "All":
         filtered = filtered[filtered[sent_col] == sent_filter]
-    if user_type_filter == "Beginner/one-time":
-        filtered = filtered[filtered.get("user_type", pd.Series(dtype=object)) == "beginner_or_one_time"]
     if search:
         filtered = filtered[filtered["feedback_clean"].str.contains(search, case=False, na=False)]
 
     st.caption(f"{len(filtered):,} reviews match")
 
-    def _format_topics(pairs):
-        if not pairs:
+    def _format_topics_short(pairs):
+        """All topic names for the grid, comma-separated — click the row for
+        the full list with sentiment per topic in the detail panel below."""
+        return ", ".join(p.get("topic", "") for p in pairs if p.get("topic"))
+
+    def _truncate(text, max_len=140):
+        if not isinstance(text, str):
+            return text
+        return text if len(text) <= max_len else text[:max_len].rstrip() + "…"
+
+    filtered = filtered.reset_index(drop=True)
+    def _format_user_type(v):
+        """Single value today (e.g. 'beginner_or_one_time'); written to also
+        accept a comma-separated or JSON list once user_type expands to
+        allow more than one tag per respondent."""
+        if pd.isna(v) or not str(v).strip():
             return ""
-        return ", ".join(
-            f"{p.get('topic', '')} {SENTIMENT_EMOJI.get(p.get('sentiment'), '')}".strip()
-            for p in pairs
-        )
+        if isinstance(v, str) and v.strip().startswith("["):
+            try:
+                vals = json.loads(v)
+            except json.JSONDecodeError:
+                vals = [v]
+        else:
+            vals = str(v).split(",")
+        return ", ".join(x.strip().replace("_", " ").title() for x in vals if x.strip())
 
     display_df = pd.DataFrame({
         "Respondent": filtered.get("respondent_id"),
         "Month": filtered.get("month"),
         "Rating": filtered.get("rating"),
-        "Topics": filtered["_topic_pairs"].apply(_format_topics),
-        "": filtered[sent_col].map(lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""),
-        "Feedback": filtered.get("feedback_clean"),
+        "Topics": filtered["_topic_pairs"].apply(_format_topics_short),
+        "Sentiment": filtered[sent_col].map(lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""),
+        "User type": filtered.get("user_type").apply(_format_user_type),
+        "Feedback": filtered.get("feedback_clean").apply(_truncate),
     })
 
-    st.dataframe(
+    st.caption("Click a row to read the full comment and every topic below.")
+    event = st.dataframe(
         display_df,
         use_container_width=True,
         height=600,
-        column_config={"": st.column_config.TextColumn(width="small")},
+        column_config={
+            "Topics": st.column_config.TextColumn(width="large"),
+            "Sentiment": st.column_config.TextColumn(width="small"),
+        },
+        on_select="rerun",
+        selection_mode="single-row",
     )
+
+    selected_rows = event.selection.rows if event and event.selection else []
+    if selected_rows:
+        sel = filtered.iloc[selected_rows[0]]
+        with st.container(border=True):
+            st.markdown(f"**Respondent {sel.get('respondent_id')}** — {sel.get('month')} — Rating: {sel.get('rating')}")
+            st.write(sel.get("feedback_clean", ""))
+            pairs = sel.get("_topic_pairs") or []
+            if pairs:
+                st.markdown("**Topics**")
+                for p in pairs:
+                    emoji = SENTIMENT_EMOJI.get(p.get("sentiment"), "")
+                    st.markdown(f"- {p.get('topic', '')} — {emoji} {p.get('sentiment', '')}")
+            else:
+                st.caption("No specific topic detected for this comment.")
+            overall = sel.get(sent_col)
+            if pd.notna(overall):
+                st.caption(f"Overall experience: {SENTIMENT_EMOJI.get(overall, '')} {overall}")
 
 
 def _render_comment_themes_month(selected_month: str):
-    """Thematic analysis + Feature & error analysis for one month — used by
-    the Feedback comments tab's Month by month sub-tab."""
-    tag_df = load_tag_group_trends()
-    tag_month = tag_df[tag_df["month"] == selected_month] if not tag_df.empty else tag_df
-    if not tag_month.empty:
-        tag_month = tag_month[~tag_month["tag_group"].astype(str).str.strip().str.casefold().eq("user type")]
+    """Thematic analysis + Topic & error analysis for one month — used by
+    the Feedback comments tab's Month by month sub-tab. Reads topic_monthly
+    (via load_topic_trends) instead of tag_group_monthly / the raw feature
+    table — no more "User type" filter hack, since user_type is its own
+    field and never appears here."""
+    topic_df = load_topic_trends()
+    topic_month = topic_df[topic_df["month"] == selected_month] if not topic_df.empty else topic_df
+    if not topic_month.empty:
+        topic_month = topic_month[~topic_month["topic"].isin(SENTIMENT_ONLY_GROUPS)]
 
     st.subheader("Thematic analysis")
-    if tag_month.empty:
-        st.info("No tag data yet for this month. Run the pipeline without SKIP_NLP.")
+    if topic_month.empty:
+        st.info("No topic data yet for this month. Run the pipeline without SKIP_NLP.")
     else:
         tc1, tc2 = st.columns(2)
         with tc1:
-            vol = tag_month.groupby("tag_group")["total_reviews"].sum().sort_values(ascending=False)
-            sentiment_by_group = tag_month.groupby("tag_group")["avg_sentiment_score"].mean()
-            colors = [SENTIMENT_COLORS["positive"] if sentiment_by_group.get(g, 0) >= 0
-                      else SENTIMENT_COLORS["negative"] for g in vol.index]
+            vol = topic_month.groupby("topic")["total_mentions"].sum().sort_values(ascending=False)
+            sentiment_by_topic = topic_month.groupby("topic")["avg_sentiment_score"].mean()
+            colors = [SENTIMENT_COLORS["positive"] if sentiment_by_topic.get(t, 0) >= 0
+                      else SENTIMENT_COLORS["negative"] for t in vol.index]
             fig, ax = plt.subplots(figsize=(10, max(4, len(vol) * 0.4)))
             fig.patch.set_facecolor(PALETTE["paper"])
             ax.set_facecolor(PALETTE["paper"])
             ax.barh(vol.index[::-1], vol.values[::-1], color=colors[::-1])
-            ax.set_title("Tag group mentions — this month", fontsize=12, loc="left", color=PALETTE["ink"])
-            ax.set_xlabel("Volume of comments per theme")
+            ax.set_title("Topic mentions — this month", fontsize=12, loc="left", color=PALETTE["ink"])
+            ax.set_xlabel("Volume of comments per topic")
             ax.grid(axis="x", color=PALETTE["grid"], linewidth=0.5)
             fig.tight_layout()
             st.pyplot(fig)
             plt.close(fig)
         with tc2:
-            st.pyplot(_diverging_sentiment_bar(tag_month, "tag_group", "avg_sentiment_score",
-                                                "Tag group sentiment — this month"))
+            st.pyplot(_diverging_sentiment_bar(topic_month, "topic", "avg_sentiment_score",
+                                                "Topic sentiment — this month"))
 
     st.divider()
 
-    st.subheader("Feature & error analysis")
+    st.subheader("Topic & error analysis")
     fc1, fc2 = st.columns(2)
     with fc1:
-        feat_df = load_feature_trends()
-        feat_month = feat_df[feat_df["month"] == selected_month] if not feat_df.empty else feat_df
-        if not feat_month.empty:
-            feat_month = feat_month.dropna(subset=["feature"])
-            feat_month = feat_month[feat_month["feature"].astype(str).str.strip().str.lower() != "nan"]
-        if feat_month.empty:
-            st.info("No feature data yet for this month.")
+        if topic_month.empty:
+            st.info("No topic data yet for this month.")
         else:
-            agg = feat_month.groupby("feature").agg(
+            agg = topic_month.groupby("topic").agg(
                 total_mentions=("total_mentions", "sum"),
-                negative_mentions=("negative_mentions", "sum"),
+                negative_mentions=("negative_count", "sum"),
             )
             agg["negative_pct"] = round(agg["negative_mentions"] / agg["total_mentions"] * 100, 1)
             top = agg.sort_values("negative_pct", ascending=False).head(10)
@@ -1069,7 +1127,7 @@ def _render_comment_themes_month(selected_month: str):
             fig.patch.set_facecolor(PALETTE["paper"])
             ax.set_facecolor(PALETTE["paper"])
             ax.barh(top.index[::-1], top["negative_pct"][::-1], color=SENTIMENT_COLORS["negative"])
-            ax.set_title("Most negatively mentioned features", fontsize=11, loc="left", color=PALETTE["ink"])
+            ax.set_title("Most negatively mentioned topics", fontsize=11, loc="left", color=PALETTE["ink"])
             ax.set_xlabel("% of mentions that are negative")
             ax.set_xlim(0, 100)
             fig.tight_layout()
@@ -1112,11 +1170,7 @@ def render_feedback_comments_view():
 
     with sub_agg:
         agg_months = _aggregate_month_picker(months, key_prefix="comments_agg", title="Feedback comments — months")
-        page_tag_groups(agg_months)
-        st.divider()
-        page_features(agg_months)
-        st.divider()
-        page_errors(agg_months)
+        page_topics(agg_months)
         st.divider()
         page_browse_reviews(agg_months)
 

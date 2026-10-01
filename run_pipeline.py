@@ -360,7 +360,15 @@ def step_preprocess(df):
         .str.lower()
         .str.strip()
         .str.replace(r'\s+', ' ', regex=True)
-        .str.replace(r'[^\w\s\'\-\.\,\!\?\£]', '', regex=True)
+        # Only \- needs escaping inside a character class (ambiguous
+        # position otherwise); . , ! ? £ are not special here even
+        # unescaped. The old version's unnecessary escapes worked under
+        # Python's re but broke under PyArrow's RE2 engine, which
+        # pandas uses automatically for PyArrow-backed string columns
+        # (e.g. pandas 2.2+ with future.infer_string, or an Arrow-backed
+        # dtype from read_excel) — RE2 rejects "\," "\!" "\?" "\." "\£"
+        # as invalid escape sequences instead of silently accepting them.
+        .str.replace(r"[^\w\s'\-.,!?£]", '', regex=True)
     )
 
     # Drop very short responses
@@ -413,7 +421,7 @@ KEYWORD_BOOST = {
         "too many steps", "too complicated"
     ],
     "Confusing": [
-        "confusing", "confused", "not intuitive",
+        "confusing", "confused", "not intuitive", "confusion",
         "hard to understand", "misleading", "baffling",
     ],
     "Bugs/ glitch": [
@@ -475,7 +483,14 @@ HARD_FALLBACK = {
         ["more guidance", "clearer guidance", "lack of guidance",
          "no guidance", "need guidance", "more explanation",
          "clearer instructions", "not sure", "not sure what",
-         "not sure which", "didn't know", "had no idea", "not obvious"],
+         "not sure which", "didn't know", "had no idea", "not obvious",
+         # Bare word additions: this is a TOPIC match, not a polarity
+         # match — sentiment is scored separately downstream, so
+         # requiring the keyword to already spell out "lack of"/"no"
+         # was too narrow. "no effective guidance", "the guidance was
+         # great", "clearer guidance would help" all belong to this
+         # topic regardless of which way they lean.
+         "guidance", "unclear", "not clear", "difficult to follow", "hard to follow"],
         "Guidance, clarity & jargon"
     ),
     "Jargon": (
@@ -521,7 +536,19 @@ HARD_FALLBACK = {
     "General UX complexity / time": (
         ["takes too long", "time consuming", "lengthy process",
          "long winded", "laborious", "tedious",
-         "hours to", "took me hours"],
+         "hours to", "took me hours",
+         # "complicated"/"complex" were missing entirely — a very common
+         # complaint word that matched nothing before.
+         "complicated", "too complex", "very complex", "so complex",
+         "overly complex", "quite complex",
+         # Sentiment-agnostic on purpose: positive navigation mentions
+         # ("easy to navigate through all the options") are now a real
+         # topic too, not sentiment-only — confirmed decision, reversing
+         # an earlier fix that scoped this to negative context only.
+         "navigate", "navigating", "navigation",
+         "difficult to use", "hard to use",
+         "tricky", "impossible to work out", "hard to work out",
+         "difficult to work out"],
         "General UX"
     ),
     "Form completion": (
@@ -566,6 +593,101 @@ def match_keywords(text, keywords):
                 continue
             return True
     return False
+
+# ── user_type — 19 categories from tags.csv's "User type" group ───────────
+# Module-level (not nested in step_entities) so other scripts — e.g.
+# backfill_master.py's historical/one-off tagging — can import this
+# directly as the single source of truth, instead of maintaining a
+# separate copy that silently drifts out of sync over time.
+#
+# Several categories can genuinely apply to the same respondent (an
+# older, occasional, homeowner applicant), so extract_user_type() below
+# returns ALL that match, not just the first — user_type is a
+# comma-joined list of category slugs, not a single value.
+#
+# Disabled / accessibility_issues / older_user are deliberately kept to
+# explicit self-disclosure phrases only — never inferred from tone or
+# writing style — since mistagging a respondent's protected
+# characteristic in a live database is worse than missing it.
+# Several role tags (tree_surgeon, project_manager, charity) will have
+# very low recall by nature — most respondents never state their job —
+# kept anyway for the cases that do say so.
+
+USER_TYPE_KEYWORDS = {
+    "beginner_or_one_time": [
+        "first time", "first-time", "new user", "never used",
+        "never used this before", "novice", "beginner", "not a professional",
+        "not an expert", "layman", "lay person", "one-time", "one off",
+    ],
+    "frequent": [
+        "frequently", "regularly", "every time i apply", "use this a lot",
+        "many applications",
+    ],
+    "infrequent": [
+        "infrequent", "rarely use", "don't use this often",
+    ],
+    "occasional": [
+        "occasional", "now and then", "every so often",
+    ],
+    "homeowner": [
+        "as a homeowner", "my own home",
+    ],
+    "agent": [
+        "as an agent", "on behalf of my client", "acting as agent",
+    ],
+    "project_manager": [
+        "as a project manager", "project manager",
+    ],
+    "designer": [
+        "as a designer",
+    ],
+    "architect": [
+        "as an architect", "architectural designer",
+    ],
+    "tree_surgeon": [
+        "tree surgeon", "arborist",
+    ],
+    "charity": [
+        "on behalf of the charity", "i work for a charity", "our charity",
+    ],
+    "community_champion": [
+        "community champion",
+    ],
+    "non_owner": [
+        "not the homeowner", "on behalf of the owner", "as a tenant",
+    ],
+    "professional_regular": [
+        "as a professional", "in my professional capacity",
+        "on behalf of clients regularly",
+    ],
+    "non_tech": [
+        "not very techy", "not good with computers",
+        "technology isn't my strength", "isn't very techy",
+    ],
+    "tech_user": [
+        "tech-savvy", "tech savvy", "comfortable with technology",
+    ],
+    "disabled": [
+        "as a disabled person", "my disability","bipolar", "autistic", "additional needs"
+    ],
+    "accessibility_issues": [
+        "accessibility issue", "accessibility issues", "screen reader",
+        "accessibility needs", "accessibility need",
+    ],
+    "older_user": [
+        "as an older person", "at my age", "elderly","older", "over 40", "not under 40"
+    ],
+}
+
+
+def extract_user_type(text):
+    # Same negation-aware matching as match_keywords for every category
+    # — "not a first time user" shouldn't tag as beginner_or_one_time.
+    # Returns every category that matches, comma-joined, or None.
+    hits = [slug for slug, keywords in USER_TYPE_KEYWORDS.items()
+            if match_keywords(text, keywords)]
+    return ", ".join(hits) if hits else None
+
 
 def apply_keyword_boost(text, svm_proba, label_encoder, boost=0.3):
     proba = svm_proba.copy()
@@ -639,6 +761,24 @@ def get_multilabel_tags(text, svm_proba, svm_pred, label_encoder,
                 secondary_groups.append(group)
                 break
 
+    # Hard override, not a keyword boost: any form of "nomination" must
+    # tag Payments, never Fees — regardless of SVM confidence. Needed
+    # because "nomination fee" contains the bare word "fee", which also
+    # matches "Fees too high"'s own keyword list; that entry sits earlier
+    # in HARD_FALLBACK's dict order and was winning first-match, so
+    # boosting Payments harder wasn't a reliable enough fix on its own.
+    if re.search(r"\bnominat\w*\b", text_lower):
+        if primary_group == "Fees, charges and quotes":
+            primary_tag, primary_group, method = "Nominations", "Payments", "override"
+        # Strip Fees out of secondary tags too, so it can't contradict
+        # the primary tag, and make sure Payments is represented.
+        keep = [(t, g) for t, g in zip(secondary_tags, secondary_groups)
+                if g != "Fees, charges and quotes"]
+        secondary_tags, secondary_groups = (list(x) for x in zip(*keep)) if keep else ([], [])
+        if primary_group != "Payments" and "Payments" not in secondary_groups:
+            secondary_tags.append("Nominations")
+            secondary_groups.append("Payments")
+
     return (
         primary_tag, primary_group,
         ", ".join(secondary_tags),
@@ -705,11 +845,11 @@ def step_classify(df):
 # STEP 4 — ABSA
 # ══════════════════════════════════════════════════════════════════════════
 ABSA_ASPECTS = {
-    "Document upload and handling":       ["document upload", "file upload", "uploading documents", "file size", "file format"],
+    "Document upload and handling":       ["document upload", "file upload", "uploading documents", "file size", "file format", "doc", "decuments", "plan", "attach", "drag", "file", "plan", "draw", "download", "down load", "upload", "photo", "up load","tag"],
     "Guidance, clarity & jargon":         ["guidance", "instructions", "jargon", "terminology", "clarity"],
-    "Fees, charges and quotes":           ["fees", "charges", "cost", "pricing", "fee calculator"],
-    "Payments":                           ["payment", "payment system", "card payment", "bank transfer"],
-    "Location plans, addresses and mapping": ["location plan", "boundary", "drawing tool", "site plan", "mapping"],
+    "Fees, charges and quotes":           ["fees", "charges", "charge", "cost", "pricing", "fee calculator", "pay", "price", "£", "fee", "expensive"],
+    "Payments":                           ["payment", "payment system", "card payment", "bank transfer", "nomination"],
+    "Location plans, addresses and mapping": ["location plan", "boundary", "drawing tool", "site plan", "mapping", "LPI", "site boundaries","sketch"],
     "Forms & application details":        ["form", "questions", "application form"],
     "General UX":                         ["navigation", "interface", "design", "usability"],
     "Challenges and Workarounds":         ["crash", "bug", "error", "system issue", "glitch"],
@@ -765,6 +905,16 @@ def step_absa(df):
                 results[aspect] = {"sentiment": sentiment, "confidence": score}
         return results
 
+    # These two groups bake sentiment into the group name itself (Easy to
+    # use/navigate/understand + bare praise -> "Overall Positive Experience";
+    # Confusing/Too complex + bare complaints -> "Negative experience") —
+    # they were never real topics. Excluding them here matches the same fix
+    # already applied to tag_migration.py for the historical backfill;
+    # missing it here was a gap, not a separate decision. The signal isn't
+    # lost — overall_experience_sentiment (below) captures it independently
+    # of tag groups.
+    SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience"}
+
     def run_absa_per_topic(text, primary_group, secondary_groups_str):
         """
         Runs ABSA against every distinct topic group the row actually
@@ -776,6 +926,7 @@ def step_absa(df):
         if secondary_groups_str:
             groups += [g.strip() for g in secondary_groups_str.split(",") if g.strip()]
         groups = list(dict.fromkeys(groups))  # de-dupe, keep order
+        groups = [g for g in groups if g not in SENTIMENT_ONLY_GROUPS]
 
         overall_sentiment, overall_score = get_absa_sentiment(text, "overall experience")
 
@@ -786,8 +937,16 @@ def step_absa(df):
             if group_results:
                 # highest-confidence aspect for this topic decides its sentiment
                 best_aspect, best = max(group_results.items(), key=lambda kv: kv[1]["confidence"])
+                # "detail" is the specific aspect(s) behind this topic —
+                # e.g. topic="Planning App/work types", detail="trees" —
+                # the sub-topic level a bare group name doesn't carry.
+                # All aspects that cleared the bar for this group, not
+                # just the winning one, since a comment can legitimately
+                # touch several (e.g. "trees" + "biodiversity").
+                detail = ", ".join(group_results.keys())
                 pairs.append({
                     "topic": group,
+                    "detail": detail,
                     "sentiment": best["sentiment"],
                     "confidence": best["confidence"],
                     "source": "absa_aspect",
@@ -799,9 +958,11 @@ def step_absa(df):
                 # No aspect for this specific topic cleared the confidence
                 # bar — fall back to the row's overall sentiment rather than
                 # leaving it unresolved. Lower-confidence than a real aspect
-                # hit, flagged as such.
+                # hit, flagged as such. No specific aspect to report as
+                # detail either, since none cleared the bar.
                 pairs.append({
                     "topic": group,
+                    "detail": None,
                     "sentiment": overall_sentiment,
                     "confidence": overall_score,
                     "source": "absa_overall_fallback",
@@ -998,21 +1159,6 @@ def step_entities(df):
 
     def extract_fees(text):
         return list(set(re.findall(r'£[\d,]+(?:\.\d{2})?', text)))
-
-    USER_TYPE_KEYWORDS = [
-        "first time", "first-time", "new user", "never used",
-        "never used this before", "novice", "beginner", "not a professional",
-        "not an expert", "layman", "lay person", "one-time", "one off",
-    ]
-
-    def extract_user_type(text):
-        # Same negation-aware matching as match_keywords — "not a first
-        # time user" shouldn't tag as beginner. Only one value currently
-        # (beginner_or_one_time); extend this dict if more user-type
-        # categories are added later (e.g. "frequent user").
-        if match_keywords(text, USER_TYPE_KEYWORDS):
-            return "beginner_or_one_time"
-        return None
 
     total = len(df)
     councils_l, features_l, errors_l, fees_l, user_type_l = [], [], [], [], []

@@ -4,6 +4,11 @@
 # touches raw survey data or runs any NLP — it only reads what
 # run_pipeline.py / aggregation_db.py has already written.
 
+# Needed for `str | None` / `list[str]` type hints below to work on Python
+# < 3.10 (this file is imported both by run_pipeline.py's venv and the
+# dashboard's — they're not guaranteed to be the same Python version).
+from __future__ import annotations
+
 import os
 import sqlite3
 from datetime import datetime, timezone
@@ -114,17 +119,24 @@ def load_monthly_summary() -> pd.DataFrame:
     return _read_sql("SELECT * FROM monthly_summary ORDER BY month")
 
 
-def load_tag_group_trends() -> pd.DataFrame:
-    """One row per (month, tag_group): volume + sentiment breakdown."""
-    return _read_sql(
-        "SELECT * FROM tag_group_monthly ORDER BY month, tag_group"
-    )
+def load_topic_trends() -> pd.DataFrame:
+    """One row per (month, topic): volume + sentiment breakdown.
+    Replaces load_tag_group_trends() and load_feature_trends() — topics
+    already fold the old tag_group *and* the near-duplicate ABSA aspects
+    ("document upload" / "file upload" / "uploading documents") into one
+    number per topic, and never include "User type" (that's its own
+    field now, not written into topic_monthly at all).
 
-
-def load_feature_trends() -> pd.DataFrame:
-    """One row per (month, feature): mentions + sentiment breakdown."""
+    Confirmed against aggregation_db.py: topic_monthly columns are
+    run_date, month, topic, total_mentions, positive_count, negative_count,
+    neutral_count, mixed_count, avg_sentiment_score — total_mentions
+    (not total_reviews, unlike tag_group_monthly) and an extra mixed_count
+    (a comment whose mentions of this topic were both positive and
+    negative). SELECT * picks up all of these; app.py reads total_mentions
+    explicitly, mixed_count is available if you want to surface it later.
+    """
     return _read_sql(
-        "SELECT * FROM feature_monthly ORDER BY month, feature"
+        "SELECT * FROM topic_monthly ORDER BY month, topic"
     )
 
 

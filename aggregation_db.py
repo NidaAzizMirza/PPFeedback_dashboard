@@ -526,13 +526,22 @@ def write_monthly_metrics(df, run_date=None):
     # topics contributes to 2 rows here, unlike tag_group_monthly which only
     # ever sees primary_tag_group (1 row per comment, regardless of how many
     # topics it actually touches).
+    #
+    # "Overall Positive Experience" / "Negative experience" are excluded
+    # here — they're sentiment wearing a topic's name, not a real subject,
+    # and mixing them into topic_monthly makes them show up in the
+    # dashboard's topic rankings/heatmap/filters as if they were one more
+    # thing respondents complained about. Overall feeling is already
+    # tracked properly per-row via overall_experience_sentiment; it doesn't
+    # need a second, topic-shaped home too.
+    SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience"}
     topic_stats = defaultdict(lambda: {"pos": 0, "neg": 0, "neu": 0, "mixed": 0})
     for _, row in df.iterrows():
         pairs = _normalize_topic_pairs(row.get("topic_sentiment_pairs", []))
         for p in pairs:
             topic = p.get("topic")
             sentiment = p.get("sentiment")
-            if not topic:
+            if not topic or topic in SENTIMENT_ONLY_GROUPS:
                 continue
             if sentiment == "positive":  topic_stats[topic]["pos"] += 1
             elif sentiment == "negative": topic_stats[topic]["neg"] += 1
