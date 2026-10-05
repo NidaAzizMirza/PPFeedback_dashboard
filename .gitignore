@@ -55,3 +55,4 @@ logs/
 fix_corrupted_ids.py
 .streamlit/
 test.py
+*.bak_*

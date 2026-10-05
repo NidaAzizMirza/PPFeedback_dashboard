@@ -859,7 +859,22 @@ ABSA_ASPECTS = {
     "Overall Positive Experience":        ["overall experience", "ease of use", "user experience"],
 }
 
+def split_group_names(groups_str, known_groups):
+    """Split a ', '-joined string of group names without cutting names
+    that contain commas (e.g. 'Fees, charges and quotes')."""
+    if not groups_str:
+        return []
+    # longest names first, so the full name wins over any shorter piece
+    pattern = "|".join(re.escape(g) for g in sorted(known_groups, key=len, reverse=True))
+    return list(dict.fromkeys(re.findall(pattern, groups_str)))  # de-duped, order kept
+
 def step_absa(df):
+    KNOWN_GROUPS = (
+            set(ABSA_ASPECTS)
+            | set(pd.read_csv(cfg.TAGS_FILE)["Group"].str.strip())
+            | {"Miscellaneous"}
+    )
+    SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience", "User type"}  # added "User type"
     log.info("=" * 60)
     log.info("STEP 4 — ABSA")
     log.info("=" * 60)
@@ -922,9 +937,10 @@ def step_absa(df):
         what lets a single comment carry independent sentiment per topic
         (e.g. "document upload great, payment confusing").
         """
+
         groups = [primary_group] if primary_group else []
         if secondary_groups_str:
-            groups += [g.strip() for g in secondary_groups_str.split(",") if g.strip()]
+            groups += split_group_names(secondary_groups_str, KNOWN_GROUPS)
         groups = list(dict.fromkeys(groups))  # de-dupe, keep order
         groups = [g for g in groups if g not in SENTIMENT_ONLY_GROUPS]
 
