@@ -12,6 +12,7 @@ from __future__ import annotations
 import os
 import sqlite3
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pandas as pd
 
@@ -106,12 +107,16 @@ def load_available_months() -> list[str]:
     df = _read_sql("SELECT DISTINCT month FROM monthly_summary ORDER BY month")
     return df["month"].dropna().tolist() if not df.empty else []
 
+DB_PATH = Path(__file__).resolve().parent / "data" / "metrics.db"
+CHECKPOINT_PATH = DB_PATH.parent / "last_fetch_checkpoint_cache.txt"
 
 def load_latest_run_date() -> str | None:
-    df = _read_sql("SELECT MAX(run_date) as latest FROM monthly_summary")
-    if df.empty or pd.isna(df.iloc[0]["latest"]):
+    """When SurveyMonkey data was last pulled (UTC), not the newest month."""
+    try:
+        ts = pd.to_datetime(CHECKPOINT_PATH.read_text().strip(), utc=True)
+        return ts.strftime("%Y-%m-%d %H:%M UTC")
+    except Exception:
         return None
-    return df.iloc[0]["latest"]
 
 
 def load_monthly_summary() -> pd.DataFrame:
