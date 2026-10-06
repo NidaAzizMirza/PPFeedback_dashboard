@@ -83,8 +83,9 @@ SENTIMENT_EMOJI = {
 # (overall_experience_sentiment) and its own column/filter everywhere
 # below; this constant is what keeps the two separated consistently.
 SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience"}
-
-
+MIN_MENTIONS = 5   # topics with fewer mentions are drawn faded and left out of "most negative" rankings
+def _topic_label(name, n):
+    return f"{name} (n={int(n)})"
 # ============================================================================
 # SECTION 1 — PAGE CONFIG + CSS
 # ============================================================================
@@ -217,26 +218,25 @@ def _bar_trend(df: pd.DataFrame, x: str, y: str, title: str,
     return fig
 
 
-def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
-                            pct: bool = True) -> plt.Figure:
-    """Stacked bar of positive/negative/neutral counts (or %) per group_col value."""
-    table = df.groupby(group_col)[["positive_count", "negative_count", "neutral_count"]].sum()
-    table = table.rename(columns={
+def _sentiment_stacked_bar(df, group_col, title, pct=True):
+    """Stacked bar of positive/negative/neutral counts (or %) per group_col value,
+    biggest topic first, with each topic's mention count in its label."""
+    counts = df.groupby(group_col)[["positive_count", "negative_count", "neutral_count"]].sum()
+    counts = counts.rename(columns={
         "positive_count": "positive", "negative_count": "negative", "neutral_count": "neutral"
     })
-    if pct:
-        totals = table.sum(axis=1)
-        table = table.div(totals, axis=0).fillna(0) * 100
-    table = table.loc[table.sum(axis=1).sort_values(ascending=False).index]
+    totals = counts.sum(axis=1)
+    order = totals.sort_values(ascending=False).index      # sort by VOLUME, before turning into %
+    counts, totals = counts.loc[order], totals.loc[order]
+    table = counts.div(totals, axis=0).fillna(0) * 100 if pct else counts
 
     n_rows = len(table)
-    fig_h = max(4, n_rows * 0.5)
-    fig, ax = plt.subplots(figsize=(10, fig_h))
+    fig, ax = plt.subplots(figsize=(10, max(4, n_rows * 0.5)))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
 
     categories = table.index.tolist()
-    wrapped_categories = [textwrap.fill(str(c), width=18) for c in categories]
+    wrapped_categories = [textwrap.fill(_topic_label(c, totals[c]), width=24) for c in categories]
     y = np.arange(len(categories))
     lefts = np.zeros(len(categories))
 
@@ -244,20 +244,20 @@ def _sentiment_stacked_bar(df: pd.DataFrame, group_col: str, title: str,
         if col not in table.columns:
             continue
         vals = table[col].values.astype(float)
-        color = SENTIMENT_COLORS[col]
-        bars = ax.barh(y, vals, left=lefts, label=col.title(), color=color, height=0.6)
+        bars = ax.barh(y, vals, left=lefts, label=col.title(), color=SENTIMENT_COLORS[col], height=0.6)
         for rect, v in zip(bars, vals):
             if v > (2 if pct else 0.5):
                 label = f"{v:.0f}%" if pct else str(int(v))
-                ax.text(rect.get_x() + rect.get_width() / 2,
-                        rect.get_y() + rect.get_height() / 2,
+                ax.text(rect.get_x() + rect.get_width() / 2, rect.get_y() + rect.get_height() / 2,
                         label, ha="center", va="center", fontsize=8, color=PALETTE["paper"])
         lefts += vals
 
     ax.set_yticks(y)
     ax.set_yticklabels(wrapped_categories, fontsize=9)
-    ax.set_xlabel("% of reviews" if pct else "Reviews")
-    ax.set_title(title, fontsize=12, loc="left", pad=12, color=PALETTE["ink"])
+    ax.invert_yaxis()                                       # biggest topic at the top
+    ax.set_xlabel("% of mentions" if pct else "Mentions")
+    if title:
+        ax.set_title(title, fontsize=12, loc="left", pad=12, color=PALETTE["ink"])
     ax.legend(frameon=True, fontsize=8, bbox_to_anchor=(1.01, 1), loc="upper left")
     ax.set_xlim(0, lefts.max() * 1.05 if lefts.max() > 0 else 1)
     for spine in ax.spines.values():
@@ -291,6 +291,28 @@ def _single_sentiment_bar(pos_pct: float, neg_pct: float, neu_pct: float,
     fig.tight_layout()
     return fig
 
+def _most_negative_chart(agg, top_n=10, width=6):
+    """agg: one row per topic (index = topic) with total_mentions and negative_pct.
+    Topics with fewer than MIN_MENTIONS mentions aren't ranked. Returns (fig_or_None, hidden_count)."""
+    reliable = agg[agg["total_mentions"] >= MIN_MENTIONS]
+    hidden = len(agg) - len(reliable)
+    top = reliable.sort_values("negative_pct", ascending=False).head(top_n)
+    if top.empty:
+        return None, hidden
+
+    labels = [_topic_label(t, n) for t, n in zip(top.index, top["total_mentions"])][::-1]
+    values = top["negative_pct"].values[::-1]
+    fig, ax = plt.subplots(figsize=(width, max(3, len(top) * 0.45)))
+    fig.patch.set_facecolor(PALETTE["paper"])
+    ax.set_facecolor(PALETTE["paper"])
+    ax.barh(labels, values, color=SENTIMENT_COLORS["negative"], height=0.6)
+    for i, v in enumerate(values):
+        ax.text(v - 1, i, f"{v:.0f}%", ha="right", va="center", fontsize=8, color=PALETTE["paper"])
+    ax.set_xlabel("% of mentions that are negative")
+    ax.set_xlim(0, 100)
+    ax.grid(axis="x", color=PALETTE["grid"], linewidth=0.5)
+    fig.tight_layout()
+    return fig, hidden
 
 def _with_alpha(hex_color: str, alpha: float) -> str:
     """
@@ -344,16 +366,23 @@ def _rating_distribution_bar(counts: dict, title: str) -> plt.Figure:
     return fig
 
 
-def _diverging_sentiment_bar(df: pd.DataFrame, group_col: str, score_col: str,
-                              title: str) -> plt.Figure:
-    """Horizontal bar from -1 (all negative) to +1 (all positive) per category."""
-    table = df.groupby(group_col)[score_col].mean().sort_values()
-    fig, ax = plt.subplots(figsize=(10, max(4, len(table) * 0.4)))
+def _diverging_sentiment_bar(df, group_col, score_col, title, count_col="total_mentions"):
+    """Bar from -1 (all negative) to +1 (all positive) per category. Each label shows how many
+    mentions the score is based on, and bars built on fewer than MIN_MENTIONS are faded."""
+    d = df.assign(_w=df[score_col] * df[count_col])
+    agg = d.groupby(group_col).agg(_w=("_w", "sum"), n=(count_col, "sum"))
+    agg["score"] = agg["_w"] / agg["n"]                     # weighted by mentions, not a plain average
+    agg = agg.sort_values("score")
+
+    fig, ax = plt.subplots(figsize=(10, max(4, len(agg) * 0.4)))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
-    colors = [SENTIMENT_COLORS["positive"] if v >= 0 else SENTIMENT_COLORS["negative"]
-              for v in table.values]
-    ax.barh(table.index, table.values, color=colors, height=0.6)
+    colors = []
+    for score, n in zip(agg["score"], agg["n"]):
+        base = SENTIMENT_COLORS["positive"] if score >= 0 else SENTIMENT_COLORS["negative"]
+        colors.append(base if n >= MIN_MENTIONS else _with_alpha(base, 0.35))
+    labels = [_topic_label(t, n) for t, n in zip(agg.index, agg["n"])]
+    ax.barh(labels, agg["score"].values, color=colors, height=0.6)
     ax.axvline(0, color=PALETTE["ink"], linewidth=0.8)
     ax.set_xlim(-1, 1)
     ax.set_xlabel("Sentiment score (-1 = all negative, +1 = all positive)")
@@ -400,8 +429,6 @@ def _overlay_trend_chart(trend: pd.DataFrame) -> plt.Figure:
     # falls back to the raw string (e.g. "2025-11") otherwise.
     parsed = pd.to_datetime(trend["month"], format="%Y-%m", errors="coerce")
     month_labels = parsed.dt.strftime("%b %y") if parsed.notna().all() else trend["month"]
-
-
 
     x = list(range(len(trend)))
 
@@ -598,10 +625,13 @@ def _topic_negative_heatmap(topic_view: pd.DataFrame, top_n: int = 12) -> plt.Fi
     pivot = grouped.pivot_table(index="topic", columns="month", values="negative_pct")
     pivot = pivot.loc[top_topics]  # keep ranked order, most-mentioned topic on top
 
+    pivot_n = grouped.pivot_table(index="topic", columns="month", values="total_mentions").loc[top_topics]
+    pivot = pivot.where(pivot_n >= MIN_MENTIONS)
+
     cmap = LinearSegmentedColormap.from_list(
         "neg_pct", [PALETTE["positive"], PALETTE["paper"], PALETTE["negative"]]
     )
-
+    cmap.set_bad("#eeeeee")
     fig, ax = plt.subplots(figsize=(10, max(4, len(pivot) * 0.5)))
     fig.patch.set_facecolor(PALETTE["paper"])
     ax.set_facecolor(PALETTE["paper"])
@@ -648,7 +678,7 @@ def _sidebar():
 
     latest_run = load_latest_run_date()
     if latest_run:
-        st.sidebar.caption(f"Last pipeline run: **{latest_run}**")
+        st.sidebar.caption(f"Data last refreshed: **{latest_run}**")
     st.sidebar.caption(f"{len(months)} month(s) available: {months[0]} to {months[-1]}")
     st.sidebar.caption("DB: `data/metrics.db`")
 
@@ -880,17 +910,14 @@ def page_topics(months: list[str] | None):
     agg = agg.sort_values("total_mentions", ascending=False).reset_index()
 
     st.subheader("Most negatively-mentioned topics")
-    top = agg.sort_values("negative_pct", ascending=False).head(15).set_index("topic")
-    fig, ax = plt.subplots(figsize=(10, max(4, len(top) * 0.4)))
-    fig.patch.set_facecolor(PALETTE["paper"])
-    ax.set_facecolor(PALETTE["paper"])
-    ax.barh(top.index[::-1], top["negative_pct"][::-1], color=SENTIMENT_COLORS["negative"])
-    ax.set_xlabel("% negative mentions")
-    ax.set_xlim(0, 100)
-    ax.grid(axis="x", color=PALETTE["grid"], linewidth=0.5)
-    fig.tight_layout()
-    st.pyplot(fig)
-    plt.close(fig)
+    fig, hidden = _most_negative_chart(agg.set_index("topic"), top_n=15, width=10)
+    if fig is None:
+        st.info(f"No topic has {MIN_MENTIONS}+ mentions yet, so there is nothing to rank.")
+    else:
+        st.pyplot(fig)
+        plt.close(fig)
+        if hidden:
+            st.caption(f"{hidden} topic(s) with fewer than {MIN_MENTIONS} mentions are not ranked.")
 
     # ---- Topic comparison across months (heatmap — replaces the old
     #      per-feature comparison heatmap on the same "negative %" basis) --
@@ -1108,6 +1135,7 @@ def _render_comment_themes_month(selected_month: str):
         with tc2:
             st.pyplot(_diverging_sentiment_bar(topic_month, "topic", "avg_sentiment_score",
                                                 "Topic sentiment — this month"))
+            st.caption(f"Faded bars are based on fewer than {MIN_MENTIONS} mentions. Treat them as anecdotes.")
 
     st.divider()
 
@@ -1121,18 +1149,25 @@ def _render_comment_themes_month(selected_month: str):
                 total_mentions=("total_mentions", "sum"),
                 negative_mentions=("negative_count", "sum"),
             )
-            agg["negative_pct"] = round(agg["negative_mentions"] / agg["total_mentions"] * 100, 1)
-            top = agg.sort_values("negative_pct", ascending=False).head(10)
-            fig, ax = plt.subplots(figsize=(6, max(3, len(top) * 0.4)))
-            fig.patch.set_facecolor(PALETTE["paper"])
-            ax.set_facecolor(PALETTE["paper"])
-            ax.barh(top.index[::-1], top["negative_pct"][::-1], color=SENTIMENT_COLORS["negative"])
-            ax.set_title("Most negatively mentioned topics", fontsize=11, loc="left", color=PALETTE["ink"])
-            ax.set_xlabel("% of mentions that are negative")
-            ax.set_xlim(0, 100)
-            fig.tight_layout()
-            st.pyplot(fig)
-            plt.close(fig)
+
+            agg["negative_pct"] = round(
+                agg["negative_mentions"] / agg["total_mentions"] * 100, 1
+            )
+
+            fig, hidden = _most_negative_chart(agg, top_n=10, width=6)
+
+            if fig is None:
+                st.info(
+                    f"No topic has {MIN_MENTIONS}+ mentions yet, so there is nothing to rank."
+                )
+            else:
+                st.pyplot(fig)
+                plt.close(fig)
+                if hidden:
+                    st.caption(
+                        f"{hidden} topic(s) with fewer than {MIN_MENTIONS} mentions are not ranked."
+                    )
+
     with fc2:
         err_df = load_error_trends()
         err_month = err_df[err_df["month"] == selected_month] if not err_df.empty else err_df
