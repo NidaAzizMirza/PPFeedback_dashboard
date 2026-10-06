@@ -56,3 +56,4 @@ fix_corrupted_ids.py
 .streamlit/
 test.py
 *.bak_*
+data/retag_progress.jsonl
