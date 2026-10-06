@@ -26,6 +26,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.class_weight import compute_class_weight
 
 import pipeline_config as cfg
+from error_patterns import extract_errors
 
 import preprocessing as pre
 
@@ -1124,18 +1125,7 @@ FEATURE_NAMES = {
     "lawful development": "Lawful development certificate",
 }
 
-ERROR_PATTERNS = [
-    r"(?:system|portal|page|site)\s+(?:crashed|crash|crashing|froze|freezing|stalled|went down|timed out)",
-    r"(?:keeps?|kept)\s+(?:crashing|freezing|stalling|logging (?:me )?out|timing out)",
-    r"(?:lost|deleted|removed)\s+(?:my|all|the)?\s*(?:data|work|information|progress|application|documents?)",
-    r"(?:unable|couldn't|can't|cannot|could not)\s+(?:upload|submit|save|load|open|access|find|complete|pay)",
-    r"(?:file|document|pdf|excel)\s+(?:not accepted|rejected|failed|won't upload|not loading)",
-    r"(?:postcode|post code|address)\s+(?:not (?:found|recognised|accepted|working)|rejected|invalid)",
-    r"(?:payment|card)\s+(?:failed|declined|not (?:working|going through|processing))",
-    r"(?:won't|doesn't|did not|didn't)\s+(?:accept|recognise|recognize|work|load|save|submit)",
-    r"(?:10mb|file size|size limit|upload limit)",
-    r"(?:square brackets|special characters?|permitted characters?)",
-]
+
 
 def step_entities(df):
     log.info("=" * 60)
@@ -1162,16 +1152,6 @@ def step_entities(df):
             v for k, v in FEATURE_NAMES.items()
             if re.search(r'\b' + re.escape(k) + r'\b', tl)
         ))
-
-    def extract_errors(text):
-        tl = text.lower()
-        found = []
-        for pat in ERROR_PATTERNS:
-            for m in re.findall(pat, tl):
-                c = m.strip().rstrip(".,;")
-                if len(c) > 5:
-                    found.append(c)
-        return list(set(found))
 
     def extract_fees(text):
         return list(set(re.findall(r'£[\d,]+(?:\.\d{2})?', text)))
