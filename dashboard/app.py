@@ -637,8 +637,18 @@ def _topic_negative_heatmap(topic_view: pd.DataFrame, top_n: int = 12) -> plt.Fi
     ax.set_facecolor(PALETTE["paper"])
     im = ax.imshow(pivot.values, cmap=cmap, vmin=0, vmax=100, aspect="auto")
 
+    # Format YY-MM month keys as clear, readable "Mon YY" labels.
+    # The line break keeps the 12-month heatmap legible without overlapping labels.
+    parsed_months = pd.to_datetime(pivot.columns.astype(str), format="%Y-%m", errors="coerce")
+    month_labels = (
+        [d.strftime("%b %y") for d in parsed_months]
+        if parsed_months.notna().all()
+        else pivot.columns.astype(str).tolist()
+    )
+
+
     ax.set_xticks(np.arange(len(pivot.columns)))
-    ax.set_xticklabels(pivot.columns, rotation=0, ha="center")
+    ax.set_xticklabels(month_labels, rotation=0, ha="center")
     ax.set_yticks(np.arange(len(pivot.index)))
     ax.set_yticklabels(pivot.index, fontsize=9)
 
