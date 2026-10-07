@@ -875,7 +875,8 @@ def step_absa(df):
             | set(pd.read_csv(cfg.TAGS_FILE)["Group"].str.strip())
             | {"Miscellaneous"}
     )
-    SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience", "User type"}  # added "User type"
+
+    SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience", "User type", "Miscellaneous"}
     log.info("=" * 60)
     log.info("STEP 4 — ABSA")
     log.info("=" * 60)
@@ -929,7 +930,7 @@ def step_absa(df):
     # missing it here was a gap, not a separate decision. The signal isn't
     # lost — overall_experience_sentiment (below) captures it independently
     # of tag groups.
-    SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience"}
+    SENTIMENT_ONLY_GROUPS = {"Overall Positive Experience", "Negative experience", "User type", "Miscellaneous"}
 
     def run_absa_per_topic(text, primary_group, secondary_groups_str):
         """
@@ -943,7 +944,8 @@ def step_absa(df):
         if secondary_groups_str:
             groups += split_group_names(secondary_groups_str, KNOWN_GROUPS)
         groups = list(dict.fromkeys(groups))  # de-dupe, keep order
-        groups = [g for g in groups if g not in SENTIMENT_ONLY_GROUPS]
+        groups = [g.strip() for g in groups if isinstance(g, str) and g.strip()]
+        groups = [g for g in dict.fromkeys(groups) if g not in SENTIMENT_ONLY_GROUPS]
 
         overall_sentiment, overall_score = get_absa_sentiment(text, "overall experience")
 
