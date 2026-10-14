@@ -1016,7 +1016,7 @@ def _recurring_phrases(texts: tuple, top_n: int = SUMMARY_TOP_PHRASES):
     counts = Counter()
     for t in texts:
         seen = set()
-        for clause in re.split(r"[.,;:!?()\n]+", str(t).lower()):   # phrases never cross punctuation
+        for clause in re.split(r"[.,;:!?()\n]+", str(t).lower().replace("\u2019", "'")):   # phrases never cross punctuation
             words = re.findall(r"[a-z']+", clause)
             for n in (2, 3):
                 for i in range(len(words) - n + 1):
@@ -1038,7 +1038,7 @@ def _recurring_phrases(texts: tuple, top_n: int = SUMMARY_TOP_PHRASES):
 
 def _example_comment(phrase, df):
     """Shortest real comment (>=40 chars) that contains the phrase."""
-    text = df["feedback_clean"].fillna("").astype(str)
+    text = df["_text"].fillna("").astype(str)
     hit = text[text.str.lower().str.contains(phrase, regex=False) & (text.str.len() >= 40)]
     if hit.empty:
         return None
@@ -1065,7 +1065,7 @@ def _render_topic_summary(df: pd.DataFrame, topics: list):
                        f"{neg.iloc[-1]:.0f}% ({_month_label(neg.index[-1])}). "
                        f"Busiest month: {_month_label(vol.idxmax())} ({vol.max()} comments).")
 
-    texts = tuple(df["feedback_clean"].fillna("").astype(str))
+    texts = tuple(df["_text"].fillna("").astype(str))
     for phrase, c in _recurring_phrases(texts):
         line = f'**"{phrase}"**: {c} comments ({c / n:.0%})'
         ex = _example_comment(phrase, df)
@@ -1098,6 +1098,14 @@ def page_browse_reviews(months: list[str] | None):
         return
 
     df = df.copy()
+    # Comment as written by the respondent; falls back to the cleaned text for
+    # rows that don't have it yet (before backfill_feedback_original.py is run).
+    if "feedback_original" in df.columns:
+        df["_text"] = df["feedback_original"].where(
+            df["feedback_original"].notna() & (df["feedback_original"].astype(str).str.strip() != ""),
+            df["feedback_clean"])
+    else:
+        df["_text"] = df["feedback_clean"]
     raw_pairs = df.get("topic_sentiment_pairs", pd.Series([None] * len(df))).apply(_parse_topic_pairs)
     # "Overall Positive Experience"/"Negative experience" are sentiment
     # wearing a topic's name, not a real subject — kept out of the Topics
@@ -1156,7 +1164,7 @@ def page_browse_reviews(months: list[str] | None):
     if sent_filter != "All":
         filtered = filtered[filtered[sent_col] == sent_filter]
     if search:
-        filtered = filtered[filtered["feedback_clean"].str.contains(search, case=False, na=False)]
+        filtered = filtered[filtered["_text"].str.contains(search, case=False, na=False)]
 
     st.caption(f"{len(filtered):,} reviews match")
 
@@ -1197,7 +1205,7 @@ def page_browse_reviews(months: list[str] | None):
         "Topics": filtered["_topic_pairs"].apply(_format_topics_short),
         "Sentiment": filtered[sent_col].map(lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""),
         "User type": filtered.get("user_type").apply(_format_user_type),
-        "Feedback": filtered.get("feedback_clean").apply(_truncate),
+        "Feedback": filtered.get("_text").apply(_truncate),
     })
 
     st.caption("Click a row to read the full comment and every topic below.")
@@ -1218,7 +1226,7 @@ def page_browse_reviews(months: list[str] | None):
         sel = filtered.iloc[selected_rows[0]]
         with st.container(border=True):
             st.markdown(f"**Respondent {sel.get('respondent_id')}** — {sel.get('month')} — Rating: {sel.get('rating')}")
-            st.write(sel.get("feedback_clean", ""))
+            st.write(sel.get("_text", ""))
             pairs = sel.get("_topic_pairs") or []
             if pairs:
                 st.markdown("**Topics**")

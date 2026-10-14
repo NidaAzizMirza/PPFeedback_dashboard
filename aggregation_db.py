@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS review_detail (
     run_date            TEXT,
     month               TEXT,
     feedback_clean      TEXT,
+    feedback_original   TEXT,
     primary_tag         TEXT,
     primary_tag_group   TEXT,
     secondary_tags      TEXT,
@@ -360,6 +361,36 @@ def write_raw_metrics(df_raw, run_date=None):
 # ══════════════════════════════════════════════════════════════════════════
 # WRITE NLP METRICS (from processed pipeline output)
 # ══════════════════════════════════════════════════════════════════════════
+# The respondent's comment exactly as written (before cleaning). master.xlsx
+# only keeps the cleaned text, so the originals come from the SurveyMonkey
+# cache (data/survey_cache.csv, refreshed by the cache workflow).
+ORIGINAL_FEEDBACK_COLS = (
+    "Is there anything you would like to tell us about your experience?",
+    "Feedback",
+    "Feedback_x",
+)
+CACHE_PATH = os.path.join(os.path.dirname(DB_PATH), "survey_cache.csv")
+
+
+def load_original_comments(path=CACHE_PATH):
+    """{respondent_id: original comment} from the survey cache. Blank comments
+    are left out. Returns {} if the cache is missing, so the pipeline never
+    fails because of it."""
+    if not os.path.exists(path):
+        print(f"  (no survey cache at {path} — original comments skipped)")
+        return {}
+    cache = pd.read_csv(path, dtype=str)           # str: IDs must never become numbers
+    id_col = cfg.COL_RESPONDENT_ID if cfg.COL_RESPONDENT_ID in cache.columns else "Respondent ID"
+    text_col = next((c for c in ORIGINAL_FEEDBACK_COLS if c in cache.columns), None)
+    if id_col not in cache.columns or text_col is None:
+        print(f"  (survey cache has no usable ID/comment column: {cache.columns.tolist()})")
+        return {}
+    cache = cache.drop_duplicates(subset=[id_col], keep="last")
+    text = cache[text_col].astype("string").str.strip()
+    keep = text.notna() & (text != "")
+    return dict(zip(cache.loc[keep, id_col].astype(str).str.strip(), text[keep]))
+
+
 def write_monthly_metrics(df, run_date=None):
     """Write NLP-derived metrics for a pipeline run."""
     if run_date is None:
@@ -378,7 +409,8 @@ def write_monthly_metrics(df, run_date=None):
     # Assumes review_detail already exists via initialise_db(), same as the
     # nsat pattern above.
     rd_cols = [r[1] for r in conn.execute("PRAGMA table_info(review_detail)").fetchall()]
-    for new_col in ("topic_sentiment_pairs", "user_type", "overall_experience_sentiment"):
+    for new_col in ("topic_sentiment_pairs", "user_type", "overall_experience_sentiment",
+                    "feedback_original"):
         if new_col not in rd_cols:
             conn.execute(f"ALTER TABLE review_detail ADD COLUMN {new_col} TEXT")
     conn.execute("""
@@ -488,6 +520,7 @@ def write_monthly_metrics(df, run_date=None):
             """, (run_date, month, pattern, int(count)))
 
     # ── 5. Review detail ──────────────────────────────────────────────────
+    original_comments = load_original_comments()
     for _, row in df.iterrows():
         respondent_id = str(row.get(cfg.COL_RESPONDENT_ID, ""))
         if not respondent_id or respondent_id == "nan":
@@ -495,16 +528,17 @@ def write_monthly_metrics(df, run_date=None):
         topic_pairs = _normalize_topic_pairs(row.get("topic_sentiment_pairs", []))
         conn.execute("""
             INSERT OR REPLACE INTO review_detail
-            (respondent_id, run_date, month, feedback_clean,
+            (respondent_id, run_date, month, feedback_clean, feedback_original,
              primary_tag, primary_tag_group, secondary_tags,
              svm_confidence, prediction_method, grouping_sentiment,
              absa_aspects, entities_features, entities_errors,
              entities_fees, rating,
              topic_sentiment_pairs, user_type, overall_experience_sentiment)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             respondent_id, run_date, month,
             str(row.get("Feedback_clean", "")),
+            original_comments.get(respondent_id),
             str(row.get("primary_tag", "")),
             str(row.get("primary_tag_group", "")),
             str(row.get("secondary_tags", "")),
