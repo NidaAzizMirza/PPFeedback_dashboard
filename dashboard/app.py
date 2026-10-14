@@ -32,7 +32,9 @@ from __future__ import annotations
 
 import sys
 import json
+import re
 import textwrap
+from collections import Counter
 from pathlib import Path
 
 import matplotlib
@@ -981,6 +983,112 @@ def _parse_topic_pairs(cell):
         return []
 
 
+# ---------------------------------------------------------------------------
+# Topic summary (Browse Reviews) — computed from the data, no LLM involved,
+# so it updates whenever the data or filters change. No extra dependencies.
+# ---------------------------------------------------------------------------
+# Negations ("not", "no", "cannot", "never") are deliberately NOT stop words:
+# "cannot upload" and "upload" mean opposite things.
+_SUMMARY_STOP = frozenset("""
+a an and are as at be been but by for from had has have he her his i if in into is it its
+me my of on or our she so than that the their them then there these they this to up us was
+we were what when where which who will with you your am do did does just very really also
+""".split())
+SUMMARY_TOP_PHRASES = 6      # recurring-phrase bullets shown
+SUMMARY_MIN_COMMENTS = 10    # below this, phrase counts aren't meaningful
+SUMMARY_EXAMPLE_LEN = 170
+
+
+def _topic_sentiment(pairs, topics):
+    """Sentiment this review gives to the first selected topic it mentions."""
+    for p in pairs or []:
+        if p.get("topic") in topics:
+            return str(p.get("sentiment") or "").strip().lower() or None
+    return None
+
+
+@st.cache_data(show_spinner=False)
+def _recurring_phrases(texts: tuple, top_n: int = SUMMARY_TOP_PHRASES):
+    """Most common 2-3 word phrases, counted once per comment."""
+    if len(texts) < SUMMARY_MIN_COMMENTS:
+        return []
+    min_count = max(3, int(len(texts) * 0.01))
+    counts = Counter()
+    for t in texts:
+        seen = set()
+        for clause in re.split(r"[.,;:!?()\n]+", str(t).lower()):   # phrases never cross punctuation
+            words = re.findall(r"[a-z']+", clause)
+            for n in (2, 3):
+                for i in range(len(words) - n + 1):
+                    gram = words[i:i + n]
+                    if gram[0] in _SUMMARY_STOP or gram[-1] in _SUMMARY_STOP:
+                        continue
+                    seen.add(" ".join(gram))
+        counts.update(seen)
+    ranked = sorted(((p, c) for p, c in counts.items() if c >= min_count),
+                    key=lambda x: (-x[1], -len(x[0])))
+    kept = []
+    for phrase, c in ranked:                      # drop near-duplicates
+        if not any(phrase in k or k in phrase for k, _ in kept):
+            kept.append((phrase, c))
+        if len(kept) == top_n:
+            break
+    return kept
+
+
+def _example_comment(phrase, df):
+    """Shortest real comment (>=40 chars) that contains the phrase."""
+    text = df["feedback_clean"].fillna("").astype(str)
+    hit = text[text.str.lower().str.contains(phrase, regex=False) & (text.str.len() >= 40)]
+    if hit.empty:
+        return None
+    s = hit.loc[hit.str.len().idxmin()]
+    return s if len(s) <= SUMMARY_EXAMPLE_LEN else s[:SUMMARY_EXAMPLE_LEN].rstrip() + "…"
+
+
+def _render_topic_summary(df: pd.DataFrame, topics: list):
+    """Bullet summary of the filtered comments for the selected topic(s)."""
+    n = len(df)
+    if n == 0:
+        return
+    sent = df["_topic_pairs"].apply(lambda p: _topic_sentiment(p, set(topics)))
+    split = sent.value_counts(normalize=True).mul(100).round(0)
+    sent_txt = ", ".join(f"{int(v)}% {k}" for k, v in split.items()) or "no sentiment tags"
+    bullets = [f"**{n:,} comments** on {', '.join(topics)}. "
+               f"Sentiment on this topic: {sent_txt}. "
+               f"Average rating {pd.to_numeric(df['rating'], errors='coerce').mean():.1f}/5."]
+
+    if df["month"].nunique() > 1:
+        neg = (sent == "negative").groupby(df["month"]).mean().mul(100).sort_index()
+        vol = df["month"].value_counts()
+        bullets.append(f"Negative share went from {neg.iloc[0]:.0f}% ({_month_label(neg.index[0])}) to "
+                       f"{neg.iloc[-1]:.0f}% ({_month_label(neg.index[-1])}). "
+                       f"Busiest month: {_month_label(vol.idxmax())} ({vol.max()} comments).")
+
+    texts = tuple(df["feedback_clean"].fillna("").astype(str))
+    for phrase, c in _recurring_phrases(texts):
+        line = f'**"{phrase}"**: {c} comments ({c / n:.0%})'
+        ex = _example_comment(phrase, df)
+        if ex:
+            line += f'. e.g. *"{ex}"*'
+        bullets.append(line)
+
+    rating = pd.to_numeric(df["rating"], errors="coerce")
+    mismatch = ((sent == "positive") & (rating <= 2)) | ((sent == "negative") & (rating >= 4))
+    if mismatch.sum():
+        bullets.append(f"**Mismatches:** {int(mismatch.sum())} comments where the topic sentiment "
+                       f"and the star rating disagree (positive text with 1-2 stars, or negative "
+                       f"text with 4-5 stars). Worth reading.")
+
+    st.markdown("#### Summary")
+    st.markdown("\n".join(f"- {b}" for b in bullets))
+
+
+def _month_label(m):
+    d = pd.to_datetime(m, format="%Y-%m", errors="coerce")
+    return d.strftime("%b %Y") if pd.notna(d) else str(m)
+
+
 def page_browse_reviews(months: list[str] | None):
     st.header("🔎 Browse Reviews")
 
@@ -1013,7 +1121,7 @@ def page_browse_reviews(months: list[str] | None):
             "is re-run."
         )
 
-    col1, col2, col3 = st.columns([2, 1, 1])
+    col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
     with col1:
         all_topics = sorted({t for topics in df["_topics"] for t in topics})
         topic_filter = st.multiselect(
@@ -1022,6 +1130,13 @@ def page_browse_reviews(months: list[str] | None):
                  "naming ANY of them.",
         )
     with col2:
+        month_options = sorted(df["month"].dropna().unique().tolist(), reverse=True)
+        month_filter = st.multiselect(
+            "Month", month_options, format_func=_month_label,
+            placeholder="All months", key="browse_reviews_month",
+            help="Leave empty to include every month currently loaded.",
+        )
+    with col3:
         sent_col = "overall_experience_sentiment" if "overall_experience_sentiment" in df.columns else "grouping_sentiment"
         sent_values = sorted(df[sent_col].dropna().unique().tolist())
         sent_options = ["All"] + sent_values
@@ -1029,19 +1144,25 @@ def page_browse_reviews(months: list[str] | None):
             "Overall sentiment", sent_options,
             format_func=lambda v: v if v == "All" else f"{SENTIMENT_EMOJI.get(v, '')} {v.title()}",
         )
-    with col3:
+    with col4:
         search = st.text_input("Search feedback text")
 
     filtered = df.copy()
     if topic_filter:
         selected = set(topic_filter)
         filtered = filtered[filtered["_topics"].apply(lambda ts: bool(selected.intersection(ts)))]
+    if month_filter:
+        filtered = filtered[filtered["month"].isin(month_filter)]
     if sent_filter != "All":
         filtered = filtered[filtered[sent_col] == sent_filter]
     if search:
         filtered = filtered[filtered["feedback_clean"].str.contains(search, case=False, na=False)]
 
     st.caption(f"{len(filtered):,} reviews match")
+
+    if topic_filter:
+        _render_topic_summary(filtered, topic_filter)
+        st.divider()
 
     def _format_topics_short(pairs):
         """All topic names for the grid, comma-separated — click the row for
