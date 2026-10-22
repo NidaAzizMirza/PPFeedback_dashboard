@@ -29,6 +29,7 @@ import pipeline_config as cfg
 from error_patterns import extract_errors
 
 import preprocessing as pre
+import sentiment_overrides as so   # rule layer: always-add topics, extra user_type words, sentiment fixes
 
 warnings.filterwarnings("ignore")
 
@@ -681,6 +682,10 @@ USER_TYPE_KEYWORDS = {
 }
 
 
+USER_TYPE_KEYWORDS["beginner_or_one_time"] += [k for k in so.BEGINNER_EXTRA
+                                              if k not in USER_TYPE_KEYWORDS["beginner_or_one_time"]]
+
+
 def extract_user_type(text):
     # Same negation-aware matching as match_keywords for every category
     # — "not a first time user" shouldn't tag as beginner_or_one_time.
@@ -826,6 +831,8 @@ def step_classify(df):
     ):
         primary_tag, primary_group, secondary_tags, secondary_groups, conf, method = \
             get_multilabel_tags(text, proba, pred, le, tag_to_group)
+        secondary_tags, secondary_groups = so.add_always_topics(
+            text, primary_group, secondary_tags, secondary_groups)
         results.append({
             "primary_tag":          primary_tag,
             "primary_tag_group":    primary_group,
@@ -859,6 +866,7 @@ ABSA_ASPECTS = {
     "Missing features & feature requests":["missing feature", "suggestion", "improvement"],
     "Overall Positive Experience":        ["overall experience", "ease of use", "user experience"],
 }
+ABSA_ASPECTS[so.COMPETITOR_GROUP] = []   # topic only; sentiment comes from overall + so rules
 
 def split_group_names(groups_str, known_groups):
     """Split a ', '-joined string of group names without cutting names
@@ -1093,6 +1101,12 @@ def step_absa(df):
     log.info(f"Sentiment distribution: "
              f"{df['grouping_sentiment'].value_counts().to_dict()}")
     log.info(f"Avg topics per row: {df['topic_sentiment_pairs'].apply(len).mean():.2f}")
+
+    # Rule layer: fix known ABSA misses (comparison with the old version,
+    # sarcasm, effort words, competitor comparisons). See sentiment_overrides.py.
+    df = so.apply_sentiment_overrides(df, cfg.COL_FEEDBACK_CLEAN, cfg.COL_RATING, log)
+    log.info(f"Sentiment distribution after overrides: "
+             f"{df['grouping_sentiment'].value_counts().to_dict()}")
     return df
 
 # ══════════════════════════════════════════════════════════════════════════
