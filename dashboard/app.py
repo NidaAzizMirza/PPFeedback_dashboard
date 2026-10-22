@@ -1205,47 +1205,10 @@ def page_browse_reviews(months: list[str] | None):
         "Topics": filtered["_topic_pairs"].apply(_format_topics_short),
         "Sentiment": filtered[sent_col].map(lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""),
         "User type": filtered.get("user_type").apply(_format_user_type),
-        "Feedback": filtered.get("_text").apply(_truncate),
+        "Feedback": filtered.get("_text"),
     })
 
-    def _render_review(sel):
-        """One review in full: header, whole comment (wrapped), every topic with sentiment."""
-        overall = sel.get(sent_col)
-        overall_txt = f"{SENTIMENT_EMOJI.get(overall, '')} {overall}" if pd.notna(overall) else ""
-        ut = _format_user_type(sel.get("user_type"))
-        with st.container(border=True):
-            st.markdown(
-                f"**Respondent {sel.get('respondent_id')}** — {sel.get('month')} — "
-                f"Rating: {sel.get('rating')}"
-                + (f" — {overall_txt}" if overall_txt else "")
-                + (f" — {ut}" if ut else ""))
-            st.write(sel.get("_text", ""))
-            pairs = sel.get("_topic_pairs") or []
-            if pairs:
-                st.markdown("  \n".join(
-                    f"- {p.get('topic', '')} — {SENTIMENT_EMOJI.get(p.get('sentiment'), '')} {p.get('sentiment', '')}"
-                    for p in pairs))
-            else:
-                st.caption("No specific topic detected for this comment.")
-
-    view = st.radio("View", ["Full comments", "Table"], horizontal=True,
-                    key="browse_reviews_view",
-                    help="Full comments shows every review with its whole text. "
-                         "Table is a compact grid where long comments are cut off.")
-
-    if view == "Full comments":
-        PAGE_SIZE = 20
-        pages = max(1, -(-len(filtered) // PAGE_SIZE))
-        page = 1
-        if pages > 1:
-            page = st.number_input(f"Page (1 to {pages})", min_value=1, max_value=pages,
-                                   value=1, step=1, key="browse_reviews_page")
-        start = (int(page) - 1) * PAGE_SIZE
-        for _, sel in filtered.iloc[start:start + PAGE_SIZE].iterrows():
-            _render_review(sel)
-        return
-
-    st.caption("Click a row to read the full comment and every topic below the table.")
+    st.caption("Click a row to read the full comment and every topic below.")
     event = st.dataframe(
         display_df,
         use_container_width=True,
@@ -1253,6 +1216,7 @@ def page_browse_reviews(months: list[str] | None):
         column_config={
             "Topics": st.column_config.TextColumn(width="large"),
             "Sentiment": st.column_config.TextColumn(width="small"),
+            "Feedback": st.column_config.TextColumn(width="large"),
         },
         on_select="rerun",
         selection_mode="single-row",
@@ -1260,7 +1224,21 @@ def page_browse_reviews(months: list[str] | None):
 
     selected_rows = event.selection.rows if event and event.selection else []
     if selected_rows:
-        _render_review(filtered.iloc[selected_rows[0]])
+        sel = filtered.iloc[selected_rows[0]]
+        with st.container(border=True):
+            st.markdown(f"**Respondent {sel.get('respondent_id')}** — {sel.get('month')} — Rating: {sel.get('rating')}")
+            st.write(sel.get("_text", ""))
+            pairs = sel.get("_topic_pairs") or []
+            if pairs:
+                st.markdown("**Topics**")
+                for p in pairs:
+                    emoji = SENTIMENT_EMOJI.get(p.get("sentiment"), "")
+                    st.markdown(f"- {p.get('topic', '')} — {emoji} {p.get('sentiment', '')}")
+            else:
+                st.caption("No specific topic detected for this comment.")
+            overall = sel.get(sent_col)
+            if pd.notna(overall):
+                st.caption(f"Overall experience: {SENTIMENT_EMOJI.get(overall, '')} {overall}")
 
 
 def _render_comment_themes_month(selected_month: str):
