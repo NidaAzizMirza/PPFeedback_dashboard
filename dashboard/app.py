@@ -1175,7 +1175,7 @@ def page_browse_reviews(months: list[str] | None):
     def _format_topics_short(pairs):
         """All topic names for the grid, comma-separated — click the row for
         the full list with sentiment per topic in the detail panel below."""
-        return ", ".join(p.get("topic", "") for p in pairs if p.get("topic"))
+        return "; ".join(p.get("topic", "") for p in pairs if p.get("topic"))
 
     def _truncate(text, max_len=140):
         if not isinstance(text, str):
@@ -1196,7 +1196,7 @@ def page_browse_reviews(months: list[str] | None):
                 vals = [v]
         else:
             vals = str(v).split(",")
-        return ", ".join(x.strip().replace("_", " ").title() for x in vals if x.strip())
+        return "; ".join(x.strip().replace("_", " ").title() for x in vals if x.strip())
 
     display_df = pd.DataFrame({
         "Respondent": filtered.get("respondent_id"),

@@ -20,8 +20,18 @@ MIXED_AS = "neutral"                     # label for comments with good AND bad 
 # ── 1. topics that must always be added ─────────────────────────────────────
 # group -> (granular tag, keywords). Group names must match tags.csv exactly,
 # except COMPETITOR_GROUP which is new and not in tags.csv.
+DOCUMENT_GROUP = "Document upload and handling"
+# Regex (not plain keywords) so "plan" does not fire on "planning", "I plan to" or "to plan".
+DOCUMENT_PATTERNS = [
+    r"\bdocuments?\b", r"\bdocumentation\b", r"\bdocs?\b", r"\bdrawings?\b",
+    r"(?<!\bi )(?<!\bto )(?<!\bwe )\bplans\b", r"(?<!\bi )(?<!\bto )(?<!\bwe )\bplan\b(?! to\b)(?! for\b)(?! ahead\b)",
+    r"\bfloor ?plans?\b", r"\bsite plans?\b", r"\blocation plans?\b",
+    r"\bblueprints?\b", r"\battachments?\b", r"\bpdfs?\b", r"\bphotos?\b",
+]
+
 ALWAYS_TOPICS = {
     "Guidance, clarity & jargon": ("Lack of guidance", ["guidance"]),
+    DOCUMENT_GROUP:               ("Document uploading", ["re:" + p for p in DOCUMENT_PATTERNS]),
     COMPETITOR_GROUP:             ("Competitor mention", COMPETITOR_NAMES),
 }
 
@@ -33,7 +43,8 @@ def add_always_topics(text, primary_group, secondary_tags, secondary_groups):
     for group, (tag, kws) in ALWAYS_TOPICS.items():
         if group == primary_group or group in groups:
             continue
-        if any(re.search(r"\b" + re.escape(k) + r"\b", low) for k in kws):
+        if any(re.search(k[3:], low) if k.startswith("re:")
+               else re.search(r"\b" + re.escape(k) + r"\b", low) for k in kws):
             tags.append(tag); groups.append(group)
     return ", ".join(tags), ", ".join(groups)
 
@@ -55,7 +66,8 @@ STRONG_NEG = [
 SOFT_NEG = [
     r"\b(intimidating|daunting|exhausting|overwhelming|stressful|frustrating)\b",
     r"\bnot (at all )?(simple|easy|straightforward|clear|intuitive)\b",
-    r"\b(complex|confusing|unclear)\b",
+    r"\b(complex|confusing|unclear|difficult|complicated)\b",
+    r"\bno (guidance|help|instructions?)\b",
 ]
 POS = r"\b(great|excellent|helpful|good|works?|working|easy|fine|thanks?|brilliant|love)\b"
 COMPARATIVE = r"\b(cheaper|better|easier|faster|simpler)\b"   # competitor comparison
@@ -71,6 +83,15 @@ def _cue(patterns, sentence):
                 return True
     return False
 
+def _pos(sentence):
+    """True if a positive word appears and is not negated ('not easy', 'not as good')."""
+    low = sentence.lower()
+    for m in re.finditer(POS, low):
+        before = low[:m.start()].split()[-2:]
+        if not any(w in NEGATORS for w in before):
+            return True
+    return False
+
 def _sentences(t):
     return [s for s in re.split(r"(?<=[.!?])\s+", t) if s.strip()]
 
@@ -80,9 +101,9 @@ def override_row(text, rating, pairs, overall):
     pairs = [dict(p) for p in (pairs or [])]
     sents = _sentences(t)
     strong  = any(_cue(STRONG_NEG, s) for s in sents)
-    soft_neg_only = any(_cue(SOFT_NEG, s) and not re.search(POS, s, re.I) for s in sents)
-    soft_mixed    = any(_cue(SOFT_NEG, s) and re.search(POS, s, re.I) for s in sents)
-    pos_only      = any(re.search(POS, s, re.I) and not _cue(SOFT_NEG + STRONG_NEG, s) for s in sents)
+    soft_neg_only = any(_cue(SOFT_NEG, s) and not _pos(s) for s in sents)
+    soft_mixed    = any(_cue(SOFT_NEG, s) and _pos(s) for s in sents)
+    pos_only      = any(_pos(s) and not _cue(SOFT_NEG + STRONG_NEG, s) for s in sents)
 
     new_overall, new_pair = overall, None
     if strong:
@@ -91,11 +112,21 @@ def override_row(text, rating, pairs, overall):
         new_pair = "negative" if soft_neg_only else MIXED_AS
         new_overall = MIXED_AS if (soft_mixed or pos_only) else "negative"
 
+    # ONE-WAY RULE: rules only make sentiment worse. An existing negative is never
+    # softened, and a neutral can only become negative (never "mixed").
+    def _worse(old, new):
+        rank = {"positive": 2, "neutral": 1, MIXED_AS: 1, "negative": 0}
+        return new if rank.get(new, 1) < rank.get(old, 1) else old
+    new_overall = _worse(overall, new_overall) if overall else new_overall
     for p in pairs:
         if p.get("topic") == COMPETITOR_GROUP and re.search(COMPARATIVE, t, re.I):
-            p["sentiment"] = "negative"; p["source"] = "rule"      # competitor is better/cheaper
-        elif new_pair and p.get("sentiment") in (None, "positive", "neutral"):
-            p["sentiment"] = new_pair; p["source"] = "rule"
+            target = "negative"                                     # competitor is better/cheaper
+        else:
+            target = new_pair
+        if target and p.get("sentiment") in (None, "positive", "neutral"):
+            better = _worse(p.get("sentiment") or "positive", target)
+            if better != p.get("sentiment"):
+                p["sentiment"] = better; p["source"] = "rule"
     if any(p.get("topic") == COMPETITOR_GROUP and re.search(COMPARATIVE, t, re.I) for p in pairs):
         new_overall = "negative"
 
@@ -151,6 +182,17 @@ if __name__ == "__main__":
         ("Easy to use, not confusing at all", 5, [], "positive"),
         ("provide a link to the CIL form would be helpful", 5, P("Missing features & feature requests"), "positive"),
     ]
+    # existing negatives must stay negative (these were softened by mistake before)
+    for text, r in [("not easy or intuitive no help line not clear what to select", 1),
+                    ("didnt find it easy to start the application via the online planning portal", 3),
+                    ("not easy to navigate", 3),
+                    ("it is too complicated and not easy to navigate at all", 1),
+                    ("the supporting documents part was confusing i would expect to see a place to upload plans", 4),
+                    ("unclear where you put photos not geared up for tree applications not as good as the old one waste of money", 1)]:
+        p, o, _ = override_row(text, r, [{"topic": "x", "sentiment": "negative"}], "negative")
+        ok = o == "negative" and p[0]["sentiment"] == "negative"
+        print("OK  " if ok else "FAIL", "kept negative |", text[:55]); bad_neg = 0 if ok else 1
+        if not ok: raise SystemExit("negative was softened")
     bad = 0
     for text, r, pairs, exp in cases:
         p, o, _ = override_row(text, r, pairs, "positive")
@@ -160,4 +202,10 @@ if __name__ == "__main__":
     # topics + user_type
     s, g = add_always_topics("guidance online is unclear", "Forms & application details", "", "")
     s2, g2 = add_always_topics("Planda Portal is cheaper!", "Missing features & feature requests", "", "")
+    for t, want in [("The plans would not upload", True), ("could not attach my drawing", True), ("Documents were confusing", True),
+                    ("a site plan is needed", True), ("The planning process was slow", False), ("I plan to apply again", False),
+                    ("hard to plan ahead", False), ("Easy to use format", False)]:
+        _, g = add_always_topics(t, "Overall Positive Experience", "", "")
+        assert (DOCUMENT_GROUP in g) == want, (t, g)
+    print("document rule: all checks passed")
     print("always topics:", g, "|", g2)
