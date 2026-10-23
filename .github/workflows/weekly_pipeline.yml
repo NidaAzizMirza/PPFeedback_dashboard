@@ -45,6 +45,9 @@ jobs:
           USE_LOCAL_CACHE: "true"
         run: python run_pipeline.py
 
+      - name: Apply manual tags
+        run: python apply_manual_tags.py --apply --yes --no-backup
+
       - name: Commit and push updated data
         run: |
           git config user.name "github-actions[bot]"
