@@ -2,16 +2,13 @@ name: Weekly full pipeline
 
 # Runs every Monday at 07:00 UTC — the full pipeline: classification,
 # ABSA sentiment, entity extraction, and dashboard tag/feature/error
-# tables. This is the heavy job (loads SVM, sentence-transformer, ABSA,
-# and spaCy models), which is why it's weekly rather than daily.
-# Raw volume/rating/NSAT numbers are updated separately, daily, by
-# daily_pipeline.yml — this workflow does not touch those.
+# tables. Heavy job (loads SVM, sentence-transformer, ABSA and spaCy models).
+# Raw volume/rating/NSAT numbers are updated separately, daily, by daily_pipeline.yml.
 #
-# Reads from the local survey cache (data/survey_cache.csv, refreshed
-# daily at 06:00 UTC by cache_refresh.yml) via USE_LOCAL_CACHE=true,
-# rather than calling the SurveyMonkey API itself — same reasoning as
-# daily_pipeline.yml. This workflow no longer needs the SURVEYMONKEY_*
-# secrets either.
+# Reads from the local survey cache (data/survey_cache.csv, refreshed daily at
+# 06:00 UTC by cache_refresh.yml) via USE_LOCAL_CACHE=true.
+#
+# ORDER MATTERS:  run pipeline  ->  apply manual tags  ->  commit and push.
 on:
   schedule:
     - cron: "0 7 * * 1"
@@ -19,6 +16,12 @@ on:
 
 permissions:
   contents: write
+
+# One data job at a time. Put the SAME block in daily_pipeline.yml and cache_refresh.yml,
+# otherwise two jobs can still push at the same moment.
+concurrency:
+  group: data-pipeline
+  cancel-in-progress: false
 
 jobs:
   run-full-pipeline:
@@ -45,6 +48,8 @@ jobs:
           USE_LOCAL_CACHE: "true"
         run: python run_pipeline.py
 
+      # Human tags from the dashboard (saved on the manual-tags branch). They win over the
+      # algorithm. Does nothing, and does not fail, when there are no manual tags yet.
       - name: Apply manual tags
         run: python apply_manual_tags.py --apply --yes --no-backup
 
@@ -53,18 +58,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # Explicit paths only — do NOT use a broad "git add outputs/" here.
-          # outputs/latest/*.xlsx is intentionally .gitignore'd (regenerated
-          # every run, not meant to live in git history). dashboard.html is
-          # the one output file that IS meant to be tracked, since GitHub
-          # Pages serves it directly from the repo.
-          #
-          # NOTE: data/last_fetch_checkpoint.txt (this job's OWN former
-          # API checkpoint) is deliberately NOT added here anymore — now
-          # that this workflow reads via USE_LOCAL_CACHE instead of
-          # calling the API directly, that file is never created in CI.
-          # It's only relevant if run_pipeline.py is ever run locally
-          # without USE_LOCAL_CACHE.
+          # outputs/latest/*.xlsx is intentionally .gitignore'd. dashboard.html is
+          # the one output file that IS tracked (GitHub Pages serves it).
+          # master.xlsx and metrics.db MUST be listed: the manual-tags step changes both.
           git add data/master.xlsx data/processed_ids.csv data/metrics.db
           git add outputs/latest/dashboard.html
           git diff --quiet --cached || git commit -m "Weekly full pipeline run — $(date -u +%Y-%m-%d)"
-          git push
+
+          # If someone pushed to main while this job ran, the push is rejected ("fetch first").
+          # Pull their commits underneath ours and try again, up to 3 times.
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin main && git push; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed, retrying..."
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 10))
+          done
+          echo "Could not push after 3 attempts"
+          exit 1
