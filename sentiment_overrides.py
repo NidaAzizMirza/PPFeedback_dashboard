@@ -36,17 +36,19 @@ ALWAYS_TOPICS = {
 }
 
 def add_always_topics(text, primary_group, secondary_tags, secondary_groups):
-    """secondary_* are the comma-joined strings get_multilabel_tags returns."""
-    tags = [t for t in str(secondary_tags or "").split(", ") if t]
-    groups = [g for g in str(secondary_groups or "").split(", ") if g]
+    """secondary_* are comma-joined strings. Group names contain commas
+    ("Guidance, clarity & jargon"), so they are checked as substrings, never split."""
+    tags = secondary_tags if isinstance(secondary_tags, str) else ""
+    groups = secondary_groups if isinstance(secondary_groups, str) else ""
     low = str(text or "").lower()
     for group, (tag, kws) in ALWAYS_TOPICS.items():
         if group == primary_group or group in groups:
             continue
         if any(re.search(k[3:], low) if k.startswith("re:")
                else re.search(r"\b" + re.escape(k) + r"\b", low) for k in kws):
-            tags.append(tag); groups.append(group)
-    return ", ".join(tags), ", ".join(groups)
+            tags = f"{tags}, {tag}" if tags else tag
+            groups = f"{groups}, {group}" if groups else group
+    return tags, groups
 
 # ── 2. user_type: merged into USER_TYPE_KEYWORDS["beginner_or_one_time"] ────
 BEGINNER_EXTRA = ["general public", "uninitiated", "not done this before",

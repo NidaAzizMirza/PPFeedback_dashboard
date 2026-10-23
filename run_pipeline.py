@@ -1089,17 +1089,26 @@ def step_absa(df):
 
     # ── Run ABSA (per topic the row actually touches) ──────────────────────
     pairs_l, aspects_l, aspect_strs_l, overall_l = [], [], [], []
+    sec_tags_l, sec_groups_l = [], []
     for i, (_, row) in enumerate(df_absa.iterrows()):
         if i % 100 == 0:
             log.info(f"  ABSA progress: {i}/{total}")
+        # Always-add topics (documents, guidance, competitor) are applied here too,
+        # not only in step_classify, so retag_history.py (which only runs step_absa) gets them.
+        sec_tags, sec_groups = so.add_always_topics(
+            row[text_col], row["primary_tag_group"],
+            row.get("secondary_tags", ""), row.get("secondary_tag_groups", ""))
+        sec_tags_l.append(sec_tags); sec_groups_l.append(sec_groups)
         pairs, aspects_str, aspect_strs, overall = run_absa_per_topic(
-            row[text_col], row["primary_tag_group"], row.get("secondary_tag_groups", "")
+            row[text_col], row["primary_tag_group"], sec_groups
         )
         pairs_l.append(pairs)
         aspects_l.append(aspects_str)
         aspect_strs_l.append(aspect_strs)
         overall_l.append(overall)
 
+    df_absa["secondary_tags"]         = sec_tags_l
+    df_absa["secondary_tag_groups"]   = sec_groups_l
     df_absa["topic_sentiment_pairs"]  = pairs_l
     df_absa["absa_aspects"]           = aspects_l           # kept for backward compat / audit
     df_absa["absa_aspect_sentiments"] = aspect_strs_l        # kept for backward compat / audit
@@ -1130,6 +1139,13 @@ def step_absa(df):
     # Drop duplicate text column if merge created one
     if text_col != cfg.COL_FEEDBACK_CLEAN and text_col in df.columns:
         df = df.drop(columns=[text_col])
+
+    # Carry the always-add topics into the tag columns too, so filters on tags match the Topics shown
+    _upd = df_absa.drop_duplicates(subset=[cfg.COL_RESPONDENT_ID]).set_index(cfg.COL_RESPONDENT_ID)
+    for _col in ("secondary_tags", "secondary_tag_groups"):
+        if _col in df.columns:
+            _new = df[cfg.COL_RESPONDENT_ID].map(_upd[_col])
+            df[_col] = _new.where(_new.notna(), df[_col])
 
     df["grouping_sentiment"] = df["grouping_sentiment"].fillna("neutral")
     df["topic_sentiment_pairs"] = df["topic_sentiment_pairs"].apply(
