@@ -885,7 +885,7 @@ def step_classify(df):
 # STEP 4 — ABSA
 # ══════════════════════════════════════════════════════════════════════════
 ABSA_ASPECTS = {
-    "Document upload and handling":       ["documents", "docs", "document upload", "file upload", "uploading documents", "file size", "file format", "doc", "decuments", "plan", "attach", "drag", "file", "plans", "draw", "download", "down load", "upload", "photo", "up load","tag", "Elevations", "Floor plan", "Floor plans"],
+    "Document upload and handling":       ["documents", "docs", "document upload", "drawing", "drawings", "file upload", "uploading documents", "file size", "file format", "doc", "decuments", "plan", "attach", "drag", "file", "plans", "draw", "download", "down load", "upload", "photo", "up load","tag", "Elevations", "Floor plan", "Floor plans", "floor plan", "floor plans", "sketch", "existing plans", "existing elevations", "proposed plans", "proposed elevations"],
     "Guidance, clarity & jargon":         ["guidance", "instructions", "jargon", "terminology", "clarity"],
     "Fees, charges and quotes":           ["fees", "charges", "charge", "cost", "pricing", "fee calculator", "pay", "price", "£", "fee", "expensive"],
     "Payments":                           ["payment", "payment system", "card payment", "bank transfer", "nomination"],
