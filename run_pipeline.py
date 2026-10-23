@@ -393,7 +393,7 @@ KEYWORD_BOOST = {
         "fees and charges", "fee structure", "fee breakdown",
         "transparent fees", "fee quote", "additional fee", "extra charge"
     ],
-    "Document uploading": [
+    "Document upload and handling": [
         "upload", "uploading", "file", "pdf", "attachment",
         "file size", "10mb", "file format", "file limit"
     ],
@@ -885,7 +885,7 @@ def step_classify(df):
 # STEP 4 — ABSA
 # ══════════════════════════════════════════════════════════════════════════
 ABSA_ASPECTS = {
-    "Document upload and handling":       ["document upload", "file upload", "uploading documents", "file size", "file format", "doc", "decuments", "plan", "attach", "drag", "file", "plan", "draw", "download", "down load", "upload", "photo", "up load","tag"],
+    "Document upload and handling":       ["documents", "docs", "document upload", "file upload", "uploading documents", "file size", "file format", "doc", "decuments", "plan", "attach", "drag", "file", "plans", "draw", "download", "down load", "upload", "photo", "up load","tag", "Elevations", "Floor plan", "Floor plans"],
     "Guidance, clarity & jargon":         ["guidance", "instructions", "jargon", "terminology", "clarity"],
     "Fees, charges and quotes":           ["fees", "charges", "charge", "cost", "pricing", "fee calculator", "pay", "price", "£", "fee", "expensive"],
     "Payments":                           ["payment", "payment system", "card payment", "bank transfer", "nomination"],
