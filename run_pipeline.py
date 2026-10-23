@@ -29,6 +29,7 @@ import pipeline_config as cfg
 from error_patterns import extract_errors
 
 import preprocessing as pre
+import manual_tags as mt            # human tags from the dashboard (win over the algorithm and the rules)
 import sentiment_overrides as so   # rule layer: always-add topics, extra user_type words, sentiment fixes
 
 warnings.filterwarnings("ignore")
@@ -393,7 +394,7 @@ KEYWORD_BOOST = {
         "fees and charges", "fee structure", "fee breakdown",
         "transparent fees", "fee quote", "additional fee", "extra charge"
     ],
-    "Document upload and handling": [
+    "Document uploading": [
         "upload", "uploading", "file", "pdf", "attachment",
         "file size", "10mb", "file format", "file limit"
     ],
@@ -628,7 +629,7 @@ USER_TYPE_KEYWORDS = {
     "beginner_or_one_time": [
         "first time", "first-time", "new user", "never used",
         "never used this before", "novice", "beginner", "not a professional",
-        "not an expert", "layman", "lay person", "one-time", "one off", "laymans"
+        "not an expert", "layman", "lay person", "one-time", "one off", "laymans", "non-professional", "non professional", "lay people", "lay", "residential user", "normal person", "normal people"
     ],
     "frequent": [
         "frequently", "regularly", "every time i apply", "use this a lot",
@@ -641,7 +642,7 @@ USER_TYPE_KEYWORDS = {
         "occasional", "now and then", "every so often",
     ],
     "homeowner": [
-        "as a homeowner", "my own home",
+        "as a homeowner", "my own home", "property i own"
     ],
     "agent": [
         "as an agent", "on behalf of my client", "acting as agent",
@@ -680,7 +681,7 @@ USER_TYPE_KEYWORDS = {
         "tech-savvy", "tech savvy", "comfortable with technology",
     ],
     "disabled": [
-        "as a disabled person", "my disability","bipolar", "autistic", "additional needs"
+        "as a disabled person", "my disability","bipolar", "autistic", "additional needs", "disable", "disabled"
     ],
     "accessibility_issues": [
         "accessibility issue", "accessibility issues", "screen reader",
@@ -885,7 +886,7 @@ def step_classify(df):
 # STEP 4 — ABSA
 # ══════════════════════════════════════════════════════════════════════════
 ABSA_ASPECTS = {
-    "Document upload and handling":       ["documents", "docs", "document upload", "drawing", "drawings", "file upload", "uploading documents", "file size", "file format", "doc", "decuments", "plan", "attach", "drag", "file", "plans", "draw", "download", "down load", "upload", "photo", "up load","tag", "Elevations", "Floor plan", "Floor plans", "floor plan", "floor plans", "sketch", "existing plans", "existing elevations", "proposed plans", "proposed elevations"],
+    "Document upload and handling":       so.DOCUMENT_KEYWORDS,   # edit the list in sentiment_overrides.py
     "Guidance, clarity & jargon":         ["guidance", "instructions", "jargon", "terminology", "clarity"],
     "Fees, charges and quotes":           ["fees", "charges", "charge", "cost", "pricing", "fee calculator", "pay", "price", "£", "fee", "expensive"],
     "Payments":                           ["payment", "payment system", "card payment", "bank transfer", "nomination"],
@@ -1167,6 +1168,12 @@ def step_absa(df):
     df = so.apply_sentiment_overrides(df, cfg.COL_FEEDBACK_CLEAN, cfg.COL_RATING, log)
     log.info(f"Sentiment distribution after overrides: "
              f"{df['grouping_sentiment'].value_counts().to_dict()}")
+
+    # Human tags win over the algorithm AND the rules above (also covers retag_history.py, which only calls this step)
+    try:
+        df = mt.apply_to_df(df, id_col=cfg.COL_RESPONDENT_ID, log=log)
+    except Exception as e:                       # never let a manual-tag problem stop the pipeline
+        log.warning(f"Manual tags not applied in step_absa: {e}")
     return df
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -1563,6 +1570,10 @@ def main():
             df = step_classify(df)
             df = step_absa(df)
             df = step_entities(df)
+            try:    # user_type is set in step_entities, so apply the human tags once more here
+                df = mt.apply_to_df(df, id_col=cfg.COL_RESPONDENT_ID, log=log)
+            except Exception as e:
+                log.warning(f"Manual tags not applied after step_entities: {e}")
         step_save(df)
 
         # Mark the FULL fetched set as processed — not just the

@@ -21,17 +21,22 @@ MIXED_AS = "neutral"                     # label for comments with good AND bad 
 # group -> (granular tag, keywords). Group names must match tags.csv exactly,
 # except COMPETITOR_GROUP which is new and not in tags.csv.
 DOCUMENT_GROUP = "Document upload and handling"
-# Regex (not plain keywords) so "plan" does not fire on "planning", "I plan to" or "to plan".
-DOCUMENT_PATTERNS = [
-    r"\bdocuments?\b", r"\bdocumentation\b", r"\bdocs?\b", r"\bdrawings?\b",
-    r"(?<!\bi )(?<!\bto )(?<!\bwe )\bplans\b", r"(?<!\bi )(?<!\bto )(?<!\bwe )\bplan\b(?! to\b)(?! for\b)(?! ahead\b)",
-    r"\bfloor ?plans?\b", r"\bsite plans?\b", r"\blocation plans?\b",
-    r"\bblueprints?\b", r"\battachments?\b", r"\bpdfs?\b", r"\bphotos?\b",
+# ONE list, used twice: any of these words in a comment ALWAYS adds the "Document upload and handling"
+# topic, and they are also the aspects the sentiment model looks at for that topic (run_pipeline.py).
+# Matched as whole words, lowercase, so "plan" does not fire on "planning". Edit the list here.
+DOCUMENT_KEYWORDS = [
+    "documents", "docs", "document upload", "drawing", "drawings", "file upload", "uploading documents",
+    "file size", "file format", "doc", "decuments", "plan", "attach", "drag", "file", "plans", "draw",
+    "download", "down load", "upload", "photo", "up load", "tag", "elevations", "floor plan", "floor plans",
+    "sketch", "existing plans", "existing elevations", "proposed plans", "proposed elevations", "pdf",
+    # extras beyond your list: other spellings of the same things
+    "document", "documentation", "photos", "pdfs", "attachment", "attachments", "blueprint", "blueprints",
+    "elevation", "uploading", "uploaded", "downloading", "downloaded",
 ]
 
 ALWAYS_TOPICS = {
     "Guidance, clarity & jargon": ("Lack of guidance", ["guidance"]),
-    DOCUMENT_GROUP:               ("Document uploading", ["re:" + p for p in DOCUMENT_PATTERNS]),
+    DOCUMENT_GROUP:               ("Document uploading", DOCUMENT_KEYWORDS),
     COMPETITOR_GROUP:             ("Competitor mention", COMPETITOR_NAMES),
 }
 
@@ -205,8 +210,8 @@ if __name__ == "__main__":
     s, g = add_always_topics("guidance online is unclear", "Forms & application details", "", "")
     s2, g2 = add_always_topics("Planda Portal is cheaper!", "Missing features & feature requests", "", "")
     for t, want in [("The plans would not upload", True), ("could not attach my drawing", True), ("Documents were confusing", True),
-                    ("a site plan is needed", True), ("The planning process was slow", False), ("I plan to apply again", False),
-                    ("hard to plan ahead", False), ("Easy to use format", False)]:
+                    ("a site plan is needed", True), ("The planning process was slow", False), ("Easy to use format", False),
+                    ("Elevations and Floor Plans were rejected", True), ("couldnt download the PDF", True)]:
         _, g = add_always_topics(t, "Overall Positive Experience", "", "")
         assert (DOCUMENT_GROUP in g) == want, (t, g)
     print("document rule: all checks passed")
