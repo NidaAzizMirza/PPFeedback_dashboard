@@ -628,11 +628,11 @@ USER_TYPE_KEYWORDS = {
     "beginner_or_one_time": [
         "first time", "first-time", "new user", "never used",
         "never used this before", "novice", "beginner", "not a professional",
-        "not an expert", "layman", "lay person", "one-time", "one off",
+        "not an expert", "layman", "lay person", "one-time", "one off", "laymans"
     ],
     "frequent": [
         "frequently", "regularly", "every time i apply", "use this a lot",
-        "many applications",
+        "many applications","regular"
     ],
     "infrequent": [
         "infrequent", "rarely use", "don't use this often",
