@@ -47,6 +47,11 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+try:
+    import manual_tags as mt          # human tags saved to the `manual-tags` branch on GitHub
+except Exception:                      # the dashboard must still load without it
+    mt = None
+
 from dashboard_config import PALETTE, SERIES_COLORS, SENTIMENT_COLORS
 from store import (
     db_exists,
@@ -1089,6 +1094,109 @@ def _month_label(m):
     return d.strftime("%b %Y") if pd.notna(d) else str(m)
 
 
+def _gh_conf():
+    """(token, repo, branch) from this app's Streamlit secrets; None where not set."""
+    try:
+        sec = st.secrets
+        return sec.get("github_token"), sec.get("github_repo"), sec.get("manual_tags_branch")
+    except Exception:
+        return None, None, None
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def _load_manual_cached(token, repo, branch):
+    return mt.load_manual(token=token, repo=repo, branch=branch, allow_git=False)
+
+
+@st.cache_data(show_spinner=False)
+def _manual_catalogue():
+    try:
+        return mt.load_catalogue()
+    except Exception:
+        return {}
+
+
+_KEEP = "(keep the algorithm's)"
+
+
+def _render_manual_tagging(sel, sent_col, pairs):
+    """Human tags for one comment. Saved to data/manual_tags.csv on the `manual-tags` branch;
+    the pipeline applies them (human wins) and they feed the algorithm report and training file."""
+    if mt is None:
+        return
+    token, repo, branch = _gh_conf()
+    rid = mt.norm_id(sel.get("respondent_id"))
+    cat = _manual_catalogue()
+    manual = _load_manual_cached(token, repo, branch)
+    found = manual[manual["respondent_id"].map(mt.norm_id) == rid]
+    ex = found.iloc[-1] if len(found) else None
+
+    with st.expander("✏️ Manual tags" + (" — saved" if ex is not None else ""), expanded=ex is not None):
+        if ex is not None:
+            st.caption(f"Saved {ex['tagged_at']}" + (f" by {ex['tagged_by']}" if ex["tagged_by"] else "")
+                       + ". Charts update after the next refresh.")
+        if not cat:
+            st.warning("The tag list could not load: data/tags.csv is not in the repo.")
+            return
+        can_save = bool(token and repo)
+        if not can_save:
+            st.warning("Saving is not set up yet: add github_token and github_repo to this app's secrets.")
+
+        options = {f"{g} › {t}": t for t, g in sorted(cat.items(), key=lambda kv: (kv[1], kv[0]))}
+        label_of = {t: lbl for lbl, t in options.items()}
+        d_tags = [label_of[t] for t in mt._split(ex["tags"]) if t in label_of] if ex is not None else []
+        d_ut = [u for u in mt._split(ex["user_type"]) if u in mt.USER_TYPES] if ex is not None else []
+        d_sent = ex["sentiment"] if ex is not None and ex["sentiment"] in mt.SENTIMENTS else _KEEP
+        sent_options = [_KEEP] + mt.SENTIMENTS
+
+        with st.form(f"manual_tag_form_{rid}"):
+            picked = st.multiselect("Tags (these replace the algorithm's tags; the first one is the main topic)",
+                                    list(options), default=d_tags)
+            sent = st.selectbox("Overall sentiment", sent_options, index=sent_options.index(d_sent))
+            uts = st.multiselect("User type", mt.USER_TYPES, default=d_ut,
+                                 format_func=lambda x: x.replace("_", " ").title())
+            note = st.text_input("Note (optional)", value=ex["note"] if ex is not None else "")
+            who = st.text_input("Your initials (optional)", value=st.session_state.get("tagger_initials", ""))
+            save = st.form_submit_button("Save manual tags", disabled=not can_save)
+
+        if save:
+            if not (picked or uts or sent != _KEEP):
+                st.warning("Pick at least one tag, a sentiment or a user type.")
+            else:
+                st.session_state["tagger_initials"] = who.strip()
+                had_snapshot = ex is not None and ex["algo_groups"] != ""
+                record = {
+                    "respondent_id": rid,
+                    "tags": mt.SEP.join(options[x] for x in picked),
+                    "user_type": mt.SEP.join(uts),
+                    "sentiment": "" if sent == _KEEP else sent,
+                    "note": note.strip(),
+                    "tagged_by": who.strip(),
+                    # what the algorithm said before any human tag (kept from the first save)
+                    "algo_groups": ex["algo_groups"] if had_snapshot
+                                   else mt.SEP.join(p.get("topic", "") for p in pairs if p.get("topic")),
+                    "algo_sentiment": ex["algo_sentiment"] if had_snapshot
+                                      else ("" if pd.isna(sel.get(sent_col)) else str(sel.get(sent_col))),
+                    "algo_user_type": ex["algo_user_type"] if had_snapshot
+                                      else ("" if pd.isna(sel.get("user_type")) else str(sel.get("user_type"))),
+                }
+                try:
+                    mt.save_record(mt.GitHubStore(token, repo, branch or mt.DEFAULT_BRANCH), record)
+                    _load_manual_cached.clear()
+                    st.success("Saved. It shows in the charts after the next refresh.")
+                except Exception as e:                                   # noqa: BLE001
+                    st.error(f"Could not save: {e}")
+
+        if ex is not None and can_save and st.button("Remove my manual tags for this comment",
+                                                     key=f"manual_remove_{rid}"):
+            try:
+                mt.delete_record(mt.GitHubStore(token, repo, branch or mt.DEFAULT_BRANCH), rid)
+                _load_manual_cached.clear()
+                st.success("Removed. The algorithm's tags apply again after the next refresh.")
+            except Exception as e:                                       # noqa: BLE001
+                st.error(f"Could not remove: {e}")
+
+
 def page_browse_reviews(months: list[str] | None):
     st.header("🔎 Browse Reviews")
 
@@ -1183,6 +1291,14 @@ def page_browse_reviews(months: list[str] | None):
         return text if len(text) <= max_len else text[:max_len].rstrip() + "…"
 
     filtered = filtered.reset_index(drop=True)
+    manual_label = {}
+    if mt is not None:
+        try:
+            for _, r in _load_manual_cached(*_gh_conf()).iterrows():
+                manual_label[mt.norm_id(r["respondent_id"])] = "; ".join(mt._split(r["tags"])) or "✏️"
+        except Exception:
+            manual_label = {}
+
     def _format_user_type(v):
         """Single value today (e.g. 'beginner_or_one_time'); written to also
         accept a comma-separated or JSON list once user_type expands to
@@ -1203,6 +1319,7 @@ def page_browse_reviews(months: list[str] | None):
         "Month": filtered.get("month"),
         "Rating": filtered.get("rating"),
         "Topics": filtered["_topic_pairs"].apply(_format_topics_short),
+        "Manual tags": filtered["respondent_id"].map(lambda x: manual_label.get(mt.norm_id(x), "") if mt else ""),
         "Sentiment": filtered[sent_col].map(lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""),
         "User type": filtered.get("user_type").apply(_format_user_type),
         "Feedback": filtered.get("_text"),
@@ -1239,6 +1356,7 @@ def page_browse_reviews(months: list[str] | None):
             overall = sel.get(sent_col)
             if pd.notna(overall):
                 st.caption(f"Overall experience: {SENTIMENT_EMOJI.get(overall, '')} {overall}")
+        _render_manual_tagging(sel, sent_col, pairs)
 
 
 def _render_comment_themes_month(selected_month: str):
