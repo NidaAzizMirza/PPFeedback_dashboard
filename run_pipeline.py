@@ -441,7 +441,7 @@ KEYWORD_BOOST = {
         "payment system", "pay instantly", "banking app",
         "manual pay", "manually pay", "payment confirmation",
         "payment method", "card payment", "pay through",
-        "new payment system", "nomination fee", "bank transfer",
+        "new payment system", "nomination fee", "bank transfer", "nominee", "nominees"
     ],
 }
 
@@ -503,7 +503,6 @@ HARD_FALLBACK = {
     ),
     "Jargon": (
         ["jargon", "technical terms", "technical language", "plain english",
-         "layperson", "lay person", "not a professional", "not a builder",
          "tooltips", "tooltip", "abbreviation", "acronym",
          "wording", "language", "terminology"],
         "Guidance, clarity & jargon"
@@ -669,8 +668,8 @@ USER_TYPE_KEYWORDS = {
         "not the homeowner", "on behalf of the owner", "as a tenant",
     ],
     "professional_regular": [
-        "as a professional", "in my professional capacity",
-        "on behalf of clients regularly",
+        "as a professional", "in my professional capacity", "professional",
+        "on behalf of clients regularly",  "layperson", "lay person", "not a professional", "not a builder","regular", "regular user"
     ],
     "non_tech": [
         "not very techy", "not good with computers",
