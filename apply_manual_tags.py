@@ -38,7 +38,7 @@ TRACKED = ["primary_tag", "primary_tag_group", "secondary_tags", "secondary_tag_
 
 manual = mt.load_manual(log=log)
 if manual.empty:
-    sys.exit("No manual tags found. Nothing to do.")
+    print("No manual tags found. Nothing to do."); sys.exit(0)
 
 master = pd.read_excel(cfg.MASTER_FILE, dtype={ID: str})
 def _norm(d):
@@ -62,7 +62,7 @@ if not args.apply:
     print("\nDRY RUN: nothing written. Add --apply to write master.xlsx and rebuild the database.")
     sys.exit(0)
 if not changed.any():
-    sys.exit("Nothing to change, master.xlsx is already up to date.")
+    print("Nothing to change, master.xlsx is already up to date."); sys.exit(0)
 
 if not args.yes:
     if input("\nHave you run `git pull`, and is no GitHub workflow running? Type yes to continue: ").strip().lower() != "yes":
