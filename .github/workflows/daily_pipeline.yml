@@ -21,6 +21,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: data-pipeline
+  cancel-in-progress: false  
+
 jobs:
   update-raw-metrics:
     runs-on: ubuntu-latest
