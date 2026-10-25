@@ -18,12 +18,23 @@ import manual_tags as mt
 
 manual = mt.load_manual()
 cat = mt.load_catalogue()
-m = manual[(manual["tags"].str.strip() != "") & (manual["algo_groups"].str.strip() != "")].copy()
+changed = (manual["tags"].str.strip() != "") | (manual["remove_groups"].str.strip() != "")
+m = manual[changed & (manual["algo_groups"].str.strip() != "")].copy()
 if m.empty:
     raise SystemExit("No manually tagged comments with the algorithm's values saved yet.")
 
 sets = lambda s: {x for x in str(s).split(mt.SEP) if x}
-m["human_groups"] = m["tags"].map(lambda s: {cat[t] for t in sets(s) if t in cat})
+
+
+def final_groups(r):
+    """The human's final set of topics for this comment."""
+    added = {cat[t] for t in sets(r["tags"]) if t in cat}
+    if r["mode"] == "replace":
+        return added
+    return (sets(r["algo_groups"]) | added) - sets(r["remove_groups"])
+
+
+m["human_groups"] = m.apply(final_groups, axis=1)
 m["algo_groups_set"] = m["algo_groups"].map(sets)
 m["missed_by_algo"] = [h - a for h, a in zip(m["human_groups"], m["algo_groups_set"])]
 m["wrongly_added_by_algo"] = [a - h for h, a in zip(m["human_groups"], m["algo_groups_set"])]
