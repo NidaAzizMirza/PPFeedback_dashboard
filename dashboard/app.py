@@ -1124,12 +1124,18 @@ def _render_manual_tagging(sel, sent_col, pairs):
     the pipeline applies them (human wins) and they feed the algorithm report and training file."""
     if mt is None:
         return
+    if "remove_groups" not in mt.COLUMNS:       # manual_tags.py on the server is older than this file
+        st.warning("Manual tagging is unavailable: manual_tags.py is out of date in the repo. "
+                   "Push the latest manual_tags.py and reload.")
+        return
     token, repo, branch = _gh_conf()
     rid = mt.norm_id(sel.get("respondent_id"))
     cat = _manual_catalogue()
     manual = _load_manual_cached(token, repo, branch)
     found = manual[manual["respondent_id"].map(mt.norm_id) == rid]
     ex = found.iloc[-1] if len(found) else None
+    if ex is not None:                           # rows saved by an older version may lack newer columns
+        ex = ex.reindex(list(dict.fromkeys(list(ex.index) + mt.COLUMNS)), fill_value="")
 
     with st.expander("✏️ Manual tags" + (" — saved" if ex is not None else ""), expanded=ex is not None):
         if ex is not None:
