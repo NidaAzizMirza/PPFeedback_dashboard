@@ -1215,6 +1215,54 @@ def _render_manual_tagging(sel, sent_col, pairs):
                 st.error(f"Could not remove: {e}")
 
 
+def _overlay_manual(df, manual):
+    """Show saved human tags straight away, before the next pipeline run writes them to the database.
+    Uses the same merge as the pipeline, so what you see here is what the charts show after the refresh."""
+    cat = _manual_catalogue()
+    ids = df["respondent_id"].map(mt.norm_id)
+    hit = ids.isin(set(manual["respondent_id"].map(mt.norm_id)))
+    if not hit.any():
+        return df
+    sc = "overall_experience_sentiment" if "overall_experience_sentiment" in df.columns else "grouping_sentiment"
+    sub = df[hit]
+    tmp = pd.DataFrame({
+        "Respondent ID": ids[hit],
+        "primary_tag_group": sub["_topics"].map(lambda t: t[0] if t else ""),
+        "secondary_tag_groups": sub["_topics"].map(lambda t: ", ".join(t[1:])),
+        "topic_sentiment_pairs": sub["_topic_pairs"],
+        "overall_experience_sentiment": sub[sc],
+        "grouping_sentiment": sub[sc],
+        "user_type": sub["user_type"] if "user_type" in sub.columns else None,
+    })
+    tmp = mt.apply_to_df(tmp, manual, id_col="Respondent ID", catalogue=cat)
+    df = df.copy()
+
+    def put(col, series):
+        new = dict(zip(sub.index, series))
+        df[col] = pd.Series([new.get(i, v) for i, v in zip(df.index, df[col])], index=df.index, dtype=object)
+
+    put("_topic_pairs", tmp["topic_sentiment_pairs"])
+    df["_topics"] = df["_topic_pairs"].apply(lambda ps: [p.get("topic") for p in ps if p.get("topic")])
+    put(sc, tmp["overall_experience_sentiment"])
+    if "grouping_sentiment" in df.columns and sc != "grouping_sentiment":
+        put("grouping_sentiment", tmp["grouping_sentiment"])
+    if "user_type" in df.columns:
+        put("user_type", tmp["user_type"])
+    return df
+
+
+def _manual_summary(rec):
+    """What was saved for a comment, as one short line for the table."""
+    parts = [x for x in mt._split(rec["tags"])]
+    if rec.get("remove_groups"):
+        parts.append("removed: " + ", ".join(mt._split(rec["remove_groups"])))
+    if rec.get("user_type"):
+        parts.append("user: " + ", ".join(u.replace("_", " ") for u in mt._split(rec["user_type"])))
+    if rec.get("sentiment"):
+        parts.append("sentiment: " + rec["sentiment"])
+    return "; ".join(parts) or "✏️"
+
+
 def page_browse_reviews(months: list[str] | None):
     st.header("🔎 Browse Reviews")
 
@@ -1241,6 +1289,15 @@ def page_browse_reviews(months: list[str] | None):
         lambda pairs: next((p.get("topic") for p in pairs if p.get("topic") in SENTIMENT_ONLY_GROUPS), None))
     df["_topic_pairs"] = raw_pairs.apply(lambda pairs: [p for p in pairs if p.get("topic") not in SENTIMENT_ONLY_GROUPS])
     df["_topics"] = df["_topic_pairs"].apply(lambda pairs: [p.get("topic") for p in pairs if p.get("topic")])
+
+    manual_df = None
+    if mt is not None and "remove_groups" in mt.COLUMNS:
+        try:
+            manual_df = _load_manual_cached(*_gh_conf())
+            if len(manual_df):
+                df = _overlay_manual(df, manual_df)
+        except Exception:                          # never stop the page because of the manual tags
+            manual_df = None
 
     has_topic_data = df["_topic_pairs"].apply(len).sum() > 0
     has_sentiment_data = (
@@ -1310,12 +1367,9 @@ def page_browse_reviews(months: list[str] | None):
 
     filtered = filtered.reset_index(drop=True)
     manual_label = {}
-    if mt is not None:
-        try:
-            for _, r in _load_manual_cached(*_gh_conf()).iterrows():
-                manual_label[mt.norm_id(r["respondent_id"])] = "; ".join(mt._split(r["tags"])) or "✏️"
-        except Exception:
-            manual_label = {}
+    if mt is not None and manual_df is not None:
+        for _, r in manual_df.iterrows():
+            manual_label[mt.norm_id(r["respondent_id"])] = _manual_summary(r)
 
     def _format_user_type(v):
         """Single value today (e.g. 'beginner_or_one_time'); written to also
