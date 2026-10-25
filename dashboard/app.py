@@ -1146,12 +1146,20 @@ def _render_manual_tagging(sel, sent_col, pairs):
         label_of = {t: lbl for lbl, t in options.items()}
         d_tags = [label_of[t] for t in mt._split(ex["tags"]) if t in label_of] if ex is not None else []
         d_ut = [u for u in mt._split(ex["user_type"]) if u in mt.USER_TYPES] if ex is not None else []
+        current_topics = [p.get("topic") for p in pairs if p.get("topic")]
+        d_remove = [g for g in mt._split(ex["remove_groups"]) if g in current_topics] if ex is not None else []
+        d_replace = ex is not None and ex["mode"] == "replace"
         d_sent = ex["sentiment"] if ex is not None and ex["sentiment"] in mt.SENTIMENTS else _KEEP
         sent_options = [_KEEP] + mt.SENTIMENTS
 
         with st.form(f"manual_tag_form_{rid}"):
-            picked = st.multiselect("Tags (these replace the algorithm's tags; the first one is the main topic)",
+            picked = st.multiselect("Add tags (these are added to the algorithm's tags)",
                                     list(options), default=d_tags)
+            removed = st.multiselect("Remove topics the algorithm got wrong (optional)",
+                                     current_topics, default=d_remove,
+                                     help="Only the topics the algorithm gave this comment are listed.")
+            replace = st.checkbox("Replace ALL the algorithm's tags with the ones I added "
+                                  "(the first one becomes the main topic)", value=d_replace)
             sent = st.selectbox("Overall sentiment", sent_options, index=sent_options.index(d_sent))
             uts = st.multiselect("User type", mt.USER_TYPES, default=d_ut,
                                  format_func=lambda x: x.replace("_", " ").title())
@@ -1160,14 +1168,18 @@ def _render_manual_tagging(sel, sent_col, pairs):
             save = st.form_submit_button("Save manual tags", disabled=not can_save)
 
         if save:
-            if not (picked or uts or sent != _KEEP):
-                st.warning("Pick at least one tag, a sentiment or a user type.")
+            if not (picked or removed or uts or sent != _KEEP):
+                st.warning("Pick a tag to add or remove, a sentiment or a user type.")
+            elif replace and not picked:
+                st.warning("To replace the algorithm's tags, add at least one tag.")
             else:
                 st.session_state["tagger_initials"] = who.strip()
                 had_snapshot = ex is not None and ex["algo_groups"] != ""
                 record = {
                     "respondent_id": rid,
                     "tags": mt.SEP.join(options[x] for x in picked),
+                    "mode": "replace" if replace else "add",
+                    "remove_groups": "" if replace else mt.SEP.join(removed),
                     "user_type": mt.SEP.join(uts),
                     "sentiment": "" if sent == _KEEP else sent,
                     "note": note.strip(),
