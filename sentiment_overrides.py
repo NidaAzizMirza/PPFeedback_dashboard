@@ -16,6 +16,10 @@ import re
 COMPETITOR_GROUP = "Competitor mention"
 COMPETITOR_NAMES = ["planda"]            # add more competitor names here
 MIXED_AS = "neutral"                     # label for comments with good AND bad parts
+# "Overall" is read by a separate model pass and can disagree with the topics. When True, an overall
+# "positive" is lowered to MIXED_AS if the real topics include a negative one and none is positive.
+OVERALL_FOLLOWS_TOPICS = True
+SENTIMENT_ONLY = {"Overall Positive Experience", "Negative experience", "User type", "Miscellaneous"}
 
 # ── 1. topics that must always be added ─────────────────────────────────────
 # group -> (granular tag, keywords). Group names must match tags.csv exactly,
@@ -31,7 +35,7 @@ DOCUMENT_KEYWORDS = [
     "sketch", "existing plans", "existing elevations", "proposed plans", "proposed elevations", "pdf",
     # extras beyond your list: other spellings of the same things
     "document", "documentation", "photos", "pdfs", "attachment", "attachments", "blueprint", "blueprints",
-    "elevation", "uploading", "uploaded", "downloading", "downloaded","attaching", "attach"
+    "elevation", "uploading", "uploaded", "downloading", "downloaded",
 ]
 
 ALWAYS_TOPICS = {
@@ -137,6 +141,11 @@ def override_row(text, rating, pairs, overall):
     if any(p.get("topic") == COMPETITOR_GROUP and re.search(COMPARATIVE, t, re.I) for p in pairs):
         new_overall = "negative"
 
+    if OVERALL_FOLLOWS_TOPICS and new_overall == "positive":
+        real = [p.get("sentiment") for p in pairs if p.get("topic") not in SENTIMENT_ONLY]
+        if "negative" in real and "positive" not in real:
+            new_overall = MIXED_AS
+
     flag = None
     try:
         if new_overall == "positive" and rating is not None and int(float(rating)) <= 2:
@@ -189,6 +198,15 @@ if __name__ == "__main__":
         ("Easy to use, not confusing at all", 5, [], "positive"),
         ("provide a link to the CIL form would be helpful", 5, P("Missing features & feature requests"), "positive"),
     ]
+    # overall follows the topics: topics neutral + negative, overall positive -> not positive
+    tp = [{"topic": "Planning App/work types", "sentiment": "neutral"}, {"topic": "General UX", "sentiment": "negative"}]
+    _, o, _ = override_row("it worked", 4, tp, "positive")
+    assert o == "neutral", o
+    tp2 = tp + [{"topic": "Overall Positive Experience", "sentiment": "positive"}]      # sentiment-only topic must not count
+    assert override_row("it worked", 4, tp2, "positive")[1] == "neutral"
+    tp3 = [{"topic": "General UX", "sentiment": "positive"}, {"topic": "Fees, charges and quotes", "sentiment": "negative"}]
+    assert override_row("great but fees", 4, tp3, "positive")[1] == "positive"           # a positive topic keeps it positive
+    print("OK   overall follows topics")
     # existing negatives must stay negative (these were softened by mistake before)
     for text, r in [("not easy or intuitive no help line not clear what to select", 1),
                     ("didnt find it easy to start the application via the online planning portal", 3),
