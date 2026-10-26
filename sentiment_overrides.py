@@ -31,7 +31,7 @@ DOCUMENT_KEYWORDS = [
     "sketch", "existing plans", "existing elevations", "proposed plans", "proposed elevations", "pdf",
     # extras beyond your list: other spellings of the same things
     "document", "documentation", "photos", "pdfs", "attachment", "attachments", "blueprint", "blueprints",
-    "elevation", "uploading", "uploaded", "downloading", "downloaded",
+    "elevation", "uploading", "uploaded", "downloading", "downloaded","attaching", "attach"
 ]
 
 ALWAYS_TOPICS = {
