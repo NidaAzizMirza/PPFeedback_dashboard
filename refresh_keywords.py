@@ -77,16 +77,17 @@ if ut_changed.any():
     for i in master.index[ut_changed][:8]:
         print(f"  [{b.at[i, 'user_type'] or '-'}] -> [{a.at[i, 'user_type'] or '-'}]  {str(master.at[i, CLEAN])[:80]}")
 if tag_changed.any():
+    known = set(mt.load_catalogue().values())       # group names contain commas, so split with the known names
     added = pd.Series([g for i in master.index[tag_changed]
-                       for g in a.at[i, "secondary_tag_groups"].split(", ")
-                       if g and g not in b.at[i, "secondary_tag_groups"]]).value_counts()
+                       for g in (set(mt.split_known(a.at[i, "secondary_tag_groups"], known))
+                                 - set(mt.split_known(b.at[i, "secondary_tag_groups"], known)))]).value_counts()
     print("\nTopics added most often:\n" + added.head(8).to_string())
 
 if not args.apply:
     print("\nDRY RUN: nothing written. Add --apply to write master.xlsx and rebuild the database.")
     sys.exit(0)
 if not (ut_changed | tag_changed).any():
-    sys.exit("Nothing to change.")
+    print("Nothing to change."); sys.exit(0)
 if not args.yes and input("\nHave you run `git pull`, and is no GitHub workflow running? Type yes to continue: ").strip().lower() != "yes":
     sys.exit("Stopped.")
 if not args.no_backup:
