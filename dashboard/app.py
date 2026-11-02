@@ -1365,6 +1365,17 @@ def page_browse_reviews(months: list[str] | None):
             return text
         return text if len(text) <= max_len else text[:max_len].rstrip() + "…"
 
+    # Received = when the response came in, in UK time (stored in UTC).
+    # Naive on purpose: the browser must not shift it into its own time zone.
+    if "response_date" in filtered.columns:
+        filtered["_received"] = (
+            pd.to_datetime(filtered["response_date"], errors="coerce", utc=True)
+            .dt.tz_convert("Europe/London").dt.tz_localize(None))
+        filtered = filtered.sort_values("_received", ascending=False, na_position="last")
+    else:
+        filtered["_received"] = pd.NaT
+    has_received = filtered["_received"].notna().any()
+
     filtered = filtered.reset_index(drop=True)
     manual_label = {}
     if mt is not None and manual_df is not None:
@@ -1388,7 +1399,7 @@ def page_browse_reviews(months: list[str] | None):
 
     display_df = pd.DataFrame({
         "Respondent": filtered.get("respondent_id"),
-        "Month": filtered.get("month"),
+        "Received": filtered["_received"] if has_received else filtered.get("month"),
         "Rating": filtered.get("rating"),
         "Topics": filtered["_topic_pairs"].apply(_format_topics_short),
         "Manual tags": filtered["respondent_id"].map(lambda x: manual_label.get(mt.norm_id(x), "") if mt else ""),
@@ -1403,6 +1414,8 @@ def page_browse_reviews(months: list[str] | None):
         use_container_width=True,
         height=600,
         column_config={
+            "Received": (st.column_config.DatetimeColumn("Received", format="DD MMM YYYY, HH:mm", width="small")
+                         if has_received else st.column_config.TextColumn("Month", width="small")),
             "Topics": st.column_config.TextColumn(width="large"),
             "Sentiment": st.column_config.TextColumn(width="small"),
             "Feedback": st.column_config.TextColumn(width="large"),
@@ -1415,7 +1428,9 @@ def page_browse_reviews(months: list[str] | None):
     if selected_rows:
         sel = filtered.iloc[selected_rows[0]]
         with st.container(border=True):
-            st.markdown(f"**Respondent {sel.get('respondent_id')}** — {sel.get('month')} — Rating: {sel.get('rating')}")
+            when = (sel["_received"].strftime("%d %b %Y, %H:%M") + " UK time"
+                    if pd.notna(sel.get("_received")) else sel.get("month"))
+            st.markdown(f"**Respondent {sel.get('respondent_id')}** — {when} — Rating: {sel.get('rating')}")
             st.write(sel.get("_text", ""))
             pairs = sel.get("_topic_pairs") or []
             if pairs:

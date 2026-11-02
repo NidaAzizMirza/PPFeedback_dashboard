@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS review_detail (
     topic_sentiment_pairs        TEXT,
     user_type                     TEXT,
     overall_experience_sentiment  TEXT,
+    response_date                 TEXT,
     PRIMARY KEY (respondent_id)
 );
 """
@@ -390,6 +391,11 @@ def load_original_comments(path=CACHE_PATH):
     keep = text.notna() & (text != "")
     return dict(zip(cache.loc[keep, id_col].astype(str).str.strip(), text[keep]))
 
+def _response_date_utc(value):
+    """Start Date as 'YYYY-MM-DD HH:MM:SS' in UTC, or None if unusable.
+    Stored in UTC; the dashboard converts to UK time when it shows it."""
+    ts = pd.to_datetime(value, errors="coerce", utc=True, format="mixed")
+    return None if pd.isna(ts) else ts.strftime("%Y-%m-%d %H:%M:%S")
 
 def write_monthly_metrics(df, run_date=None):
     """Write NLP-derived metrics for a pipeline run."""
@@ -410,7 +416,7 @@ def write_monthly_metrics(df, run_date=None):
     # nsat pattern above.
     rd_cols = [r[1] for r in conn.execute("PRAGMA table_info(review_detail)").fetchall()]
     for new_col in ("topic_sentiment_pairs", "user_type", "overall_experience_sentiment",
-                    "feedback_original"):
+                    "feedback_original", "response_date"):
         if new_col not in rd_cols:
             conn.execute(f"ALTER TABLE review_detail ADD COLUMN {new_col} TEXT")
     conn.execute("""
@@ -533,8 +539,8 @@ def write_monthly_metrics(df, run_date=None):
              svm_confidence, prediction_method, grouping_sentiment,
              absa_aspects, entities_features, entities_errors,
              entities_fees, rating,
-             topic_sentiment_pairs, user_type, overall_experience_sentiment)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             topic_sentiment_pairs, user_type, overall_experience_sentiment, response_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             respondent_id, run_date, month,
             str(row.get("Feedback_clean", "")),
@@ -553,6 +559,7 @@ def write_monthly_metrics(df, run_date=None):
             json.dumps(topic_pairs),
             row.get("user_type") if pd.notna(row.get("user_type")) else None,
             row.get("overall_experience_sentiment") if pd.notna(row.get("overall_experience_sentiment")) else None,
+            _response_date_utc(row.get("Start Date")),
         ))
 
     # ── 6. Topic monthly (exploded topic_sentiment_pairs) ──────────────────
