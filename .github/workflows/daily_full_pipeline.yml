@@ -1,4 +1,4 @@
-name: Weekly full pipeline
+name: Daily full pipeline
 
 # Runs every day — the full pipeline: classification,
 # ABSA sentiment, entity extraction, and dashboard tag/feature/error
