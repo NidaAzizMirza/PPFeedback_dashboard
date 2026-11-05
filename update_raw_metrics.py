@@ -168,6 +168,17 @@ def main():
 
     df[cfg.COL_RESPONDENT_ID] = normalize_id_series(df[cfg.COL_RESPONDENT_ID])
 
+    # ── Cache mode: recount every month from the whole cache ─────────────
+    # A running tally can never correct itself after a lost or rolled-back
+    # update; recounting from the full cache every day can.
+    if cfg.USE_LOCAL_CACHE:
+        df = df[df[cfg.COL_RESPONDENT_ID] != "nan"].drop_duplicates(
+            subset=[cfg.COL_RESPONDENT_ID], keep="last")
+        adb.initialise_db()
+        adb.write_raw_metrics(df, overwrite=True)
+        log.info(f"Recounted raw metrics for all months from {len(df)} cached responses.")
+        sys.exit(0)
+
     # ── Dedup against the raw-only processed list ───────────────────────
     processed_ids = load_processed_raw_ids()
     new_df = df[~df[cfg.COL_RESPONDENT_ID].isin(processed_ids)].copy()

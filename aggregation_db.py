@@ -171,7 +171,7 @@ def _normalize_topic_pairs(value):
 # ══════════════════════════════════════════════════════════════════════════
 # WRITE RAW METRICS (from full export before preprocessing)
 # ══════════════════════════════════════════════════════════════════════════
-def _write_raw_metrics_single_month(df_raw, run_date):
+def _write_raw_metrics_single_month(df_raw, run_date, overwrite=False):
     """Write raw volume/rating metrics for a single month's slice of the raw export."""
     month = get_month(run_date)
 
@@ -234,6 +234,18 @@ def _write_raw_metrics_single_month(df_raw, run_date):
     cols = [r[1] for r in conn.execute("PRAGMA table_info(monthly_summary)").fetchall()]
     if "nsat" not in cols:
         conn.execute("ALTER TABLE monthly_summary ADD COLUMN nsat REAL")
+
+
+    # overwrite=True: reset this month's raw totals to zero first, so the
+    # upsert below lands on zero and the month ends up as an exact recount
+    # of df_raw instead of a running tally. NLP columns are left alone.
+    if overwrite:
+        conn.execute("""
+            UPDATE monthly_summary
+            SET total_respondents = 0, total_with_feedback = 0,
+                rating_5 = 0, rating_4 = 0, rating_3 = 0, rating_2 = 0, rating_1 = 0
+            WHERE run_date = ?
+        """, (run_date,))
 
     # Upsert — adds to existing raw totals for this month rather than
     # overwriting, so multiple exports landing in the same month accumulate
@@ -312,7 +324,7 @@ def _write_raw_metrics_single_month(df_raw, run_date):
           f"avg rating: {avg_rating}, {total_with_feedback} with feedback")
 
 
-def write_raw_metrics(df_raw, run_date=None):
+def write_raw_metrics(df_raw, run_date=None, overwrite=False):
     """
     Write volume and rating metrics from the raw SurveyMonkey export,
     BEFORE preprocessing drops any rows (so rating-only respondents are
@@ -351,13 +363,13 @@ def write_raw_metrics(df_raw, run_date=None):
             df_tmp["_month_key"] = df_tmp["_month_key"].fillna(get_month(fallback) + "-01")
 
             for month_key, batch in df_tmp.groupby("_month_key"):
-                _write_raw_metrics_single_month(batch.drop(columns=["_month_key"]), month_key)
+                _write_raw_metrics_single_month(batch.drop(columns=["_month_key"]), month_key, overwrite)
             return
 
     # No usable date column — treat the whole export as one run_date
     if run_date is None:
         run_date = datetime.now().strftime("%Y-%m-%d")
-    _write_raw_metrics_single_month(df_raw, run_date)
+    _write_raw_metrics_single_month(df_raw, run_date, overwrite)
 
 # ══════════════════════════════════════════════════════════════════════════
 # WRITE NLP METRICS (from processed pipeline output)
