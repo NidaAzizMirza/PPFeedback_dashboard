@@ -1,21 +1,16 @@
 name: Daily raw metrics update
 
-# Runs every day at 07:00 UTC — updates ONLY response volume, ratings,
-# and NSAT. No NLP models involved, so this installs and runs fast even
-# though it fires daily. Full classification/sentiment/entities run
-# separately on their own weekly schedule (see weekly_pipeline.yml).
-#
-# Reads from the local survey cache (data/survey_cache.csv, refreshed
-# daily at 06:00 UTC by cache_refresh.yml) via USE_LOCAL_CACHE=true,
-# rather than calling the SurveyMonkey API itself. This means only ONE
-# job in the whole pipeline ever talks to SurveyMonkey — cache_refresh.yml
-# — instead of three separate jobs each maintaining their own API
-# checkpoint and each independently eating into the same 500/day quota.
-# That's also why this workflow no longer needs the SURVEYMONKEY_*
-# secrets at all.
+# Runs after each successful "Daily survey cache refresh" (04:17 UTC, though GitHub
+# may start it later). Updates ONLY response volume, ratings and NSAT: every month's
+# totals are recounted from the whole survey cache (data/survey_cache.csv), so a
+# missed or rolled-back update corrects itself on the next run. No NLP models, so
+# it installs and runs fast. Comments, topics and sentiment come from
+# daily_full_pipeline.yml. Needs no SurveyMonkey secrets: only the cache refresh
+# talks to SurveyMonkey.
 on:
-  schedule:
-    - cron: "0 7 * * *"
+  workflow_run:
+    workflows: ["Daily survey cache refresh"]
+    types: [completed]
   workflow_dispatch: {}
 
 permissions:
@@ -27,6 +22,7 @@ concurrency:
 
 jobs:
   update-raw-metrics:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -68,3 +64,5 @@ jobs:
           done
           echo "Could not push after 3 attempts"
           exit 1
+
+        
