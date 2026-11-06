@@ -12,6 +12,7 @@ Three jobs:
 """
 from __future__ import annotations
 import re
+import pandas as pd
 
 COMPETITOR_GROUP = "Competitor mention"
 COMPETITOR_NAMES = ["planda"]            # add more competitor names here
@@ -44,13 +45,42 @@ ALWAYS_TOPICS = {
     COMPETITOR_GROUP:             ("Competitor mention", COMPETITOR_NAMES),
 }
 
-def add_always_topics(text, primary_group, secondary_tags, secondary_groups):
+# ── New feature topics: only for responses AFTER 25 Aug 2026 ────────────────
+# Each feature is its own group, so it shows as its own topic in the dashboard.
+# Same format as ALWAYS_TOPICS: group -> (granular tag, keywords). Edit the keyword lists here.
+# Matched as whole words, lowercase. Use "re:<regex>" for a pattern.
+NEW_TOPICS_FROM = pd.Timestamp("2026-08-26", tz="Europe/London")   # 26 Aug 00:00 UK = everything after 25 Aug
+NEW_FEATURE_TOPICS = {
+    "AI document checker": ("AI document checker", [
+        "document checker", "ai checker", "ai document", "document check",
+        "check my documents", "checked my documents", "checks documents"]),
+    "Constraints checker": ("Constraints checker", [
+        "constraints checker", "constraint checker", "constraints check", "site constraints",
+        "suggested documents", "suggests documents", "recommended documents"]),
+    "AI description rewrite": ("AI description rewrite", [
+        "description rewrite", "rewrite the description", "rewrite my description",
+        "rewrote my description", "improved description", "ai description", "ai rewrite"]),
+}
+
+def _topics_for(start_date):
+    """ALWAYS_TOPICS, plus the new feature topics when the response date is after 25 Aug 2026.
+    A missing or unreadable date means no new topics."""
+    topics = dict(ALWAYS_TOPICS)
+    try:
+        ts = pd.to_datetime(start_date, errors="coerce", utc=True, format="mixed")
+    except (TypeError, ValueError):
+        ts = pd.NaT
+    if pd.notna(ts) and ts >= NEW_TOPICS_FROM:
+        topics.update(NEW_FEATURE_TOPICS)
+    return topics
+
+def add_always_topics(text, primary_group, secondary_tags, secondary_groups, start_date=None):
     """secondary_* are comma-joined strings. Group names contain commas
     ("Guidance, clarity & jargon"), so they are checked as substrings, never split."""
     tags = secondary_tags if isinstance(secondary_tags, str) else ""
     groups = secondary_groups if isinstance(secondary_groups, str) else ""
     low = str(text or "").lower()
-    for group, (tag, kws) in ALWAYS_TOPICS.items():
+    for group, (tag, kws) in _topics_for(start_date).items():
         if group == primary_group or group in groups:
             continue
         if any(re.search(k[3:], low) if k.startswith("re:")

@@ -858,13 +858,14 @@ def step_classify(df):
     all_pred  = svm.predict(embeddings)
 
     results = []
-    for text, pred, proba in zip(
-        df[cfg.COL_FEEDBACK_CLEAN], all_pred, all_proba
+    dates = df["Start Date"] if "Start Date" in df.columns else [None] * len(df)
+    for text, pred, proba, start in zip(
+            df[cfg.COL_FEEDBACK_CLEAN], all_pred, all_proba, dates
     ):
         primary_tag, primary_group, secondary_tags, secondary_groups, conf, method = \
             get_multilabel_tags(text, proba, pred, le, tag_to_group)
         secondary_tags, secondary_groups = so.add_always_topics(
-            text, primary_group, secondary_tags, secondary_groups)
+            text, primary_group, secondary_tags, secondary_groups, start_date=start)
         results.append({
             "primary_tag":          primary_tag,
             "primary_tag_group":    primary_group,
@@ -899,6 +900,8 @@ ABSA_ASPECTS = {
     "Overall Positive Experience":        ["overall experience", "ease of use", "user experience"],
 }
 ABSA_ASPECTS[so.COMPETITOR_GROUP] = []   # topic only; sentiment comes from overall + so rules
+for _group in so.NEW_FEATURE_TOPICS:
+    ABSA_ASPECTS[_group] = []   # topic only; sentiment comes from the overall sentiment
 
 def split_group_names(groups_str, known_groups):
     """Split a ', '-joined string of group names without cutting names
@@ -1097,7 +1100,8 @@ def step_absa(df):
         # not only in step_classify, so retag_history.py (which only runs step_absa) gets them.
         sec_tags, sec_groups = so.add_always_topics(
             row[text_col], row["primary_tag_group"],
-            row.get("secondary_tags", ""), row.get("secondary_tag_groups", ""))
+            row.get("secondary_tags", ""), row.get("secondary_tag_groups", ""),
+            start_date=row.get("Start Date"))
         sec_tags_l.append(sec_tags); sec_groups_l.append(sec_groups)
         pairs, aspects_str, aspect_strs, overall = run_absa_per_topic(
             row[text_col], row["primary_tag_group"], sec_groups
