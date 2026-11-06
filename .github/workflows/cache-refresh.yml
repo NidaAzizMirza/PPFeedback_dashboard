@@ -4,7 +4,7 @@ name: Daily survey cache refresh
 # talks to SurveyMonkey: it pulls new responses since its own checkpoint into
 # data/survey_cache.csv. Daily raw metrics and Daily full pipeline both read this
 # cache (USE_LOCAL_CACHE=true), so they need a fresh cache to show new data.
-# Daily full pipeline starts automatically when this workflow succeeds.
+# Both start automatically when this workflow succeeds.
 on:
   schedule:
     - cron: "17 4 * * *"
@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v5
