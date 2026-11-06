@@ -52,14 +52,26 @@ ALWAYS_TOPICS = {
 NEW_TOPICS_FROM = pd.Timestamp("2026-08-26", tz="Europe/London")   # 26 Aug 00:00 UK = everything after 25 Aug
 NEW_FEATURE_TOPICS = {
     "AI document checker": ("AI document checker", [
-        "document checker", "ai checker", "ai document", "document check",
-        "check my documents", "checked my documents", "checks documents"]),
+        r"re:\bai\b.{0,15}\b(check\w*|review\w*|tools?|bot)\b",
+        r"re:\bai\b.{0,40}\b(recogni\w+|identif\w+)\b",
+        r"re:\bcheck\w*\s+ai\b",
+        r"re:\b(application|plan|document|documents|drawing|drawings)\s+check\w*",
+        r"re:\bcheck(ing)?\s+(the|my|our)\s+application\b",
+        r"re:\bcheck application\b",
+        r"re:\bchecking\s+(system|procedure|software)\b",
+        r"re:\b(automatic|automated)\s+check\w*",
+        r"re:\byour\s+checks?\b",
+        r"re:\bnew\s+plan\s+review\w*",
+    ]),
     "Constraints checker": ("Constraints checker", [
-        "constraints checker", "constraint checker", "constraints check", "site constraints",
-        "suggested documents", "suggests documents", "recommended documents"]),
+        r"re:\bconstraints?\b.{0,120}\b(documents?|assessments?|required|suggest\w*)\b",
+        "suggested documents", "suggests documents", "recommended documents",
+    ]),
     "AI description rewrite": ("AI description rewrite", [
+        r"re:\bai\b.{0,20}\b(descriptions?|rewrit\w*|reword\w*|rephras\w*)\b",
         "description rewrite", "rewrite the description", "rewrite my description",
-        "rewrote my description", "improved description", "ai description", "ai rewrite"]),
+        "rewrote my description", "improved description",
+    ]),
 }
 
 def _topics_for(start_date):
