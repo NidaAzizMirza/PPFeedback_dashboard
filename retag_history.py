@@ -96,7 +96,7 @@ if args.apply:
 print("\nLoading models (this takes a minute)...")
 from run_pipeline import step_absa   # noqa: E402  (heavy import, so it comes after the checks above)
 
-cols = [ID, CLEAN, "primary_tag_group", "secondary_tag_groups"]
+cols = [ID, CLEAN, "primary_tag_group", "secondary_tag_groups", "Start Date"]
 if "Feedback" in master.columns:
     cols.append("Feedback")
 
