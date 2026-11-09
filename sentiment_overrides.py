@@ -62,6 +62,7 @@ NEW_FEATURE_TOPICS = {
         r"re:\b(automatic|automated)\s+check\w*",
         r"re:\byour\s+checks?\b",
         r"re:\bnew\s+plan\s+review\w*",
+        r"re:\bnew\s+validation\s+(stage|review|step|check)\w*",
     ]),
     "Constraints checker": ("Constraints checker", [
         r"re:\bconstraints?\b.{0,120}\b(documents?|assessments?|required|suggest\w*)\b",
