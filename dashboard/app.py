@@ -20,6 +20,7 @@ Page structure:
                                  (tag groups, features, errors, browse
                                  reviews), split the same way into its own
                                  Month by month / Aggregate sub-tabs.
+    Tab 3 - Browse reviews : all comments tagged programatically
 
 Edit THIS file if you want to:
   - Change a page's layout or charts (Section 4 — PAGE FUNCTIONS)
@@ -1552,9 +1553,17 @@ def render_feedback_comments_view():
     with sub_agg:
         agg_months = _aggregate_month_picker(months, key_prefix="comments_agg", title="Feedback comments — months")
         page_topics(agg_months)
-        st.divider()
-        page_browse_reviews(agg_months)
 
+def render_browse_reviews_view():
+    """Browse Reviews has its own top-level tab (it used to sit at the bottom of
+    Feedback comments > Aggregate). It gets its own months picker in the sidebar."""
+    months = load_available_months()
+    if not months:
+        st.info("No data yet.")
+        return
+    browse_months = None
+    # browse_months = _aggregate_month_picker(months, key_prefix="browse", title="Browse Reviews — months")
+    page_browse_reviews(browse_months)
 
 # ============================================================================
 # SECTION 5 — MONTHLY SNAPSHOT VIEW (matches the preferred design)
@@ -1741,11 +1750,13 @@ def main():
 
     st.title("Planning Portal Feedback Dashboard")
 
-    tab1, tab2, tab_about = st.tabs(["Feedback ratings", "Feedback comments", "About"])
+    tab1, tab2, tab3, tab_about = st.tabs(["Feedback ratings", "Feedback comments", "Browse Reviews", "About"])
     with tab1:
         render_feedback_ratings_view()
     with tab2:
         render_feedback_comments_view()
+    with tab3:
+        render_browse_reviews_view()
     with tab_about:
         page_about()
 
