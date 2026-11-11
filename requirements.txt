@@ -27,8 +27,10 @@ protobuf
 # Dashboard
 streamlit
 matplotlib
+graphviz
 
 tiktoken
 cymem==2.0.13
 preshed==3.0.13
 murmurhash==1.0.15
+
