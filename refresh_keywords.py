@@ -14,7 +14,6 @@ Human tags from the dashboard are applied last and always win.
     python refresh_keywords.py              # DRY RUN: shows what would change, writes nothing
     python refresh_keywords.py --apply      # backs up master.xlsx, writes it, rebuilds metrics.db
     python refresh_keywords.py --apply --yes --no-backup      # for the GitHub Action
-
 AFTER --apply, run:  python retag_history.py --months <months>  so the topic sentiment for newly added
 topics is scored (that step reads the tag groups this script just updated).
 

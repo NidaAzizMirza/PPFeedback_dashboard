@@ -402,6 +402,11 @@ KEYWORD_BOOST = {
         "location plan", "boundary", "lpi", "red line", "blue line",
         "site plan", "requestaplan", "drawing tool", "mapping tool",
         "drawing tools", "which drawings", "drawings required",
+        "location plans", "site plans", "boundaries", "red lines", "blue lines",
+        "boundary line", "boundary lines", "site boundaries", "site location",
+        "location map", "mapping software", "mapping system", "mapping service",
+        "map tool", "os map", "os maps", "google maps", "google map",
+        "zoom", "zooming", "request a plan",
     ],
     "Suggestions": [
         "would be good if", "would help if", "it would help",
@@ -567,10 +572,13 @@ HARD_FALLBACK = {
         "Forms & application details"
     ),
     "LPI tool / Drawing tools": (
-        ["drawing tool", "drawing tools", "sketch tool", "boundary tool",
-         "which drawings", "drawings required", "drawing required",
-         "what drawings", "plans required", "lpi tool",
-         "red line boundary", "blue line"],
+        ["red line boundary", "blue line", "red line", "red lines", "blue lines",
+         "draw the boundary", "location plan", "location plans",
+         "drawing boundaries", "drawing the boundary", "draw the boundary",
+         "location plan", "location plans",
+         "site location", "location map", "mapping tool", "mapping software",
+         "mapping system", "mapping service", "map tool",
+         "os map", "google maps", "request a plan"],
         "Location plans, addresses and mapping"
     ),
 }
@@ -890,7 +898,7 @@ ABSA_ASPECTS = {
     "Guidance, clarity & jargon":         ["guidance", "instructions", "jargon", "terminology", "clarity"],
     "Fees, charges and quotes":           ["fees", "charges", "charge", "cost", "pricing", "fee calculator", "pay", "price", "£", "fee", "expensive"],
     "Payments":                           ["payment", "payment system", "card payment", "bank transfer", "nomination","nominees"],
-    "Location plans, addresses and mapping": ["location plan", "boundary", "drawing tool", "site plan", "mapping", "LPI", "site boundaries","sketch"],
+    "Location plans, addresses and mapping": ["location plan", "location plans", "boundary", "boundaries", "drawing tool", "site plan", "site plans", "mapping", "LPI", "site boundaries", "sketch", "red line", "blue line", "location map"],
     "Forms & application details":        ["form", "questions", "application form"],
     "General UX":                         ["navigation", "interface", "design", "usability", "complicated", "clunky"],
     "Challenges and Workarounds":         ["crash", "bug", "error", "system issue", "glitch"],

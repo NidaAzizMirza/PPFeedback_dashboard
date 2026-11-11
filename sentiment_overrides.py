@@ -39,10 +39,25 @@ DOCUMENT_KEYWORDS = [
     "elevation", "uploading", "uploaded", "downloading", "downloaded",
 ]
 
+LOCATION_GROUP = "Location plans, addresses and mapping"
+LOCATION_KEYWORDS = [
+    "requestaplan",
+    r"re:\b(location|site|block) plan (tool|tools|creation|service|software|feature|builder)\b",
+    r"re:\bplan creation tools?\b",
+    r"re:\bdrawing tools?\b",
+    r"re:\bdraw(ing)? (the |a )?(site )?boundar(y|ies)\b",
+    r"re:\b(creat\w+|draw\w+|mak\w+) (a |the |my |our )?(site |location |block )*(location|site|block) plans?\b",
+    r"re:\blocation plan\b.{0,30}\b(didnt|did not|wont|would not|not work|failed|experience|feature|interface)\b",
+    r"re:\b(red|blue) lines?\b",
+    "location map", "map tool", "sketch map",
+    r"re:\bmapping (tool|software|system|service)\b",
+]
+
 ALWAYS_TOPICS = {
     "Guidance, clarity & jargon": ("Lack of guidance", ["guidance"]),
     DOCUMENT_GROUP:               ("Document uploading", DOCUMENT_KEYWORDS),
     COMPETITOR_GROUP:             ("Competitor mention", COMPETITOR_NAMES),
+    LOCATION_GROUP:               ("LPI tool", LOCATION_KEYWORDS),
 }
 
 # ── New feature topics: only for responses AFTER 25 Aug 2026 ────────────────
