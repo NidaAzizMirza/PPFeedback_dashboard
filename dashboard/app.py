@@ -691,7 +691,7 @@ def _about_dialog():
 def _sidebar():
     st.sidebar.title("Planning Control Portal")
     st.sidebar.caption("Feedback Pipeline Dashboard")
-    if st.sidebar.button("ℹ️ About this dashboard", key="open_about"):
+    if st.sidebar.button("ℹ️ Bamboozle", key="open_about"):
         _about_dialog()
     st.sidebar.divider()
 
