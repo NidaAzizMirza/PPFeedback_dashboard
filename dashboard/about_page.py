@@ -24,6 +24,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import streamlit as st
+from graphviz import Digraph
 
 UK_TZ = ZoneInfo("Europe/London")
 
@@ -74,7 +75,7 @@ ABOUT_CONTENT = {
         "Only people who chose to answer the survey are included. They may not represent all users.",
     ],
     "privacy": [
-        "No personally identifiable information (PII) is shared on this dashboard.",
+        "Respondent names and contact details are not collected or shown. Comments are written by users and may occasionally contain personal details.",
         "The dashboard is password protected. Only people who have been given the password can open it.",
         "Please do not share the password or screenshots outside the team.",  # CHECK: remove if not your policy
     ],
@@ -96,12 +97,25 @@ def format_uk(ts: datetime | str | None) -> str:
     return ts.astimezone(UK_TZ).strftime("%d %b %Y, %H:%M")
 
 
+# def _term_table(rows: list[tuple[str, str]]) -> None:
+#     """Two-column list: term in bold, meaning beside it."""
+#     for term, meaning in rows:
+#         left, right = st.columns([1, 3])
+#         left.markdown(f"**{term}**")
+#         right.markdown(meaning)
+
 def _term_table(rows: list[tuple[str, str]]) -> None:
-    """Two-column list: term in bold, meaning beside it."""
+    """Display terms and meanings in individual visual cards."""
+
     for term, meaning in rows:
-        left, right = st.columns([1, 3])
-        left.markdown(f"**{term}**")
-        right.markdown(meaning)
+        with st.container(border=True):
+            left, right = st.columns([1, 3], vertical_alignment="center")
+
+            with left:
+                st.markdown(f"**{term}**")
+
+            with right:
+                st.markdown(meaning)
 
 
 # --------------------------------------------------------------------------
@@ -123,7 +137,11 @@ def page_about(last_updated: datetime | str | None = None,
     st.caption(c["purpose"]["source"])
 
     st.subheader("Where to find things")
-    _term_table(c["where_to_look"])
+
+    _navigation_tree(
+        "Feedback dashboard",
+        c["where_to_look"]
+    )
 
     st.subheader("How to read it")
     _term_table(c["how_to_read"])
@@ -143,3 +161,87 @@ def page_about(last_updated: datetime | str | None = None,
 if __name__ == "__main__":
     # Run alone to preview:  streamlit run about_page.py
     page_about(last_updated=datetime.now(UK_TZ))
+
+
+# --------------------------------------------------------------------------
+# Navigation tree
+# --------------------------------------------------------------------------
+def _navigation_tree(section: str, pages: list[tuple[str, str]]) -> None:
+    """Display dashboard navigation as a hierarchical tree."""
+
+    dot = Digraph()
+
+    dot.attr(
+        rankdir="TB",
+        bgcolor="transparent",
+        nodesep="0.5",
+        ranksep="0.7"
+    )
+
+    dot.attr(
+        "node",
+        shape="box",
+        style="rounded,filled",
+        fontname="Arial",
+        fontsize="11",
+        margin="0.2,0.15"
+    )
+
+    dot.attr(
+        "edge",
+        color="#9CA3AF",
+        penwidth="1.5",
+        arrowsize="0.7"
+    )
+
+    # Main dashboard node
+    dot.node(
+        "root",
+        section,
+        fillcolor="#DBEAFE",
+        color="#60A5FA",
+        penwidth="1.5"
+    )
+
+    # Group pages by their parent section
+    groups = {}
+
+    for path, description in pages:
+        if " > " in path:
+            parent, child = path.split(" > ", 1)
+        else:
+            parent, child = path, None
+
+        groups.setdefault(parent, []).append((child, description))
+
+    # Create parent and child branches
+    for i, (parent, children) in enumerate(groups.items()):
+
+        parent_id = f"section_{i}"
+
+        dot.node(
+            parent_id,
+            parent,
+            fillcolor="#EDE9FE",
+            color="#A78BFA"
+        )
+
+        dot.edge("root", parent_id)
+
+        for j, (child, description) in enumerate(children):
+
+            if child is None:
+                continue
+
+            child_id = f"page_{i}_{j}"
+
+            dot.node(
+                child_id,
+                f"{child}\n{description}",
+                fillcolor="#F0FDF4",
+                color="#86EFAC"
+            )
+
+            dot.edge(parent_id, child_id)
+
+    st.graphviz_chart(dot, use_container_width=True)
