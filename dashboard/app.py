@@ -683,9 +683,16 @@ def _topic_negative_heatmap(topic_view: pd.DataFrame, top_n: int = 12) -> plt.Fi
 # SECTION 3 — SIDEBAR
 # ============================================================================
 
+@st.dialog("About the dashboard", width="large")
+def _about_dialog():
+    page_about()
+
+
 def _sidebar():
     st.sidebar.title("Planning Control Portal")
     st.sidebar.caption("Feedback Pipeline Dashboard")
+    if st.sidebar.button("ℹ️ About this dashboard", key="open_about"):
+        _about_dialog()
     st.sidebar.divider()
 
     months = load_available_months()
@@ -1750,15 +1757,14 @@ def main():
 
     st.title("Planning Portal Feedback Dashboard")
 
-    tab1, tab2, tab3, tab_about = st.tabs(["Feedback ratings", "Feedback comments", "Browse Reviews", "About"])
+    tab1, tab2, tab3 = st.tabs(["Feedback ratings", "Feedback comments", "Browse reviews"])
     with tab1:
         render_feedback_ratings_view()
     with tab2:
         render_feedback_comments_view()
     with tab3:
         render_browse_reviews_view()
-    with tab_about:
-        page_about()
+
 
 
 if __name__ == "__main__":

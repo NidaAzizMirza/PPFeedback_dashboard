@@ -33,7 +33,8 @@ UK_TZ = ZoneInfo("Europe/London")
 # 1. CONTENT  (edit this, not the layout code)
 # --------------------------------------------------------------------------
 ABOUT_CONTENT = {
-    "title": "About this dashboard",
+    "title": "",
+    # How to read this dashboard",
     "purpose": {
         "summary": (
             "This dashboard shows what users of the Planning Portal tell us "
