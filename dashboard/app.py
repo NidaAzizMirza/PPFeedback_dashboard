@@ -43,6 +43,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import pandas as pd
 import streamlit as st
+from about_page import page_about
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -52,7 +53,7 @@ try:
 except Exception:                      # the dashboard must still load without it
     mt = None
 
-from dashboard_config import PALETTE, SERIES_COLORS, SENTIMENT_COLORS
+from dashboard_config import PALETTE, SENTIMENT_COLORS
 from store import (
     db_exists,
     log_visit,
@@ -1740,11 +1741,13 @@ def main():
 
     st.title("Planning Portal Feedback Dashboard")
 
-    tab1, tab2 = st.tabs(["Feedback ratings", "Feedback comments"])
+    tab1, tab2, tab_about = st.tabs(["Feedback ratings", "Feedback comments", "About"])
     with tab1:
         render_feedback_ratings_view()
     with tab2:
         render_feedback_comments_view()
+    with tab_about:
+        page_about()
 
 
 if __name__ == "__main__":
