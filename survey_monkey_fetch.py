@@ -27,8 +27,11 @@ API_BASE = "https://api.surveymonkey.com/v3"
 # responses, not the whole history) and any duplicates are caught by the
 # existing processed_ids dedup in run_pipeline.py — so it's safe to be
 # generous here rather than risk silently missing a response.
-CHECKPOINT_OVERLAP_MINUTES = 60
+CHECKPOINT_OVERLAP_MINUTES = 360
 
+# Filter on when a response was last modified (i.e. completed), not when it
+# was started, so people who finish the next day are still picked up.
+CHECKPOINT_FILTER_FIELD = "start_modified_at"
 
 def load_checkpoint(path):
     """
@@ -236,7 +239,7 @@ def fetch_all_responses(survey_id=None, per_page=None, start_created_at=None):
     url = f"{API_BASE}/surveys/{survey_id}/responses/bulk"
     params = {"per_page": per_page, "page": 1, "status": "completed"}
     if start_created_at:
-        params["start_created_at"] = start_created_at
+        params[CHECKPOINT_FILTER_FIELD] = start_created_at
         log.info(f"Incremental fetch: responses since {start_created_at}")
     else:
         log.info("Full fetch: no checkpoint set, pulling entire survey history")
