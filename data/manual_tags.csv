@@ -38,3 +38,4 @@ respondent_id,tags,user_type,sentiment,note,tagged_by,tagged_at,algo_groups,algo
 119250146240,General UX complexity / time,,,,,2026-11-17 09:57 UTC,,positive,,add,
 119249775917,,,negative,,,2026-11-17 10:00 UTC,Document upload and handling|AI document checker,positive,,add,
 119242605944,,,,,,2026-11-17 13:22 UTC,"Location plans, addresses and mapping|Document upload and handling|AI document checker",negative,,add,"Location plans, addresses and mapping"
+119241594040,Description rewrite,,,,,2026-11-17 13:29 UTC,"Payments|Document upload and handling|Location plans, addresses and mapping",negative,professional_regular,add,
