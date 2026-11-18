@@ -40,3 +40,4 @@ respondent_id,tags,user_type,sentiment,note,tagged_by,tagged_at,algo_groups,algo
 119242605944,,,,,,2026-11-17 13:22 UTC,"Location plans, addresses and mapping|Document upload and handling|AI document checker",negative,,add,"Location plans, addresses and mapping"
 119241594040,Description rewrite,,,,,2026-11-17 13:29 UTC,"Payments|Document upload and handling|Location plans, addresses and mapping",negative,professional_regular,add,
 119251535140,Document check,,,,,2026-11-18 11:56 UTC,"Location plans, addresses and mapping|Document upload and handling",negative,,add,
+119250812487,,beginner_or_one_time,,,,2026-11-18 12:26 UTC,,positive,,add,
