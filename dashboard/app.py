@@ -1550,9 +1550,9 @@ def page_browse_reviews(months: list[str] | None):
     # Received is text on purpose: a date column copies out as 2026-11-20, text copies as 20/11/2026.
     # The table is already newest-first; clicking the Received header sorts it as text.
     display_df = pd.DataFrame({
+        "Respondent": filtered.get("respondent_id"),
         "Received": (filtered["_received"].dt.strftime("%d/%m/%Y").fillna("") if has_received
                      else filtered.get("month")),
-        "Respondent": filtered.get("respondent_id"),
         "Feedback": filtered.get("_text"),
         "Rating": filtered.get("rating"),
         "Topics": filtered["_topic_pairs"].apply(_format_topics_short),
