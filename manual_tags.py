@@ -158,11 +158,20 @@ def _modify(store: GitHubStore, change, message: str, retries: int = 4):
     raise RuntimeError(f"Could not save after {retries} tries ({last})")
 
 
+def now_uk() -> str:
+    """Timestamp for tagged_at: UK time, UK date format (e.g. 20 Nov 2026, 16:16)."""
+    try:
+        from zoneinfo import ZoneInfo
+        return datetime.now(ZoneInfo("Europe/London")).strftime("%d %b %Y, %H:%M")
+    except Exception:                                            # noqa: BLE001  (no tz database)
+        return datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M UTC")
+
+
 def save_record(store: GitHubStore, record: dict):
     rid = norm_id(record["respondent_id"])
     row = {c: str(record.get(c, "") or "") for c in COLUMNS}
     row["respondent_id"] = rid
-    row["tagged_at"] = row["tagged_at"] or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    row["tagged_at"] = row["tagged_at"] or now_uk()
 
     def change(df):
         df = df[df["respondent_id"].map(norm_id) != rid]
@@ -174,6 +183,100 @@ def delete_record(store: GitHubStore, respondent_id):
     rid = norm_id(respondent_id)
     return _modify(store, lambda df: df[df["respondent_id"].map(norm_id) != rid],
                    f"Remove manual tags for respondent {rid}")
+
+
+# ── bulk edits: one change applied to many comments ─────────────────────────
+BULK_CAP = 500                 # most comments the dashboard will change in one go
+
+
+def edit_is_empty(edit: dict) -> bool:
+    """True when a bulk edit would change nothing."""
+    return not (edit.get("tags") or edit.get("remove_groups") or edit.get("user_type")
+                or edit.get("sentiment") in SENTIMENTS or str(edit.get("note") or "").strip())
+
+
+def merge_edit(existing: dict | None, edit: dict, snapshot: dict | None = None) -> dict:
+    """The manual row for ONE comment after a bulk edit. Pure function (no GitHub, no Streamlit).
+
+    edit keys (all optional; blank means "leave as it is"):
+        tags             list of tag titles to add
+        remove_groups    list of topic groups the algorithm got wrong
+        sentiment        positive / neutral / negative
+        user_type        list of user types
+        note             text, appended to any note already there
+        tagged_by        initials
+        replace_algo     True -> my tags replace ALL the algorithm's tags (mode "replace")
+        overwrite_manual True -> tags, removed topics and user types given here replace the ones
+                         already saved by hand on this comment, instead of being added to them
+    snapshot: the algorithm's values (algo_groups, algo_sentiment, algo_user_type). Used only for a
+              comment with no saved row yet, so the first snapshot is never overwritten.
+    """
+    ex = {c: str((existing or {}).get(c, "") or "") for c in COLUMNS}
+    new = dict(ex)
+    overwrite = bool(edit.get("overwrite_manual"))
+
+    def combine(field, values):
+        values = [str(v).strip() for v in (values or []) if str(v).strip()]
+        if values:
+            old = [] if overwrite else _split(ex[field])
+            new[field] = SEP.join(dict.fromkeys(old + values))
+
+    new["mode"] = "replace" if edit.get("replace_algo") else (ex["mode"] or "add")
+    combine("tags", edit.get("tags"))
+    combine("remove_groups", edit.get("remove_groups"))
+    combine("user_type", edit.get("user_type"))
+    if new["mode"] == "replace":
+        new["remove_groups"] = ""                       # same as the single-comment form
+        if not new["tags"]:                             # "replace" with no tags would wipe training rows
+            new["mode"] = "add"
+    if edit.get("sentiment") in SENTIMENTS:
+        new["sentiment"] = edit["sentiment"]
+    note = str(edit.get("note") or "").strip()
+    if note:
+        new["note"] = note if (overwrite or not ex["note"]) else f"{ex['note']}; {note}"
+    if str(edit.get("tagged_by") or "").strip():
+        new["tagged_by"] = str(edit["tagged_by"]).strip()
+    new["tagged_at"] = now_uk()
+    if existing is None and snapshot:
+        for c in ("algo_groups", "algo_sentiment", "algo_user_type"):
+            new[c] = str(snapshot.get(c, "") or "")
+    return new
+
+
+def save_many(store: GitHubStore, edit: dict, rows: list[dict], message: str | None = None):
+    """Apply ONE edit to many comments with ONE read-modify-write, so it is one GitHub commit.
+
+    rows: [{"respondent_id", "algo_groups", "algo_sentiment", "algo_user_type"}, ...]
+    Returns (dataframe saved, number of comments given a first row, number updated).
+    """
+    if edit_is_empty(edit):
+        raise ValueError("Nothing to change.")
+    by_id = {norm_id(r["respondent_id"]): r for r in rows}
+    counts = {"new": 0, "updated": 0}
+
+    def change(df):
+        counts["new"] = counts["updated"] = 0           # reset if the save is retried
+        ids = df["respondent_id"].map(norm_id)
+        existing = {i: r.to_dict() for i, (_, r) in zip(ids[~ids.duplicated(keep="last")],
+                                                        df[~ids.duplicated(keep="last")].iterrows())}
+        out = []
+        for rid, snap in by_id.items():
+            ex = existing.get(rid)
+            row = merge_edit(ex, edit, snap)
+            row["respondent_id"] = rid
+            counts["updated" if ex is not None else "new"] += 1
+            out.append(row)
+        return pd.concat([df[~ids.isin(by_id)], pd.DataFrame(out, columns=COLUMNS)], ignore_index=True)
+
+    df = _modify(store, change, message or f"Bulk manual tags for {len(by_id)} comments")
+    return df, counts["new"], counts["updated"]
+
+
+def delete_many(store: GitHubStore, respondent_ids):
+    """Remove the manual rows for several comments in one commit."""
+    ids = {norm_id(i) for i in respondent_ids}
+    return _modify(store, lambda df: df[~df["respondent_id"].map(norm_id).isin(ids)],
+                   f"Remove manual tags for {len(ids)} comments")
 
 
 # ── loading (dashboard + pipeline) ──────────────────────────────────────────

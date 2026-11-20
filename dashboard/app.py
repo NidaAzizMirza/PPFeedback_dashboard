@@ -1272,6 +1272,147 @@ def _manual_summary(rec):
     return "; ".join(parts) or "✏️"
 
 
+_BULK_KEEP = "(leave as it is)"
+
+
+def _bulk_summary(pend, n, n_have):
+    """Plain-English description of what the pending bulk change will do."""
+    if pend["action"] == "delete":
+        return (f"**Remove the manual tags from {len(pend['ids_with_tags']):,} comments.** "
+                f"The algorithm's tags apply to them again after the next refresh.")
+    e = pend["edit"]
+    parts = []
+    if e.get("tags"):
+        parts.append(("replace ALL the algorithm's tags with: " if e.get("replace_algo") else "add tags: ")
+                     + ", ".join(e["tags"]))
+    if e.get("remove_groups"):
+        parts.append("remove topics: " + ", ".join(e["remove_groups"]))
+    if e.get("sentiment"):
+        parts.append(f"set sentiment to {e['sentiment']} (overall and for every topic)")
+    if e.get("user_type"):
+        parts.append("set user type to " + ", ".join(u.replace("_", " ") for u in e["user_type"])
+                     + " (replaces the algorithm's)")
+    if str(e.get("note") or "").strip():
+        parts.append(f"add note: {e['note'].strip()}")
+    start = " Tags, removed topics and user types set earlier by hand are replaced." if e.get("overwrite_manual") else ""
+    return (f"**Change {n:,} comments** ({n_have:,} already have manual tags, {n - n_have:,} do not).\n\n"
+            + "\n".join(f"- {x}" for x in parts) + ("\n\n" + start.strip() if start else ""))
+
+
+def _render_bulk_tagging(targets, sent_col, manual_df):
+    """One set of human tags for several comments at once. One save = one commit on the
+    `manual-tags` branch. Anything left blank is left as it is on each comment."""
+    if mt is None:
+        return
+    if not hasattr(mt, "save_many"):
+        st.warning("Bulk tagging is unavailable: manual_tags.py is out of date in the repo. "
+                   "Push the latest manual_tags.py and reload.")
+        return
+    token, repo, branch = _gh_conf()
+    cat = _manual_catalogue()
+    ids = [mt.norm_id(x) for x in targets["respondent_id"]]
+    n = len(ids)
+    have = set(manual_df["respondent_id"].map(mt.norm_id)) if manual_df is not None and len(manual_df) else set()
+    ids_with_tags = [i for i in ids if i in have]
+    n_have = len(ids_with_tags)
+
+    with st.container(border=True):
+        st.markdown(f"#### ✏️ Bulk tag {n:,} comments")
+        if n > mt.BULK_CAP:
+            st.warning(f"That is more than {mt.BULK_CAP:,} comments. Narrow the filters or tick fewer rows.")
+            return
+        if not cat:
+            st.warning("The tag list could not load: data/tags.csv is not in the repo.")
+            return
+        can_save = bool(token and repo)
+        if not can_save:
+            st.warning("Saving is not set up yet: add github_token and github_repo to this app's secrets.")
+        st.caption(f"{n_have:,} of these already have manual tags and will be updated; {n - n_have:,} will get "
+                   f"their first. Anything you leave blank is left as it is. Tags, removed topics and user "
+                   f"types are added to any you set earlier.")
+
+        options = {f"{g} › {t}": t for t, g in sorted(cat.items(), key=lambda kv: (kv[1], kv[0]))}
+        topics_here = sorted({t for ts in targets["_topics"] for t in ts})
+        with st.form("bulk_tag_form"):
+            picked = st.multiselect("Add tags (these are added to the algorithm's tags)", list(options))
+            removed = st.multiselect("Remove topics the algorithm got wrong (optional)", topics_here,
+                                     help="Topics the algorithm gave these comments. Each is removed from "
+                                          "every selected comment that has it.")
+            sent = st.selectbox("Overall sentiment", [_BULK_KEEP] + mt.SENTIMENTS,
+                                help="Sets the overall sentiment and the sentiment of every topic on each comment.")
+            uts = st.multiselect("User type", mt.USER_TYPES,
+                                 format_func=lambda x: x.replace("_", " ").title(),
+                                 help="Replaces the algorithm's user type on every selected comment.")
+            note = st.text_input("Note (optional)", help="Added to any note already on a comment.")
+            who = st.text_input("Your initials (optional)", value=st.session_state.get("tagger_initials", ""))
+            with st.expander("More options"):
+                replace_algo = st.checkbox("Replace ALL the algorithm's tags with the ones I added "
+                                           "(the first one becomes the main topic)")
+                overwrite = st.checkbox("Start again: replace the tags, removed topics and user types I set "
+                                        "earlier on these comments, instead of adding to them")
+            review = st.form_submit_button("Review changes", disabled=not can_save)
+
+        if review:
+            edit = {"tags": [options[x] for x in picked], "remove_groups": removed,
+                    "sentiment": "" if sent == _BULK_KEEP else sent, "user_type": uts,
+                    "note": note.strip(), "tagged_by": who.strip(),
+                    "replace_algo": replace_algo, "overwrite_manual": overwrite}
+            if mt.edit_is_empty(edit):
+                st.warning("Pick a tag to add or remove, a sentiment, a user type or a note.")
+            elif replace_algo and not picked:
+                st.warning("To replace the algorithm's tags, add at least one tag.")
+            else:
+                st.session_state["tagger_initials"] = who.strip()
+                st.session_state["bulk_pending"] = {"action": "save", "ids": tuple(ids), "edit": edit,
+                                                    "ids_with_tags": ids_with_tags}
+
+        if n_have and can_save and st.button(f"Remove manual tags from the {n_have:,} that have them",
+                                             key="bulk_remove"):
+            st.session_state["bulk_pending"] = {"action": "delete", "ids": tuple(ids), "edit": {},
+                                                "ids_with_tags": ids_with_tags}
+
+        pend = st.session_state.get("bulk_pending")
+        if pend and pend["ids"] == tuple(ids):          # a different selection drops the pending change
+            st.info(_bulk_summary(pend, n, n_have))
+            c1, c2, _ = st.columns([1, 1, 3])
+            confirm = c1.button("Confirm and save", type="primary", key="bulk_confirm")
+            cancel = c2.button("Cancel", key="bulk_cancel")
+            if cancel:
+                st.session_state.pop("bulk_pending", None)
+                st.rerun()
+            if confirm:
+                ok = False
+                try:
+                    store = mt.GitHubStore(token, repo, branch or mt.DEFAULT_BRANCH)
+                    if pend["action"] == "delete":
+                        mt.delete_many(store, pend["ids_with_tags"])
+                        flash = (f"Removed manual tags from {len(pend['ids_with_tags']):,} comments. "
+                                 f"The algorithm's tags apply again after the next refresh.")
+                    else:
+                        rows = []
+                        for _, r in targets.iterrows():
+                            ut = r.get("user_type")
+                            rows.append({
+                                "respondent_id": mt.norm_id(r.get("respondent_id")),
+                                # what the algorithm said; only used for comments with no saved row yet
+                                "algo_groups": mt.SEP.join(p.get("topic", "") for p in (r.get("_topic_pairs") or [])
+                                                           if p.get("topic")),
+                                "algo_sentiment": "" if pd.isna(r.get(sent_col)) else str(r.get(sent_col)),
+                                "algo_user_type": "" if ut is None or pd.isna(ut) else str(ut),
+                            })
+                        _, n_new, n_upd = mt.save_many(store, pend["edit"], rows)
+                        flash = (f"Saved manual tags on {n:,} comments ({n_new:,} new, {n_upd:,} updated) "
+                                 f"in one save. Charts update after the next refresh.")
+                    _load_manual_cached.clear()
+                    st.session_state.pop("bulk_pending", None)
+                    st.session_state["bulk_flash"] = flash
+                    ok = True
+                except Exception as e:                                   # noqa: BLE001
+                    st.error(f"Could not save: {e}")
+                if ok:
+                    st.rerun()
+
+
 def page_browse_reviews(months: list[str] | None):
     st.header("🔎 Browse Reviews")
 
@@ -1417,7 +1558,10 @@ def page_browse_reviews(months: list[str] | None):
         "Feedback": filtered.get("_text"),
     })
 
-    st.caption("Click a row to read the full comment and every topic below.")
+    flash = st.session_state.pop("bulk_flash", None)
+    if flash:
+        st.success(flash)
+    st.caption("Tick one row to read the full comment and every topic below, or tick several to tag them together.")
     event = st.dataframe(
         display_df,
         use_container_width=True,
@@ -1430,11 +1574,24 @@ def page_browse_reviews(months: list[str] | None):
             "Feedback": st.column_config.TextColumn(width="large"),
         },
         on_select="rerun",
-        selection_mode="single-row",
+        selection_mode="multi-row",
     )
 
     selected_rows = event.selection.rows if event and event.selection else []
-    if selected_rows:
+
+    # Several comments at once: tick rows, or tick the box to take every review that matches the filters.
+    # The box's key changes with the filters, so it clears itself when they change.
+    all_matching = False
+    if mt is not None and len(filtered) > 1:
+        sig = abs(hash((tuple(topic_filter), tuple(month_filter), sent_filter, search)))
+        all_matching = st.checkbox(
+            f"Tag all {len(filtered):,} reviews that match the filters (instead of the rows I ticked)",
+            key=f"bulk_all_{sig}")
+    if all_matching:
+        _render_bulk_tagging(filtered, sent_col, manual_df)
+    elif len(selected_rows) > 1:
+        _render_bulk_tagging(filtered.iloc[selected_rows], sent_col, manual_df)
+    elif len(selected_rows) == 1:
         sel = filtered.iloc[selected_rows[0]]
         with st.container(border=True):
             when = (sel["_received"].strftime("%d %b %Y, %H:%M") + " UK time"
