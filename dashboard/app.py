@@ -1547,15 +1547,18 @@ def page_browse_reviews(months: list[str] | None):
             vals = str(v).split(",")
         return "; ".join(x.strip().replace("_", " ").title() for x in vals if x.strip())
 
+    # Received is text on purpose: a date column copies out as 2026-11-20, text copies as 20/11/2026.
+    # The table is already newest-first; clicking the Received header sorts it as text.
     display_df = pd.DataFrame({
+        "Received": (filtered["_received"].dt.strftime("%d/%m/%Y").fillna("") if has_received
+                     else filtered.get("month")),
         "Respondent": filtered.get("respondent_id"),
-        "Received": filtered["_received"] if has_received else filtered.get("month"),
+        "Feedback": filtered.get("_text"),
         "Rating": filtered.get("rating"),
         "Topics": filtered["_topic_pairs"].apply(_format_topics_short),
-        "Manual tags": filtered["respondent_id"].map(lambda x: manual_label.get(mt.norm_id(x), "") if mt else ""),
         "Sentiment": filtered[sent_col].map(lambda v: SENTIMENT_EMOJI.get(v, "") if pd.notna(v) else ""),
         "User type": filtered.get("user_type").apply(_format_user_type),
-        "Feedback": filtered.get("_text"),
+        "Manual tags": filtered["respondent_id"].map(lambda x: manual_label.get(mt.norm_id(x), "") if mt else ""),
     })
 
     flash = st.session_state.pop("bulk_flash", None)
@@ -1567,8 +1570,7 @@ def page_browse_reviews(months: list[str] | None):
         use_container_width=True,
         height=600,
         column_config={
-            "Received": (st.column_config.DatetimeColumn("Received", format="DD MMM YYYY, HH:mm", width="small")
-                         if has_received else st.column_config.TextColumn("Month", width="small")),
+            "Received": st.column_config.TextColumn("Received" if has_received else "Month", width="small"),
             "Topics": st.column_config.TextColumn(width="large"),
             "Sentiment": st.column_config.TextColumn(width="small"),
             "Feedback": st.column_config.TextColumn(width="large"),
