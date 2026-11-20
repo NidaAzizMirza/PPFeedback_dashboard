@@ -57,3 +57,4 @@ fix_corrupted_ids.py
 test.py
 *.bak_*
 data/retag_progress.jsonl
+test.py
