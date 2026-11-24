@@ -522,7 +522,10 @@ HARD_FALLBACK = {
         ["had to call", "had to phone", "called helpline", "speak to someone",
          "real person", "can you icer", "phone advice", "phone support",
          "over the phone", "live chat", "help desk", "helpdesk",
-         "customer service", "customer support", "phone call", "phone calls", "on the phone"],
+         "customer service", "customer support", "phone call", "phone calls", "on the phone",
+         "support desk", "help desk", "helpdesk", "support team", "emailed support",
+         "email to your support", "email to support", "contacted support", "support email"
+        ],
         "Customer support & human assistance"
     ),
     "Tree works (minor vs major)": (
@@ -901,9 +904,10 @@ ABSA_ASPECTS = {
     "Location plans, addresses and mapping": ["location plan", "location plans", "boundary", "boundaries", "drawing tool", "site plan", "site plans", "mapping", "LPI", "site boundaries", "sketch", "red line", "blue line", "location map"],
     "Forms & application details":        ["form", "questions", "application form"],
     "General UX":                         ["navigation", "interface", "design", "usability", "complicated", "clunky"],
+
     "Challenges and Workarounds":         ["crash", "bug", "error", "system issue", "glitch"],
     "Planning App/work types":            ["tree works", "biodiversity", "discharge conditions", "application type", "listed building consent", "consents", "TPO", "householder"],
-    "Customer support & human assistance":["support", "helpdesk", "phone support"],
+    "Customer support & human assistance":["support", "helpdesk", "phone support", "Customer support & human assistance"],
     "Missing features & feature requests":["missing feature", "suggestion", "improvement"],
     "Overall Positive Experience":        ["overall experience", "ease of use", "user experience"],
 }
